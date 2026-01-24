@@ -36,8 +36,8 @@ export default function PageHeader() {
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <h3 className="capitalize font-semibold text-2xl">All Projects</h3>
+    <div className="flex items-center justify-between ">
+      <h3 className="capitalize font-bold text-2xl ">All Projects</h3>
 
       <div className="flex items-center justify-evenly space-x-4">
         <div className="flex items-center justify-center -space-x-3">
