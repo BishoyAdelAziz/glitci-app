@@ -31,7 +31,7 @@ function DesktopNav() {
   const { user, isPending } = useUser();
 
   return (
-    <header className="hidden md:flex w-[90%] mx-auto items-center justify-between pt-[5vh]">
+    <header className="hidden md:flex w-[95%] mx-auto items-center justify-between pt-[5vh]">
       <div className="h-20 flex items-center gap-x-2 bg-white dark:bg-gray-900 px-6 rounded-4xl">
         <Image
           src="/icons/App-Icon.svg"

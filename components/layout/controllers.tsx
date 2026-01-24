@@ -10,7 +10,7 @@ export default function ControllersNav() {
     "flex items-center justify-center w-10 h-10 rounded-full transition hover:bg-gray-200 dark:hover:bg-gray-700";
 
   return (
-    <div className="hidden md:flex fixed bottom-5 left-10 flex-col items-center gap-5 z-50">
+    <div className="hidden md:flex fixed bottom-5 left-15 flex-col items-center gap-5 z-50">
       {/* Top Section */}
       <div className="flex flex-col items-center bg-white dark:bg-gray-900 rounded-4xl py-5 px-3 gap-y-5 shadow-lg transition-colors">
         {/* Theme toggle (ONLY interactive) */}
