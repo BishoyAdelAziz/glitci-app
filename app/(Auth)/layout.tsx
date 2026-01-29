@@ -15,7 +15,7 @@ export default function AuthLayout({
     <main className="relative min-h-screen">
       {/* Centered App Icon (overlay) */}
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-        <div className="bg-[#f6f6f6] dark:bg-gray-900 p-6 rounded-full  transition-colors duration-300">
+        <div className="bg-[#f6f6f6] dark:bg-[#171717] p-6 rounded-full  transition-colors duration-300">
           <Image
             src="/icons/App-Logo.svg"
             width={40}

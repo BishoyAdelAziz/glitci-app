@@ -2,6 +2,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies as nextCookies } from "next/headers";
 
+// ✅ Add this to enable dynamic behavior
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function GET(req: NextRequest) {
   return proxy(req);
 }
@@ -25,13 +29,16 @@ export async function PATCH(req: NextRequest) {
 async function proxy(req: NextRequest) {
   try {
     const cookieStore = await nextCookies();
-    const token = cookieStore.get("GlitciAccessToken")?.value;
 
-    // Extract proxied path
+    // Get accessToken from Authorization header
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.replace("Bearer ", "");
+
     const pathname = req.nextUrl.pathname;
     const proxiedPath = pathname.replace("/api/proxy/", "");
 
-    // Backend URL with FULL query params forwarded ✅
+    console.log("🔍 Proxying:", req.method, proxiedPath); // Debug log
+
     if (!process.env.API_URL) throw new Error("API_URL is not defined");
 
     const backendUrl = new URL(`${process.env.API_URL}/${proxiedPath}`);
@@ -39,18 +46,21 @@ async function proxy(req: NextRequest) {
       backendUrl.searchParams.append(key, value);
     });
 
-    // Forward headers
-    const headers = new Headers(req.headers);
+    const headers = new Headers();
     headers.set("content-type", "application/json");
     if (token) headers.set("authorization", `Bearer ${token}`);
 
-    // Body - ONLY for methods that need it ✅
     let body: string | undefined;
     if (req.method !== "GET" && req.method !== "HEAD") {
       body = await req.text();
     }
 
+<<<<<<< HEAD
     // Fetch backend
+=======
+    console.log("🚀 Fetching:", backendUrl.toString()); // Debug log
+
+>>>>>>> 1b4b1063fb867cc1fb7363bee159204eaf7bda5d
     const res = await fetch(backendUrl.toString(), {
       method: req.method,
       headers,
@@ -59,14 +69,19 @@ async function proxy(req: NextRequest) {
 
     const data = await res.text();
 
-    // If backend returns 401, clear cookies and redirect
+    // If backend returns 401, clear everything
     if (res.status === 401) {
       console.warn("❌ Token expired or invalid, redirecting to login");
       const response = NextResponse.redirect(new URL("/login", req.url));
+<<<<<<< HEAD
       response.cookies.delete("GlitciAccessToken");
       response.cookies.delete("GlitciRefreshToken");
       response.cookies.delete("GlitciUser");
       response.cookies.delete("GlitciTokenExpiry");
+=======
+      response.cookies.delete("refreshToken");
+
+>>>>>>> 1b4b1063fb867cc1fb7363bee159204eaf7bda5d
       return response;
     }
 
@@ -78,13 +93,14 @@ async function proxy(req: NextRequest) {
       },
     });
 
-    // Forward backend Set-Cookie headers
+    // Forward ALL Set-Cookie headers from backend
     res.headers.forEach((value, key) => {
       if (key.toLowerCase() === "set-cookie") {
         response.headers.append(key, value);
       }
     });
 
+<<<<<<< HEAD
     // --- Special Handling: Login ---
     if (proxiedPath === "auth/login" && res.ok) {
       try {
@@ -149,6 +165,8 @@ async function proxy(req: NextRequest) {
       }
     }
 
+=======
+>>>>>>> 1b4b1063fb867cc1fb7363bee159204eaf7bda5d
     return response;
   } catch (err: unknown) {
     let message = "Unknown error occurred";
