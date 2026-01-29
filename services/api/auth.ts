@@ -17,10 +17,12 @@ interface LoginResponse {
 export const loginApi = async (data: LoginData): Promise<LoginResponse> => {
   const response = await axiosInstance.post("/auth/login", data);
 
-  // ✅ Store accessToken and expiry in localStorage
-  const { accessToken, accessTokenExpires } = response.data;
-  localStorage.setItem("accessToken", accessToken);
-  localStorage.setItem("accessTokenExpires", accessTokenExpires);
+  // ✅ Guard: only use localStorage in browser
+  if (typeof window !== "undefined") {
+    const { accessToken, accessTokenExpires } = response.data;
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("accessTokenExpires", accessTokenExpires);
+  }
 
   return response.data;
 };
@@ -31,9 +33,11 @@ export const getMeApi = async () => {
 };
 
 export const logoutApi = async () => {
-  // Clear localStorage
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("accessTokenExpires");
+  // ✅ Guard: only use localStorage in browser
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("accessTokenExpires");
+  }
 
   // Optional: call backend logout endpoint if exists
   // await axiosInstance.post("/auth/logout");

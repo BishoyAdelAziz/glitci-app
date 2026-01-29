@@ -8,13 +8,16 @@ const axiosInstance = axios.create({
   },
 });
 
-// ✅ Request interceptor - attach accessToken from localStorage
+// Request interceptor - attach accessToken from localStorage
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const accessToken = localStorage.getItem("accessToken");
+    // ✅ Guard: only access localStorage in browser
+    if (typeof window !== "undefined") {
+      const accessToken = localStorage.getItem("accessToken");
 
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
     }
 
     return config;
@@ -22,10 +25,15 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// ✅ Response interceptor - handle token refresh
+// Response interceptor - handle token refresh
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // ✅ Guard: only run in browser
+    if (typeof window === "undefined") {
+      return Promise.reject(error);
+    }
+
     const originalRequest = error.config;
 
     // If 401 and we haven't retried yet

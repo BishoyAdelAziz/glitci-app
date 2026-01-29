@@ -8,6 +8,9 @@ export function useTokenRefresh() {
   const intervalRef = useRef<NodeJS.Timeout>({} as NodeJS.Timeout);
 
   useEffect(() => {
+    // ✅ Guard: only run in browser
+    if (typeof window === "undefined") return;
+
     const checkAndRefreshToken = async () => {
       const accessTokenExpires = localStorage.getItem("accessTokenExpires");
 
@@ -16,7 +19,7 @@ export function useTokenRefresh() {
       const expiresAt = new Date(accessTokenExpires).getTime();
       const now = Date.now();
 
-      // ✅ Refresh 4 minutes (240000ms) before expiry
+      // Refresh 4 minutes (240000ms) before expiry
       const shouldRefresh = expiresAt - now < 4 * 60 * 1000;
 
       if (shouldRefresh) {
@@ -33,7 +36,6 @@ export function useTokenRefresh() {
         } catch (error) {
           console.error("❌ Token refresh failed:", error);
 
-          // Clear tokens and redirect to login
           localStorage.removeItem("accessToken");
           localStorage.removeItem("accessTokenExpires");
           window.location.href = "/login";
