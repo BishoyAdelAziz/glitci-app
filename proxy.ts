@@ -1,38 +1,22 @@
-// proxy.ts
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/api/")) return NextResponse.next();
 
-  // Skip API routes
-  if (pathname.startsWith("/api/")) {
-    return NextResponse.next();
-  }
-
-  const authRoutes = [
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/reset-password",
-  ];
-
-  // ✅ No public routes - redirect unauthenticated users to login
-  const publicRoutes: string[] = [];
-
+  const authRoutes = ["/login", "/register", "/forgot-password"];
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-  const isPublicRoute = publicRoutes.includes(pathname);
-  const isAppRoute = !isAuthRoute && !isPublicRoute;
 
-  // ✅ Check refreshToken cookie (set by backend)
-  const hasRefreshToken = request.cookies.has("refreshToken");
+  // Use the access token cookie to verify session
+  const hasToken = request.cookies.has("GlitciAccessToken");
 
-  if (!hasRefreshToken && isAppRoute) {
+  if (!hasToken && !isAuthRoute) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (hasRefreshToken && isAuthRoute) {
+  if (hasToken && isAuthRoute) {
     return NextResponse.redirect(new URL("/projects", request.url));
   }
 
@@ -41,6 +25,6 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -1,8 +1,5 @@
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
-import { ThemeProvider } from "@/providers/themeProvider";
 import "./globals.css";
-import AuthWatcher from "@/providers/AuthWatcher";
+import ClientProviders from "@/providers/ClientProviders";
 
 export default function RootLayout({
   children,
@@ -15,29 +12,19 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-(function () {
-  try {
-    const storedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const theme = storedTheme || (prefersDark ? "dark" : "light");
-
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  } catch (_) {}
-})();
-            `,
+          (function () {
+            try {
+              const storedTheme = localStorage.getItem("theme");
+              const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+              const theme = storedTheme || (prefersDark ? "dark" : "light");
+              document.documentElement.classList.toggle("dark", theme === "dark");
+            } catch (_) {}
+          })();`,
           }}
         />
       </head>
-
       <body suppressHydrationWarning>
-        <QueryClientProvider client={queryClient}>
-          <AuthWatcher />
-          <ThemeProvider>{children}</ThemeProvider>
-        </QueryClientProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

@@ -3,7 +3,6 @@ import ControllersNav from "@/components/layout/controllers";
 import { useTokenRefresh } from "@/hooks/useTokenRefresh";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  useTokenRefresh();
   return (
     <>
       <NavHeader />
