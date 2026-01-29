@@ -37,7 +37,7 @@ const PasswordInput = ({
       >
         v
         <input
-          className="w-full outline-none text-black dark:text-white"
+          className="outline-none bg-transparent w-full"
           {...register(name)}
           type={showPassword ? "text" : "password"}
           placeholder={placeholder}
