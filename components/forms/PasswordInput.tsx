@@ -35,6 +35,7 @@ const PasswordInput = ({
           errors[name as any]?.message ? "border-red-500" : ""
         }`}
       >
+        v
         <input
           className="w-full outline-none text-black dark:text-white"
           {...register(name)}
