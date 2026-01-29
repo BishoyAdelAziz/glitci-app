@@ -1,10 +1,11 @@
-// app/layout.tsx
-"use client";
-
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
+import { QueryClientProvider } from "@/lib/queryClient";
 import { ThemeProvider } from "@/providers/themeProvider";
 import "./globals.css";
+<<<<<<< HEAD
+import AuthWatcher from "@/providers/AuthWorker";
+=======
+import { TokenRefreshProvider } from "@/providers/TokenRefreshProvider";
+>>>>>>> 1b4b1063fb867cc1fb7363bee159204eaf7bda5d
 
 export default function RootLayout({
   children,
@@ -36,8 +37,16 @@ export default function RootLayout({
       </head>
 
       <body suppressHydrationWarning>
+<<<<<<< HEAD
         <QueryClientProvider client={queryClient}>
+          <AuthWatcher />
           <ThemeProvider>{children}</ThemeProvider>
+=======
+        <QueryClientProvider>
+          <TokenRefreshProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </TokenRefreshProvider>
+>>>>>>> 1b4b1063fb867cc1fb7363bee159204eaf7bda5d
         </QueryClientProvider>
       </body>
     </html>
