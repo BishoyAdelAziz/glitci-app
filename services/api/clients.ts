@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
 
-import { ClientsQueryParams, ClientsResponse } from "@/types/Clients";
+import { ClientsQueryParams, ClientsResponse } from "@/types/clients";
 export const getClients = async (
   params?: ClientsQueryParams,
 ): Promise<ClientsResponse> => {
