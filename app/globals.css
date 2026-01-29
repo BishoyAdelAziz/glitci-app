@@ -37,3 +37,43 @@ body {
     @apply bg-gray-900;
   }
 }
+.dark .react-datepicker {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dark .react-datepicker__day {
+  color: white;
+}
+
+.dark .react-datepicker__day--selected {
+  background-color: #2563eb;
+}
+.react-datepicker-wrapper {
+  width: 100% !important;
+}
+
+.react-datepicker__input-container {
+  width: 100% !important;
+}
+
+.react-datepicker__input-container input {
+  width: 100% !important;
+}
+.react-datepicker__input-container {
+  width: 100% !important;
+}
+.react-datepicker {
+  width: 100% !important;
+}
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari, Opera */
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge, and Firefox */
+  .scrollbar-hidden {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

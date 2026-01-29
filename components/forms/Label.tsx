@@ -9,7 +9,7 @@ interface Props {
 export default function Label({ name, label, required, id }: Props) {
   return (
     <label
-      className="inline-flex items-center justify-center gap-1 font-bold text-black"
+      className="inline-flex items-center justify-center gap-1 font-bold"
       htmlFor={`${name}`}
       id={id}
     >

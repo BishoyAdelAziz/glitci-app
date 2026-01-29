@@ -5,7 +5,7 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
-import ValidationError from "@/components/Errors/validationError";
+import ValidationError from "../errors/validationError";
 import Label from "./Label";
 
 interface Props {

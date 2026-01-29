@@ -7,7 +7,7 @@ interface Props {
 
 const SubmitError = ({ isError, error }: Props) => {
   if (!isError) return null;
-
+  console.log(error);
   const errorMessage = error?.response?.data?.message;
 
   return (
