@@ -42,9 +42,10 @@ export const getPriorityColor = (priority: string) => {
 };
 
 export const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
+  return new Date(dateString).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
     year: "numeric",
-    month: "short",
-    day: "numeric",
   });
 };
+export const toDateInput = (iso?: string) => (iso ? iso.split("T")[0] : "");

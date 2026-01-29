@@ -1,34 +1,27 @@
 import axiosInstance from "@/lib/axios";
 import type {
-  ProjectFilters,
+  ProjectsQueryParams,
   ProjectsResponse,
   Project,
+  SingleProject,
+  UpdateProjectDto,
 } from "@/types/projects";
+import { ProjectFormData } from "../validations/project";
 
 export const getProjects = async (
-  filters?: ProjectFilters,
+  params?: ProjectsQueryParams,
 ): Promise<ProjectsResponse> => {
-  const response = await axiosInstance.get("/projects", {
-    params: {
-      page: filters?.page || 1,
-      limit: filters?.limit || 10,
-      status: filters?.status,
-      priority: filters?.priority,
-      client: filters?.client,
-      department: filters?.department,
-      isActive: filters?.isActive,
-    },
-  });
+  const response = await axiosInstance.get("/projects", { params });
   return response.data;
 };
 
-export const getProjectById = async (id: string): Promise<Project> => {
+export const getProjectById = async (id: string): Promise<SingleProject> => {
   const response = await axiosInstance.get(`/projects/${id}`);
-  return response.data;
+  return response.data.data;
 };
 
 export const createProject = async (
-  data: Partial<Project>,
+  data: Partial<ProjectFormData>,
 ): Promise<Project> => {
   const response = await axiosInstance.post("/projects", data);
   return response.data;
@@ -36,10 +29,10 @@ export const createProject = async (
 
 export const updateProject = async (
   id: string,
-  data: Partial<Project>,
+  data: Partial<UpdateProjectDto>,
 ): Promise<Project> => {
   const response = await axiosInstance.patch(`/projects/${id}`, data);
-  return response.data;
+  return response.data.data;
 };
 
 export const deleteProject = async (id: string): Promise<void> => {
