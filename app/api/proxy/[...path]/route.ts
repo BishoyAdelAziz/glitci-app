@@ -2,6 +2,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies as nextCookies } from "next/headers";
 
+// ✅ Add this to enable dynamic behavior
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function GET(req: NextRequest) {
   return proxy(req);
 }
@@ -26,12 +30,14 @@ async function proxy(req: NextRequest) {
   try {
     const cookieStore = await nextCookies();
 
-    // ✅ Get accessToken from Authorization header (client sends it)
+    // Get accessToken from Authorization header
     const authHeader = req.headers.get("authorization");
     const token = authHeader?.replace("Bearer ", "");
 
     const pathname = req.nextUrl.pathname;
     const proxiedPath = pathname.replace("/api/proxy/", "");
+
+    console.log("🔍 Proxying:", req.method, proxiedPath); // Debug log
 
     if (!process.env.API_URL) throw new Error("API_URL is not defined");
 
@@ -40,7 +46,7 @@ async function proxy(req: NextRequest) {
       backendUrl.searchParams.append(key, value);
     });
 
-    const headers = new Headers(req.headers);
+    const headers = new Headers();
     headers.set("content-type", "application/json");
     if (token) headers.set("authorization", `Bearer ${token}`);
 
@@ -48,6 +54,8 @@ async function proxy(req: NextRequest) {
     if (req.method !== "GET" && req.method !== "HEAD") {
       body = await req.text();
     }
+
+    console.log("🚀 Fetching:", backendUrl.toString()); // Debug log
 
     const res = await fetch(backendUrl.toString(), {
       method: req.method,
@@ -62,8 +70,6 @@ async function proxy(req: NextRequest) {
       console.warn("❌ Token expired or invalid, redirecting to login");
 
       const response = NextResponse.redirect(new URL("/login", req.url));
-
-      // Clear refresh token cookie (backend might have set it)
       response.cookies.delete("refreshToken");
 
       return response;
@@ -77,7 +83,7 @@ async function proxy(req: NextRequest) {
       },
     });
 
-    // ✅ Forward ALL Set-Cookie headers from backend (for refreshToken)
+    // Forward ALL Set-Cookie headers from backend
     res.headers.forEach((value, key) => {
       if (key.toLowerCase() === "set-cookie") {
         response.headers.append(key, value);
