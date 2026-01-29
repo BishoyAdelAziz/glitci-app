@@ -1,6 +1,3 @@
-// app/layout.tsx
-"use client";
-
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { ThemeProvider } from "@/providers/themeProvider";
@@ -37,11 +34,11 @@ export default function RootLayout({
       </head>
 
       <body suppressHydrationWarning>
-        <TokenRefreshProvider>
-          <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <TokenRefreshProvider>
             <ThemeProvider>{children}</ThemeProvider>
-          </QueryClientProvider>
-        </TokenRefreshProvider>
+          </TokenRefreshProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );
