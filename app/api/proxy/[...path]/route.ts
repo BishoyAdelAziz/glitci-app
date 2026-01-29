@@ -27,18 +27,17 @@ async function proxy(req: NextRequest) {
     if (!process.env.API_URL) throw new Error("API_URL is not defined");
 
     const backendUrl = new URL(`${process.env.API_URL}/${proxiedPath}`);
-    req.nextUrl.searchParams.forEach((value, key) => {
-      backendUrl.searchParams.append(key, value);
-    });
+    req.nextUrl.searchParams.forEach((v, k) =>
+      backendUrl.searchParams.append(k, v),
+    );
 
     const headers = new Headers(req.headers);
     headers.set("content-type", "application/json");
+    // Forward the short-lived access token in the header
     if (token) headers.set("authorization", `Bearer ${token}`);
 
     let body: string | undefined;
-    if (req.method !== "GET" && req.method !== "HEAD") {
-      body = await req.text();
-    }
+    if (req.method !== "GET" && req.method !== "HEAD") body = await req.text();
 
     const res = await fetch(backendUrl.toString(), {
       method: req.method,
@@ -51,8 +50,6 @@ async function proxy(req: NextRequest) {
     if (res.status === 401) {
       const response = NextResponse.redirect(new URL("/login", req.url));
       response.cookies.delete("GlitciAccessToken");
-      response.cookies.delete("GlitciRefreshToken");
-      response.cookies.delete("GlitciUser");
       response.cookies.delete("GlitciTokenExpiry");
       return response;
     }
@@ -64,49 +61,38 @@ async function proxy(req: NextRequest) {
       },
     });
 
-    res.headers.forEach((value, key) => {
-      if (key.toLowerCase() === "set-cookie")
-        response.headers.append(key, value);
+    // CRITICAL: Forward all cookies from backend (like the 30-day refresh token)
+    res.headers.forEach((v, k) => {
+      if (k.toLowerCase() === "set-cookie") response.headers.append(k, v);
     });
 
-    // Handle Login & Refresh to set Client-Readable Expiry
+    // Logic for Login and Refresh response
     if (
       (proxiedPath === "auth/login" || proxiedPath === "auth/refresh") &&
       res.ok
     ) {
-      try {
-        const jsonData = JSON.parse(data);
-        const isProduction = process.env.NODE_ENV === "production";
+      const json = JSON.parse(data);
+      const isProd = process.env.NODE_ENV === "production";
 
-        response.cookies.set("GlitciAccessToken", jsonData.accessToken, {
-          httpOnly: true,
-          secure: isProduction,
-          sameSite: "lax",
-          path: "/",
-        });
+      // Save the 1-hour access token as HttpOnly
+      response.cookies.set("GlitciAccessToken", json.accessToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+      });
 
-        response.cookies.set("GlitciTokenExpiry", jsonData.accessTokenExpires, {
-          httpOnly: false, // ALLOW JS TO READ
-          secure: isProduction,
-          sameSite: "lax",
-          path: "/",
-        });
-
-        if (jsonData.refreshToken) {
-          response.cookies.set("GlitciRefreshToken", jsonData.refreshToken, {
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: "lax",
-            path: "/",
-          });
-        }
-      } catch (e) {
-        console.warn("Response parsing failed");
-      }
+      // THE ONLY CLIENT-READABLE COOKIE: The Expiry Timestamp
+      response.cookies.set("GlitciTokenExpiry", json.accessTokenExpires, {
+        httpOnly: false, // Accessible by AuthWatcher
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+      });
     }
 
     return response;
-  } catch (err: unknown) {
+  } catch (err) {
     return NextResponse.json(
       { status: "fail", message: "Proxy error" },
       { status: 500 },

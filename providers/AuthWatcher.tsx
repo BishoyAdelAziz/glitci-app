@@ -4,30 +4,33 @@ import axiosInstance from "@/lib/axios";
 
 export default function AuthWatcher() {
   useEffect(() => {
-    const checkToken = async () => {
+    const checkAndRefresh = async () => {
       const cookies = document.cookie.split("; ");
-      const expiryCookie = cookies.find((row) =>
+      const expiryRow = cookies.find((row) =>
         row.startsWith("GlitciTokenExpiry="),
       );
 
-      if (!expiryCookie) return;
+      if (!expiryRow) return;
 
-      const expiryValue = decodeURIComponent(expiryCookie.split("=")[1]);
+      const expiryValue = decodeURIComponent(expiryRow.split("=")[1]);
       const expiryTime = new Date(expiryValue).getTime();
       const now = Date.now();
 
-      // Trigger refresh if less than 5 minutes remain
-      if (expiryTime - now < 5 * 60 * 1000) {
+      // Refresh 5 minutes before the 1-hour access token expires
+      const threshold = 5 * 60 * 1000;
+
+      if (expiryTime - now < threshold) {
         try {
+          // The proxy handles sending the backend cookies and updating the expiry
           await axiosInstance.post("/auth/refresh");
-          console.log("Token successfully refreshed");
-        } catch (error) {
-          console.error("Silent refresh failed");
+          console.log("Token refreshed.");
+        } catch (err) {
+          console.error("Refresh failed.");
         }
       }
     };
 
-    const interval = setInterval(checkToken, 60000); // Check every minute
+    const interval = setInterval(checkAndRefresh, 60000); // Check every minute
     return () => clearInterval(interval);
   }, []);
 
