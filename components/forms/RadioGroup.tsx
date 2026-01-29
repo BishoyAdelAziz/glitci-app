@@ -1,28 +1,44 @@
 "use client";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import {
+  UseFormRegister,
+  FieldErrors,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 import Label from "./Label";
-import ValidationError from "../Errors/validationError";
+import ValidationError from "../errors/validationError";
 
-interface Props {
+interface Props<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
+> {
   label: string;
   required?: boolean;
   options: string[];
-  name: string;
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
+  name: TName; // Typed to valid form field paths
+  register: UseFormRegister<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
 }
 
-export default function RadioGroup({
+export default function RadioGroup<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
+>({
   label,
   required,
   options,
   name,
   register,
   errors,
-}: Props) {
+}: Props<TFieldValues, TName>) {
   return (
     <div className="space-y-2">
-      <Label name={name} label={label} required={required} id={name} />
+      <Label
+        name={String(name)}
+        label={label}
+        required={required}
+        id={String(name)}
+      />
       <div className="flex gap-4 flex-wrap">
         {options.map((option) => (
           <label
@@ -33,7 +49,7 @@ export default function RadioGroup({
               type="radio"
               value={option}
               {...register(name, {
-                required: required ? "This field is required" : false,
+                required: required ? "هذا الحقل مطلوب" : false,
               })}
               className="accent-primary"
             />

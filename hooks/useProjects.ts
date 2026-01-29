@@ -1,16 +1,17 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import type { ProjectFilters, Project } from "@/types/projects";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ProjectFilters, UpdateProjectDto } from "@/types/projects";
 import {
   getProjects,
-  getProjectById,
   createProject,
   updateProject,
   deleteProject,
-} from "@/services/api/pfojects";
+  getProjectById,
+} from "@/services/api/projects";
+import { ProjectFormData, projectSchema } from "@/services/validations/project";
 
 // Query keys factory
 export const projectKeys = {
@@ -21,8 +22,13 @@ export const projectKeys = {
   detail: (id: string) => [...projectKeys.details(), id] as const,
 };
 
+interface UseProjectsOptions {
+  onSuccess?: () => void;
+  id?: string | null; // For fetching single project
+}
+
 // ==================== Main Hook ====================
-export function useProjects() {
+export function useProjects(options?: UseProjectsOptions) {
   const queryClient = useQueryClient();
 
   // Filter form using react-hook-form
@@ -30,15 +36,35 @@ export function useProjects() {
     defaultValues: {
       page: 1,
       limit: 10,
-      status: undefined,
-      priority: undefined,
       client: undefined,
-      department: undefined,
+      status: undefined,
       isActive: undefined,
     },
   });
 
   const filters = filterForm.watch();
+  const paginationParams = {
+    page: filters.page,
+    limit: filters.limit,
+  };
+
+  const filterParams = {
+    client: filters.client,
+    status: filters.status,
+    isActive: filters.isActive,
+  };
+  // Fetch single project by ID
+  const {
+    data: singleProject,
+    isLoading: singleProjectIsPending,
+    isError: singleProjectIsError,
+    error: singleProjectError,
+  } = useQuery({
+    queryKey: projectKeys.detail(options?.id || ""),
+    queryFn: () => getProjectById(options?.id as string),
+    enabled: !!options?.id, // Only fetch if ID is provided
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Fetch projects with filters
   const {
@@ -50,7 +76,31 @@ export function useProjects() {
   } = useQuery({
     queryKey: projectKeys.list(filters),
     queryFn: () => getProjects(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: (prev) => {
+      prev;
+      return prev;
+    },
+  });
+  const pagination = projectsData
+    ? {
+        totalPages: projectsData.totalPages,
+        currentPage: projectsData.page,
+        limit: projectsData.limit,
+        total: projectsData.results, // or totalItems if available
+      }
+    : undefined;
+
+  // Project form using react-hook-form with validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+    setValue,
+    watch,
+    reset,
+  } = useForm<ProjectFormData>({
+    resolver: zodResolver(projectSchema),
   });
 
   // Create project mutation
@@ -58,18 +108,32 @@ export function useProjects() {
     mutationFn: createProject,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
+      reset(); // Reset form after successful creation
+      options?.onSuccess?.(); // Trigger callback (e.g., close modal)
     },
   });
 
   // Update project mutation
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Project> }) =>
-      updateProject(id, data),
+  const {
+    mutate: updateProjectMutation,
+    isError: UpdateProjectIsError,
+    isPending: updateProjectIsPending,
+    error: updateProjectError,
+  } = useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<UpdateProjectDto>;
+    }) => updateProject(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
       queryClient.invalidateQueries({
         queryKey: projectKeys.detail(variables.id),
       });
+      reset();
+      options?.onSuccess?.();
     },
   });
 
@@ -81,7 +145,12 @@ export function useProjects() {
     },
   });
 
-  // Helper functions
+  // Form submit handler
+  const onSubmit: SubmitHandler<ProjectFormData> = (data) => {
+    createMutation.mutate(data);
+  };
+
+  // Helper functions for pagination
   const setPage = (page: number) => {
     filterForm.setValue("page", page);
   };
@@ -98,30 +167,51 @@ export function useProjects() {
   return {
     // Data
     projects: projectsData?.data || [],
-    meta: projectsData?.meta,
-
+    pagination, // Clean pagination object for Pagination component
+    filterParams, // { client, status, isActive } - for filter UI
+    filterForm,
+    resetFilters,
+    // Single project data
+    singleProject,
+    singleProjectIsPending,
+    singleProjectIsError,
+    singleProjectError,
+    // update Project
+    paginationParams, // { page, limit } - for Pagination component
+    setPage,
+    setLimit,
+    updateProjectMutation,
+    UpdateProjectIsError,
+    updateProjectIsPending,
+    updateProjectError,
     // Loading states
     isLoading,
     isError,
     error,
 
-    // Filter form
-    filterForm,
-    filters,
-    setPage,
-    setLimit,
-    resetFilters,
+    // Filter management
+
+    // Form handling
+    register,
+    handleSubmit,
+    FormErrors: errors,
+    onSubmit,
+    control,
+    setValue,
+    watch,
+    resetForm: reset,
 
     // Mutations
     createProject: createMutation.mutate,
-    updateProject: updateMutation.mutate,
     deleteProject: deleteMutation.mutate,
 
     // Mutation states
     isCreating: createMutation.isPending,
-    isUpdating: updateMutation.isPending,
-    isDeleting: deleteMutation.isPending,
 
+    isDeleting: deleteMutation.isPending,
+    CreateError: createMutation.error,
+    DeleteError: deleteMutation.error,
+    isCreateError: createMutation.isError,
     // Utils
     refetch,
   };

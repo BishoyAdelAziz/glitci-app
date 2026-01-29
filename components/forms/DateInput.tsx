@@ -1,64 +1,57 @@
 "use client";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import ValidationError from "../Errors/validationError";
-import { FieldErrors, Controller } from "react-hook-form";
+import { Controller, FieldErrors } from "react-hook-form";
 import Label from "./Label";
+import ValidationError from "../errors/validationError";
 
-interface Props extends React.HTMLAttributes<HTMLInputElement> {
+interface Props {
   name: string;
-  required?: boolean;
-  errors: FieldErrors<any>;
-  control: any; // react-hook-form control object required for Controller
   label: string;
+  control: any;
+  errors: FieldErrors<any>;
+  required?: boolean;
   placeholder?: string;
 }
-
-// Calculate max and min dates
-const today = new Date();
-const maxDate = new Date(
-  today.getFullYear() - 6,
-  today.getMonth(),
-  today.getDate()
-);
-const minDate = new Date(
-  maxDate.getFullYear() - 100,
-  maxDate.getMonth(),
-  maxDate.getDate()
-);
 
 export default function DateInput({
   name,
   label,
-  errors,
   control,
-  placeholder,
+  errors,
   required,
+  placeholder,
 }: Props) {
   return (
-    <div className="w-full">
-      <Label label={label} required={required} name={name} />
+    <div className="w-full flex flex-col items-start justify-center">
+      <Label label={label} name={name} required={required} />
+
       <Controller
         name={name}
         control={control}
         render={({ field }) => (
           <DatePicker
-            className="w-full rounded-lg border border-[#CCCCCC] bg-white p-2 text-black"
             placeholderText={placeholder}
             selected={field.value ? new Date(field.value) : null}
             onChange={(date: Date | null) => {
-              // Pass the Date object directly - Zod will handle it
-              field.onChange(date);
+              field.onChange(date ? date.toISOString().split("T")[0] : "");
             }}
-            maxDate={maxDate}
-            minDate={minDate}
             dateFormat="dd-MM-yyyy"
             showMonthDropdown
             showYearDropdown
             dropdownMode="select"
+            className="
+              w-full rounded-lg border px-3 py-2 text-sm
+              bg-white text-black border-gray-300
+              dark:bg-gray-900 dark:text-white dark:border-gray-600
+              focus:outline-none focus:ring-1 focus:ring-primary
+            "
+            calendarClassName="dark:bg-gray-800 dark:text-white"
           />
         )}
       />
+
       <div className="min-h-5">
         <ValidationError errors={errors} name={name} />
       </div>
