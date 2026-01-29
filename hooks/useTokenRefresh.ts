@@ -5,7 +5,8 @@ import { useEffect, useRef } from "react";
 import axios from "axios";
 
 export function useTokenRefresh() {
-  const intervalRef = useRef<NodeJS.Timeout>({} as NodeJS.Timeout);
+  // ✅ Fix: Initialize with null instead of empty object
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // ✅ Guard: only run in browser
