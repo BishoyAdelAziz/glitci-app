@@ -25,7 +25,10 @@ export async function PATCH(req: NextRequest) {
 async function proxy(req: NextRequest) {
   try {
     const cookieStore = await nextCookies();
-    const token = cookieStore.get("GlitciAccessToken")?.value;
+
+    // ✅ Get accessToken from Authorization header (client sends it)
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.replace("Bearer ", "");
 
     const pathname = req.nextUrl.pathname;
     const proxiedPath = pathname.replace("/api/proxy/", "");
@@ -54,14 +57,14 @@ async function proxy(req: NextRequest) {
 
     const data = await res.text();
 
-    // If backend returns 401, clear cookies and redirect
+    // If backend returns 401, clear everything
     if (res.status === 401) {
       console.warn("❌ Token expired or invalid, redirecting to login");
 
       const response = NextResponse.redirect(new URL("/login", req.url));
-      response.cookies.delete("GlitciAccessToken");
-      response.cookies.delete("GlitciRefreshToken");
-      response.cookies.delete("GlitciUser");
+
+      // Clear refresh token cookie (backend might have set it)
+      response.cookies.delete("refreshToken");
 
       return response;
     }
@@ -74,15 +77,12 @@ async function proxy(req: NextRequest) {
       },
     });
 
-    // ✅ Forward ALL Set-Cookie headers from backend
+    // ✅ Forward ALL Set-Cookie headers from backend (for refreshToken)
     res.headers.forEach((value, key) => {
       if (key.toLowerCase() === "set-cookie") {
         response.headers.append(key, value);
       }
     });
-
-    // ✅ REMOVED: Manual cookie setting for login
-    // Let the backend's Set-Cookie headers handle it
 
     return response;
   } catch (err: unknown) {
