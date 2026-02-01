@@ -1,24 +1,35 @@
 "use client";
-import { Controller, Control, FieldErrors } from "react-hook-form";
+import {
+  Controller,
+  Control,
+  FieldErrors,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 import Label from "./Label";
-import ValidationError from "../Errors/validationError";
+import ValidationError from "../errors/validationError";
 
 interface Option {
   id: string | number;
   name: string;
 }
 
-interface Props {
+interface Props<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
+> {
   label: string;
-  name: string;
+  name: TName; // Now typed to valid form field paths
   options: Option[];
   required?: boolean;
-  control: Control<any>;
-  errors: FieldErrors<any>;
+  control: Control<TFieldValues>; // Typed to form's shape
+  errors: FieldErrors<TFieldValues>; // Typed to form's errors
   disabled?: boolean;
 }
-
-export default function MultiCheckInput({
+export default function MultiCheckInput<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
+>({
   label,
   name,
   options,
@@ -26,7 +37,7 @@ export default function MultiCheckInput({
   required = false,
   errors,
   disabled,
-}: Props) {
+}: Props<TFieldValues, TName>) {
   return (
     <div className="space-y-2">
       <Label name={name} label={label} required={required} id={name} />
@@ -59,8 +70,8 @@ export default function MultiCheckInput({
                       } else {
                         field.onChange(
                           field.value?.filter(
-                            (v: string) => v !== option.name
-                          ) || []
+                            (v: string) => v !== option.name,
+                          ) || [],
                         );
                       }
                     }}

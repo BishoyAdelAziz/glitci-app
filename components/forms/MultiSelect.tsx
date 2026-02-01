@@ -1,66 +1,54 @@
 "use client";
 import {
-  UseFormRegister,
+  Controller,
+  Control,
   FieldErrors,
-  UseFormSetValue,
-  UseFormTrigger,
+  FieldPath,
+  FieldValues,
+  Path,
 } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
-import ValidationError from "@/components/Errors/validationError";
+import ValidationError from "../errors/validationError";
 import Label from "./Label";
-
-interface Props {
-  name: string;
-  label: string;
-  required?: boolean;
-  placeHolder?: string;
-  options: Option[];
-  register: UseFormRegister<any>;
-  setValue: UseFormSetValue<any>;
-  errors: FieldErrors<any>;
-  disabled?: boolean;
-  defaultValue?: any[];
-  className?: string;
-  trigger?: UseFormTrigger<any>;
-  /** choose whether to store "id" or "enName" */
-  saveAs?: "id" | "enName" | "arName";
-}
-
-interface Options {
-  id: number;
-  name: string;
-}
 
 interface Option {
   id: string;
   name: string;
 }
-export default function MultiSelect({
-  label,
+
+interface Props<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
+> {
+  name: TName;
+  label: string;
+  control: Control<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
+  options: Option[] | undefined;
+  required?: boolean;
+  placeHolder?: string;
+  disabled?: boolean;
+  saveAs?: "id" | "name";
+  className?: string;
+}
+
+export default function MultiSelect<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
+>({
   name,
+  label,
+  control,
+  errors,
   options,
   required,
   placeHolder,
-  errors,
-  register,
-  setValue,
   disabled = false,
-  defaultValue = [],
   saveAs = "id",
-}: Props) {
-  const [selectedItems, setSelectedItems] = useState<any[]>(defaultValue);
+  className = "",
+}: Props<TFieldValues, TName>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Register field on mount
-  useEffect(() => {
-    register(name, { required });
-  }, [name, register, required]);
-
-  // Keep form state updated
-  useEffect(() => {
-    setValue(name, selectedItems);
-  }, [selectedItems, name, setValue]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -76,96 +64,99 @@ export default function MultiSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleToggleOption = (option: Option) => {
-    if (disabled) return;
+  const getSelectedOptions = (selectedValues: string[]) =>
+    options?.filter((option) => {
+      const valueToSave = saveAs === "id" ? option.id : option.name;
+      return selectedValues.includes(valueToSave);
+    });
 
-    const valueToSave = saveAs === "id" ? option.id : option.name;
-    setSelectedItems((prev) =>
-      prev.includes(valueToSave)
-        ? prev.filter((item) => item !== valueToSave)
-        : [...prev, valueToSave]
-    );
-  };
-
-  const handleRemoveOption = (value: any) => {
-    if (disabled) return;
-    setSelectedItems((prev) => prev.filter((item) => item !== value));
-  };
-
-  const isSelected = (option: Option) => {
-    const valueToSave = saveAs === "id" ? option.id : option.name;
-    return selectedItems.includes(valueToSave);
-  };
-
-  const getSelectedOptions = () =>
-    options?.filter((option) => isSelected(option));
-
-  const getAvailableOptions = () =>
-    options?.filter((option) => !isSelected(option));
+  const getAvailableOptions = (selectedValues: string[]) =>
+    options?.filter((option) => {
+      const valueToSave = saveAs === "id" ? option.id : option.name;
+      return !selectedValues.includes(valueToSave);
+    });
 
   return (
-    <div className="w-full" ref={containerRef}>
-      <Label label={label} required={required} name={name} />
+    <div className={`w-full ${className}`} ref={containerRef}>
+      <Label label={label} required={required} name={String(name)} />
 
-      <div className="relative w-full">
-        {/* Selected Items Display */}
-        <div
-          className={`w-full rounded-lg border border-[#CCCCCC] bg-white p-2 ${
-            disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-          } ${selectedItems.length === 0 ? "min-h-10.5" : "min-h-10.5"}`}
-          onClick={() => !disabled && setIsOpen(!isOpen)}
-        >
-          {selectedItems.length === 0 ? (
-            <span className="text-gray-400">{`--${
-              placeHolder ?? "Select"
-            }--`}</span>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {getSelectedOptions()?.map((option) => (
-                <div
-                  key={option.id}
-                  className="bg-secondary flex items-center gap-2 rounded-md px-3 py-1 text-sm text-white"
-                >
-                  <span>{option.name}</span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const val = saveAs === "id" ? option.id : option.name;
-                      handleRemoveOption(val);
-                    }}
-                    className="hover:text-red-300"
-                    disabled={disabled}
-                  >
-                    ✕
-                  </button>
+      <Controller
+        control={control}
+        name={name}
+        rules={{ required: required ? "هذا الحقل مطلوب" : false }}
+        render={({ field: { value = [] as string[], onChange } }) => (
+          <div className="relative w-full">
+            {/* Selected Items Display */}
+            <div
+              className={`w-full rounded-lg border border-[#CCCCCC] bg-white dark:bg-gray-900 p-2 transition-colors ${
+                disabled
+                  ? "cursor-not-allowed opacity-50"
+                  : "cursor-pointer hover:border-secondary"
+              } ${value.length === 0 ? "min-h-10.5" : "min-h-10.5"}`}
+              onClick={() => !disabled && setIsOpen((prev) => !prev)}
+            >
+              {value.length === 0 ? (
+                <span className="text-gray-400">
+                  {`--${placeHolder ?? "Select"}--`}
+                </span>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {getSelectedOptions(value)?.map((option) => (
+                    <div
+                      key={option.id}
+                      className="bg-secondary dark:bg-gray-900 flex items-center gap-2 rounded-md px-3 py-1 text-sm text-white"
+                    >
+                      <span>{option.name}</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const val = saveAs === "id" ? option.id : option.name;
+                          onChange(value.filter((item) => item !== val));
+                        }}
+                        className="hover:text-red-300"
+                        disabled={disabled}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Dropdown Options */}
-        {isOpen && !disabled && (
-          <div className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[#CCCCCC] bg-white shadow-lg">
-            {getAvailableOptions().length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                no Available Options
+            {/* Dropdown Options */}
+            {isOpen && !disabled && (
+              <div className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[#CCCCCC] bg-white dark:bg-gray-900 shadow-lg">
+                {getAvailableOptions(value)?.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500">
+                    No Available Options
+                  </div>
+                ) : (
+                  getAvailableOptions(value)?.map((option) => (
+                    <div
+                      key={option.id}
+                      className="hover:bg-secondary/10 cursor-pointer p-3 transition-colors border-b border-gray-100 last:border-b-0"
+                      onClick={() => {
+                        const val = saveAs === "id" ? option.id : option.name;
+                        const isSelected = value.includes(val);
+                        onChange(
+                          isSelected
+                            ? value.filter((item) => item !== val)
+                            : [...value, val],
+                        );
+                        setIsOpen(false); // Close after selection
+                      }}
+                    >
+                      {option.name}
+                    </div>
+                  ))
+                )}
               </div>
-            ) : (
-              getAvailableOptions().map((option) => (
-                <div
-                  key={option.id}
-                  className="hover:bg-secondary/10 cursor-pointer p-3 transition-colors"
-                  onClick={() => handleToggleOption(option)}
-                >
-                  {option.name}
-                </div>
-              ))
             )}
           </div>
         )}
-      </div>
+      />
 
       <div className="min-h-5">
         <ValidationError errors={errors} name={name} />
