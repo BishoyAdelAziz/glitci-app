@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Client } from "@/types/clients";
+import { formatPhoneNumber } from "@/utils/functions";
 interface Props {
   client: Client;
 }
@@ -68,7 +69,9 @@ export default function ClientCard({ client }: Props) {
                     strokeWidth="0.5"
                   />
                 </svg>
-                <p className="font-poppins text-[#979797]">{phone}</p>
+                <p className="font-poppins text-[#979797]">
+                  {formatPhoneNumber(phone)}
+                </p>
               </div>
             );
           })}
