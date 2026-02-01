@@ -35,17 +35,19 @@ export interface Employee {
   updatedAt: string;
 }
 
+// Params for the API request
 export interface EmployeesQueryParams {
   page?: number;
   limit?: number;
   name?: string;
   employmentType?: EmployeeTypes;
-  department?: string; // department id
-  position?: string; // position id
-  skill?: string; // skill id
+  department?: string; // department ID
+  position?: string; // position ID
+  skill?: string; // skill ID
   isActive?: boolean;
 }
 
+// Matches the Paginated JSON structure exactly
 export interface EmployeesResponse {
   totalPages: number;
   page: number;
