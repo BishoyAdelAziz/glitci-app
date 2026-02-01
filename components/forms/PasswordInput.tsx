@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { UseFormRegister, FieldErrors, FieldError } from "react-hook-form";
+import Label from "./Label";
 
 interface Props {
   name: string;
@@ -9,6 +10,8 @@ interface Props {
   register: UseFormRegister<any>;
   errors: FieldErrors<any>;
   rest?: React.InputHTMLAttributes<HTMLInputElement>;
+  label: string;
+  required?: boolean;
 }
 
 const PasswordInput = ({
@@ -16,6 +19,8 @@ const PasswordInput = ({
   placeholder,
   register,
   errors,
+  label,
+  required,
   ...rest
 }: Props) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -29,13 +34,13 @@ const PasswordInput = ({
   const errorMessage = error && (error as FieldError)?.message;
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col items-start gap-2 w-full">
+      <Label label={label} name={name} required />
       <div
         className={`focus:border-secondary flex gap-2 w-full rounded-lg p-4 border border-[#CFCFCF] dark:border-gray-700 outline-none placeholder:text-xs placeholder:opacity-35 transition-colors ${
           errors[name as any]?.message ? "border-red-500" : ""
         }`}
       >
-        v
         <input
           className="outline-none bg-transparent w-full"
           {...register(name)}
