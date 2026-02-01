@@ -1,4 +1,5 @@
 import { Employee } from "@/types/employees";
+import { formatPhoneNumber } from "@/utils/functions";
 import Image from "next/image";
 interface Props {
   employee: Employee;
@@ -22,7 +23,7 @@ export default function EmployeeCard({ employee }: Props) {
             <h4 className="font-poppins font-bold text-nowrap">
               {employee.user.name}
             </h4>
-            <p className="font-poppins font-normal text-[#979797]">
+            <p className="font-poppins font-normal text-[#979797] text-nowrap">
               {employee.position.name}
             </p>
           </div>
@@ -63,7 +64,7 @@ export default function EmployeeCard({ employee }: Props) {
             />
           </svg>
           <p className="font-poppins font-normal text-[#979797] text-md">
-            {employee.user.phone}
+            {formatPhoneNumber(employee.user.phone)}
           </p>
         </div>
         <div className="h-0.5 bg-gray-400/30 w-ful"></div>

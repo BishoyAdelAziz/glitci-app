@@ -49,3 +49,33 @@ export const formatDate = (dateString: string) => {
   });
 };
 export const toDateInput = (iso?: string) => (iso ? iso.split("T")[0] : "");
+export const formatPhoneNumber = (phone: string): string => {
+  if (!phone) return "";
+
+  // 1. Handle the prefix adjustment (+20 -> +02)
+  let prefix = phone.slice(0, 3);
+  if (prefix === "+20") {
+    prefix = "+02";
+  }
+
+  // 2. Extract the digits after the prefix
+  const remainingDigits = phone.slice(3);
+  const stacks: string[] = [];
+
+  let i = 0;
+  while (i < remainingDigits.length) {
+    const charsLeft = remainingDigits.length - i;
+
+    // Rule: if 4 digits are left, make the last stack 4 digits
+    if (charsLeft === 4) {
+      stacks.push(remainingDigits.substring(i, i + 4));
+      break;
+    }
+
+    // Otherwise, continue with standard 3-digit stacks
+    stacks.push(remainingDigits.substring(i, i + 3));
+    i += 3;
+  }
+
+  return `${prefix} ${stacks.join(" ")}`;
+};
