@@ -26,7 +26,7 @@ export default function LoginPage() {
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data, {
       onSuccess: () => {
-        router.push("/overview");
+        router.push("/projects");
         router.refresh(); // refresh server components
       },
     });
@@ -56,7 +56,13 @@ export default function LoginPage() {
           required
         />
 
-        <PasswordInput errors={errors} name="password" register={register} />
+        <PasswordInput
+          label="password"
+          required
+          errors={errors}
+          name="password"
+          register={register}
+        />
         <SubmitButton
           error={loginMutation.error}
           isError={loginMutation.isError}

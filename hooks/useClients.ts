@@ -1,5 +1,5 @@
 import { getClients } from "@/services/api/clients";
-import { ClientsQueryParams } from "@/types/Clients";
+import { ClientsQueryParams } from "@/types/clients";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useClients(params?: ClientsQueryParams) {
