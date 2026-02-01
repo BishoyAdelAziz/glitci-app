@@ -10,6 +10,7 @@
   --color-background: #f6f6f6;
   --color-foreground: #171717;
   --color-primary: #2563eb;
+  --color-light-gray: #979797;
 }
 
 /* Dark theme */
@@ -17,6 +18,7 @@
   --color-background: #0a0a0a;
   --color-foreground: #f6f6f6;
   --color-primary: #3b82f6;
+  --color-light-gray: #979797;
 }
 
 /* Apply variables */
@@ -27,6 +29,9 @@ body {
   transition:
     background-color 500ms ease,
     color 300ms ease;
+}
+@theme inline {
+  --font-poppins: var(--font-poppins);
 }
 @layer utilities {
   .white-dark {

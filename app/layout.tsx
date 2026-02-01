@@ -1,6 +1,17 @@
 import "./globals.css";
 import ClientProviders from "@/providers/ClientProviders";
-
+import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
+export const metadata: Metadata = {
+  icons: {
+    icon: "/favicon.svg",
+  },
+};
+const Poppins_Font = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+});
 export default function RootLayout({
   children,
 }: {
@@ -23,7 +34,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className={`${Poppins_Font.variable} antialiased`}
+      >
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
