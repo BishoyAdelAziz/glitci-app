@@ -77,7 +77,7 @@ export const EmployeeArrayInput = ({
         <button
           type="button"
           onClick={addEmployee}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary  rounded hover:bg-primary/90 transition-colors"
         >
           <svg
             className="w-5 h-5"
