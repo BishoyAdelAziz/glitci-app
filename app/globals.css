@@ -7,10 +7,11 @@
 
 /* Light theme */
 :root {
-  --color-background: #f6f6f6;
+  --color-background: #f2f0f0;
   --color-foreground: #171717;
   --color-primary: #2563eb;
   --color-light-gray: #979797;
+  --datepicker-day-names: #000000; /* Black for light mode */
 }
 
 /* Dark theme */
@@ -19,6 +20,7 @@
   --color-foreground: #f6f6f6;
   --color-primary: #3b82f6;
   --color-light-gray: #979797;
+  --datepicker-day-names: #ffffff; /* White for dark mode */
 }
 
 /* Apply variables */
@@ -81,4 +83,107 @@ body {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+}
+/* --- React DatePicker Custom Styling --- */
+
+/* 1. Container & Wrapper */
+.react-datepicker {
+  @apply border-none shadow-2xl font-poppins rounded-2xl overflow-hidden;
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+.dark .react-datepicker {
+  background-color: #111827; /* Tailwind gray-900 */
+  color: #f3f4f6;
+  border: 1px solid #374151;
+}
+
+/* 2. Header (Month/Year area) */
+.react-datepicker__header {
+  @apply border-none pt-4;
+  background-color: #ffffff;
+}
+
+.dark .react-datepicker__header {
+  background-color: #111827;
+}
+
+.react-datepicker__current-month {
+  @apply text-sm font-semibold mb-2 capitalize text-black dark:text-white;
+}
+
+.dark .react-datepicker__current-month {
+  color: #ffffff;
+}
+
+/* 3. Day Names (Mon, Tue, etc.) */
+.react-datepicker__day-name {
+  @apply text-gray-400 font-medium;
+  width: 2.5rem;
+}
+
+/* 4. Individual Days */
+.react-datepicker__day {
+  @apply transition-all duration-200 rounded-lg flex items-center justify-center;
+
+  color: inherit;
+}
+
+.react-datepicker__day:hover {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-lg;
+}
+
+/* 5. Selected Range & Days (The "Maroon" Branding) */
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range,
+.react-datepicker__day--in-selecting-range {
+  background-color: #d83333 !important; /* Maroon */
+  color: white !important;
+}
+
+/* Soft maroon background for the middle of the range */
+.react-datepicker__day--in-range:not(.react-datepicker__day--range-start):not(
+    .react-datepicker__day--range-end
+  ) {
+  background-color: rgba(216, 51, 51, 0.15) !important;
+  color: #d83333 !important;
+}
+
+.dark
+  .react-datepicker__day--in-range:not(.react-datepicker__day--range-start):not(
+    .react-datepicker__day--range-end
+  ) {
+  background-color: rgba(216, 51, 51, 0.3) !important;
+  color: #ff8a8a !important;
+}
+
+/* 6. Navigation Arrows */
+.react-datepicker__navigation {
+  top: 15px;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #9ca3af; /* Gray-400 */
+  border-width: 2px;
+}
+
+.react-datepicker__navigation:hover *::before {
+  border-color: #d83333;
+}
+
+/* 7. Today Highlight */
+.react-datepicker__day--today {
+  @apply font-bold underline;
+}
+
+/* 8. Poppers & Triangle Arrow */
+.react-datepicker__triangle {
+  display: none; /* Cleaner look without the triangle */
+}
+.react-datepicker__day-name {
+  color: var(--datepicker-day-names) !important;
+  @apply font-medium;
+  width: 2.5rem;
+  opacity: 0.8; /* Optional: makes it look a bit more modern */
 }

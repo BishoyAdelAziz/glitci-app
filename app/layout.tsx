@@ -36,7 +36,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${Poppins_Font.variable} antialiased`}
+        className={`${Poppins_Font.variable} antialiased  mx-auto`}
       >
         <ClientProviders>{children}</ClientProviders>
       </body>
