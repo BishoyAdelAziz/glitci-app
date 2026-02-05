@@ -1,8 +1,8 @@
 export type CurrencyCode = "EGP" | "USD" | "AED" | "EUR" | "SAR";
 
 export interface AnalyticsQueryParams {
-  from: string;
-  to: string;
+  from?: string | undefined;
+  to?: string | undefined;
   currency?: CurrencyCode;
 }
 export interface StatsQueryParams {

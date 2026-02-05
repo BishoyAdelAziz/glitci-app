@@ -116,13 +116,23 @@ export default function ControllersNav() {
         {/* 2. Integrated Calendar */}
         <DatePicker
           selected={startDate}
-          onChange={(update) => setRange(update[0], update[1])}
+          onChange={(update) => {
+            if (!update) {
+              setRange(null, null); // ✅ clear state
+              return;
+            }
+
+            const [start, end] = update;
+            setRange(start, end);
+          }}
           startDate={startDate}
-          portalId="root-portal" // Or any ID present in your body
           endDate={endDate}
           selectsRange
+          isClearable
+          portalId="root-portal"
           customInput={<CalendarTrigger />}
-          popperPlacement="right" // Since your nav is on the left, open to the right
+          popperPlacement="right"
+          clearButtonClassName="bg-black"
         />
 
         {/* Settings */}

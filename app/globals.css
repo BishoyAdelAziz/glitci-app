@@ -187,3 +187,6 @@ body {
   width: 2.5rem;
   opacity: 0.8; /* Optional: makes it look a bit more modern */
 }
+.react-datepicker__close-icon:after {
+  background-color: #d83333 !important;
+}
