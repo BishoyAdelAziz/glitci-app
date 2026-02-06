@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 import ProjectRow from "./ProjectRow";
 import {
@@ -105,7 +105,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                       type="checkbox"
                       checked={selectAll}
                       onChange={handleSelectAll}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                      className="w-4 h-4 rounded accent-[#B72D2D] border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
                     />
                   </th>
                   <th className="col-span-2">Project Name</th>
@@ -140,7 +140,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
           {/* Mobile Cards */}
           <div className="lg:hidden space-y-4 p-4 ring-1 ring-gray-700/20 dark:ring-white/15">
             {projects.map((project) => (
-              <>
+              <React.Fragment key={project.id}>
                 <div
                   key={project.id}
                   className="bg-white dark:bg-gray-800 outline-1 outline-gray-700/30 dark:border-gray-700/30 rounded-xl p-4 space-y-3"
@@ -152,7 +152,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                         type="checkbox"
                         checked={selectedProjects.includes(project.id)}
                         onChange={() => handleSelectProject(project.id)}
-                        className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600"
+                        className="mt-1 w-4 h-4 accent-[#B72D2D] rounded border-gray-300 dark:border-gray-600 text-blue-600"
                       />
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -235,14 +235,14 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                   projectId={project.id}
                   project={project}
                 />
-              </>
+                <EditProjectModal
+                  isOpen={isEditModalOpen}
+                  onClose={() => setIsEditModalOpen(false)}
+                  projectId={editProjectId}
+                />
+              </React.Fragment>
             ))}
           </div>
-          <EditProjectModal
-            isOpen={isEditModalOpen}
-            onClose={() => setIsEditModalOpen(false)}
-            projectId={editProjectId}
-          />
         </div>
         {/* Pass onClose to the modal */}
         <AddProjectModal isOpen={isOpen} onClose={onClose} />

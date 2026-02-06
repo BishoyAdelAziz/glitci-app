@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Client } from "@/types/clients";
+import { formatPhoneNumber } from "@/utils/functions";
 interface Props {
   client: Client;
 }
@@ -8,7 +9,7 @@ export default function ClientCard({ client }: Props) {
     <div className=" shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-16 rounded-[20px] max-w-95 bg-white dark:bg-gray-800">
       <div className="flex flex-col items-stretch justify-center gap-6">
         <div className="flex items-center justify-evenly gap-4">
-          <div className="relative inline-block">
+          <div className="relative flex w-60 h-auto">
             <Image
               alt="User Profile"
               width={100}
@@ -68,7 +69,9 @@ export default function ClientCard({ client }: Props) {
                     strokeWidth="0.5"
                   />
                 </svg>
-                <p className="font-poppins text-[#979797]">{phone}</p>
+                <p className="font-poppins text-[#979797]">
+                  {formatPhoneNumber(phone)}
+                </p>
               </div>
             );
           })}

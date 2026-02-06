@@ -47,7 +47,7 @@ export default function ProjectRow({
             type="checkbox"
             checked={isSelected}
             onChange={() => onSelect(project?.id)}
-            className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
+            className="w-4 h-4 accent-[#B72D2D] rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
           />
         </td>
         <td className="font-medium col-span-2 inline-flex items-center justify-start truncate">
