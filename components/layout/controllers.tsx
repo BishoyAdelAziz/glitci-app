@@ -1,38 +1,96 @@
 "use client";
 
+import React, { forwardRef } from "react";
 import useTheme from "@/hooks/useTheme";
-import Image from "next/image";
-
+import DatePicker from "react-datepicker";
+import { useDateFilter } from "@/stores/useDateFilter"; // Import your Zustand store
+import "react-datepicker/dist/react-datepicker.css";
+interface CalendarTriggerProps {
+  value?: string;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
 export default function ControllersNav() {
   const { theme, toggleTheme } = useTheme();
+  const { startDate, endDate, setRange } = useDateFilter();
 
   const iconBtn =
     "flex items-center justify-center w-10 h-10 rounded-full transition hover:bg-gray-200 dark:hover:bg-gray-700";
 
+  // 1. Define the Custom Button to keep your exact styling
+  const CalendarTrigger = forwardRef<HTMLButtonElement, CalendarTriggerProps>(
+    ({ value, onClick }, ref) => (
+      <button
+        className={iconBtn}
+        aria-label="calendar"
+        onClick={onClick}
+        ref={ref}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <rect
+            x="3"
+            y="4"
+            width="18"
+            height="18"
+            rx="2"
+            ry="2"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <line
+            x1="16"
+            y1="2"
+            x2="16"
+            y2="6"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <line
+            x1="8"
+            y1="2"
+            x2="8"
+            y2="6"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <line
+            x1="3"
+            y1="10"
+            x2="21"
+            y2="10"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+    ),
+  );
+  CalendarTrigger.displayName = "CalendarTrigger";
+
   return (
     <div className="hidden md:flex fixed bottom-5 left-15 flex-col items-center gap-5 z-50">
-      {/* Top Section */}
       <div className="flex flex-col items-center bg-white dark:bg-gray-900 rounded-4xl py-5 px-3 gap-y-5 shadow-lg transition-colors">
-        {/* Theme toggle (ONLY interactive) */}
+        {/* Theme toggle */}
         <button
           aria-label="toggle theme"
           onClick={toggleTheme}
           className={iconBtn}
         >
-          {/* Sun icon - visible in dark mode */}
           <svg
             className="w-5 h-5 hidden dark:block"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <circle
-              cx="12"
-              cy="12"
-              r="4"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
+            <circle cx="12" cy="12" r="4" strokeWidth="2" />
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -40,8 +98,6 @@ export default function ControllersNav() {
               d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"
             />
           </svg>
-
-          {/* Moon icon - visible in light mode */}
           <svg
             className="w-5 h-5 block dark:hidden"
             fill="none"
@@ -57,56 +113,30 @@ export default function ControllersNav() {
           </svg>
         </button>
 
-        {/* Calendar */}
-        <button className={iconBtn} aria-label="calendar">
-          {/* Calendar icon - changes color based on theme */}
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <rect
-              x="3"
-              y="4"
-              width="18"
-              height="18"
-              rx="2"
-              ry="2"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <line
-              x1="16"
-              y1="2"
-              x2="16"
-              y2="6"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <line
-              x1="8"
-              y1="2"
-              x2="8"
-              y2="6"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <line
-              x1="3"
-              y1="10"
-              x2="21"
-              y2="10"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button>
+        {/* 2. Integrated Calendar */}
+        <DatePicker
+          selected={startDate}
+          onChange={(update) => {
+            if (!update) {
+              setRange(null, null); // ✅ clear state
+              return;
+            }
+
+            const [start, end] = update;
+            setRange(start, end);
+          }}
+          startDate={startDate}
+          endDate={endDate}
+          selectsRange
+          isClearable
+          portalId="root-portal"
+          customInput={<CalendarTrigger />}
+          popperPlacement="right"
+          clearButtonClassName="bg-black"
+        />
 
         {/* Settings */}
         <button className={iconBtn} aria-label="settings">
-          {/* Settings/Gear icon */}
           <svg
             className="w-5 h-5"
             fill="none"
@@ -129,11 +159,9 @@ export default function ControllersNav() {
         </button>
       </div>
 
-      {/* Bottom Section */}
       <div className="flex flex-col items-center bg-white dark:bg-gray-900 rounded-4xl py-5 px-3 gap-y-5 shadow-lg transition-colors">
-        {/* Quiz */}
+        {/* Quiz & Logout remain the same */}
         <button className={iconBtn} aria-label="quiz">
-          {/* Question mark in circle icon */}
           <svg
             className="w-6 h-6"
             fill="none"
@@ -162,7 +190,6 @@ export default function ControllersNav() {
           </svg>
         </button>
 
-        {/* Logout */}
         <button className={iconBtn} aria-label="logout">
           <svg
             className="w-6 h-6 rotate-180"
@@ -170,7 +197,6 @@ export default function ControllersNav() {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            {/* Door frame (right bracket) */}
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

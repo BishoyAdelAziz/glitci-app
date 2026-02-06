@@ -26,7 +26,7 @@ export default function LoginPage() {
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data, {
       onSuccess: () => {
-        router.push("/projects");
+        router.push("/overview");
         router.refresh(); // refresh server components
       },
     });

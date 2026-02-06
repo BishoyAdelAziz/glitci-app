@@ -7,21 +7,21 @@ export const metadata: Metadata = {
 };
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <section className="container mx-auto">
       <NavHeader />
 
       {/* App shell */}
-      <div className="relative w-[95%] mx-auto   flex">
+      <div className="relative  flex">
         {/* Controllers pinned inside app width */}
         <ControllersNav />
 
         {/* Main page content */}
-        <main className="flex-1 md:ml-24 pt-20 ">
+        <main className="flex-1  pt-20 ">
           <section className="bg-white dark:bg-gray-900 p-20 rounded-4xl">
             {children}
           </section>
         </main>
       </div>
-    </>
+    </section>
   );
 }
