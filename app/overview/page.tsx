@@ -18,15 +18,15 @@ export default function OverViewPage() {
   return (
     <div className="grid   md:grid-cols-4 grid-cols-1 justify-center items-center gap-8">
       <div className="col-span-4 flex gap-3 items-start justify-center flex-col">
-        <h4 className="text-3xl font-poppins font-normal capitalize ">
+        <h4 className="text-6xl font-poppins font-normal capitalize ">
           Good Morning, {firstName}
         </h4>
-        <p className="font-poppins font-light text-lg">
+        <p className="font-poppins font-light text-2xl">
           Stay on top of your tasks, monitor progress, and track status.
         </p>
       </div>
       <div className="col-span-4 grid md:grid-cols-4 grid-cols-1 items-stretch gap-x-8 gap-y-8 justify-center ">
-        <div className="col-span-1 flex flex-col p-8 rounded-4xl items-start gap-8  justify-center bg-linear-to-bl from-[#DE4646] to-[#B72D2D]">
+        <div className="col-span-1 flex flex-col p-8 rounded-4xl items-start gap-8  justify-center bg-[url('/icons/Revenue-Background.svg')] bg-cover bg-no-repeat bg-center">
           <div className="flex flex-col items-start justify-start gap-4">
             <p className="text-white font-poppins font-semibold text-md">
               Revenues
@@ -105,7 +105,7 @@ export default function OverViewPage() {
             <p className="text-sm font-normal ">this month</p>
           </div>
         </div>
-        <div className="col-span-2 flex items-center justify-center dark:bg-gray-800 bg-white rounded-4xl p-4">
+        <div className="col-span-1 md:col-span-2 flex items-center justify-center dark:bg-gray-800 bg-white rounded-4xl p-4">
           <GrowthChart GrowttChartItems={overview?.charts?.growthTrend} />
         </div>
         <div className="col-span-2  justify-center grid md:grid-cols-3 grid-cols-1  gap-x-4 items-stretch ">
@@ -174,7 +174,7 @@ export default function OverViewPage() {
               <h4 className="font-poppins font-semibold text-lg">
                 AVG Completion
               </h4>
-              <p className="text-6xl font-poppins font-medium">
+              <p className="text-7xl font-poppins font-semibold">
                 {statsData?.data.counts.avgCompletion}%
               </p>
               <p className="font-poppins font-normal text-sm"></p>

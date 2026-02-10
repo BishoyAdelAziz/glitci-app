@@ -30,7 +30,17 @@ export const getStatusColor = (status: string) => {
   };
   return colors[status as keyof typeof colors] || colors.planning;
 };
-
+export const getStatusFlagColor = (status: boolean): string => {
+  switch (status) {
+    case true:
+      return "bg-[#E6FAF3] text-[#85C6B0] dark:bg-green-900 dark:text-green-200";
+    case false:
+      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+    default:
+      // Fallback in case of unexpected types at runtime
+      return "bg-gray-100 text-gray-800";
+  }
+};
 export const getPriorityColor = (priority: string) => {
   const colors = {
     high: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",

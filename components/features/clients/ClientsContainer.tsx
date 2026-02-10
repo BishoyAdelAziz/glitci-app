@@ -1,5 +1,4 @@
 "use client";
-import PageLoader from "next/dist/client/page-loader";
 import ClientCard from "./ClientCard";
 import useClients from "@/hooks/useClients";
 export default function ClientsContainer() {
