@@ -1,7 +1,6 @@
 import axiosInstance from "@/lib/axios";
 
 export const loginApi = async (data: any) => {
-  // Just send the request. Backend sets tokens, Proxy sets GlitciTokenExpiry.
   const response = await axiosInstance.post("/auth/login", data);
   return response.data;
 };

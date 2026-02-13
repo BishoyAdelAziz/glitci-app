@@ -77,7 +77,7 @@ export default function TextInput<
       <Label label={label} name={String(name)} required={required} />
       <input
         type={type}
-        className={`focus:border-secondary w-full rounded-lg p-4 border border-[#CFCFCF] dark:border-gray-700 outline-none placeholder:text-xs placeholder:opacity-35 transition-colors ${
+        className={`focus:border-secondary w-full rounded-lg p-3  bg-[#EEEEEE]  outline-none placeholder:text-xs placeholder:opacity-35 transition-colors ${
           errors[name as any]?.message ? "border-red-500" : ""
         } ${className || ""}`}
         {...register(name, {

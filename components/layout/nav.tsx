@@ -14,7 +14,7 @@ const Routes = [
   { id: 3, name: "clients", path: "/clients" },
   { id: 4, name: "employees", path: "/employees" },
   { id: 5, name: "services", path: "/services" },
-  { id: 6, name: "finance", path: "/finance" },
+  { id: 6, name: "transactions", path: "/transactions" },
 ];
 
 export default function AppNav() {

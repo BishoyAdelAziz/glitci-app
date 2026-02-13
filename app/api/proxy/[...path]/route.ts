@@ -33,7 +33,6 @@ async function proxy(req: NextRequest) {
 
     const headers = new Headers(req.headers);
     headers.set("content-type", "application/json");
-    // Forward the short-lived access token in the header
     if (token) headers.set("authorization", `Bearer ${token}`);
 
     let body: string | undefined;
@@ -47,7 +46,12 @@ async function proxy(req: NextRequest) {
 
     const data = await res.text();
 
-    if (res.status === 401) {
+    // Only redirect on 401 if it's NOT a login/refresh attempt
+    if (
+      res.status === 401 &&
+      proxiedPath !== "auth/login" &&
+      proxiedPath !== "auth/refresh"
+    ) {
       const response = NextResponse.redirect(new URL("/login", req.url));
       response.cookies.delete("GlitciAccessToken");
       response.cookies.delete("GlitciTokenExpiry");
@@ -61,12 +65,10 @@ async function proxy(req: NextRequest) {
       },
     });
 
-    // CRITICAL: Forward all cookies from backend (like the 30-day refresh token)
     res.headers.forEach((v, k) => {
       if (k.toLowerCase() === "set-cookie") response.headers.append(k, v);
     });
 
-    // Logic for Login and Refresh response
     if (
       (proxiedPath === "auth/login" || proxiedPath === "auth/refresh") &&
       res.ok
@@ -74,7 +76,6 @@ async function proxy(req: NextRequest) {
       const json = JSON.parse(data);
       const isProd = process.env.NODE_ENV === "production";
 
-      // Save the 1-hour access token as HttpOnly
       response.cookies.set("GlitciAccessToken", json.accessToken, {
         httpOnly: true,
         secure: isProd,
@@ -82,9 +83,8 @@ async function proxy(req: NextRequest) {
         path: "/",
       });
 
-      // THE ONLY CLIENT-READABLE COOKIE: The Expiry Timestamp
       response.cookies.set("GlitciTokenExpiry", json.accessTokenExpires, {
-        httpOnly: false, // Accessible by AuthWatcher
+        httpOnly: false,
         secure: isProd,
         sameSite: "lax",
         path: "/",

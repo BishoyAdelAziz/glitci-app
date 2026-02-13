@@ -1,7 +1,13 @@
 "use client";
 import ClientCard from "./ClientCard";
 import useClients from "@/hooks/useClients";
-export default function ClientsContainer() {
+import { Dispatch, SetStateAction } from "react";
+import AddClient from "./AddClientModal";
+interface Props {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+}
+export default function ClientsContainer({ isOpen, setIsOpen }: Props) {
   const { clients, error, isError, isLoading, pagination } = useClients();
   if (isLoading) {
     return (
@@ -23,10 +29,15 @@ export default function ClientsContainer() {
   }
 
   return (
-    <div className="grid grid-cols-4 items-center justify-center gap-x-6 gap-y-12">
-      {clients?.map((client) => {
-        return <ClientCard client={client} key={client.id} />;
-      })}
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-stretch justify-center gap-x-6 gap-y-12">
+        {clients?.map((client) => {
+          return <ClientCard client={client} key={client.id} />;
+        })}
+      </div>
+      {isOpen && (
+        <AddClient isOpen={isOpen} onClose={() => setIsOpen(!isOpen)} />
+      )}
+    </>
   );
 }
