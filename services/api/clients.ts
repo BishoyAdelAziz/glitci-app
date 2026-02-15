@@ -1,6 +1,10 @@
 import axiosInstance from "@/lib/axios";
 
-import { ClientsQueryParams, ClientsResponse } from "@/types/clients";
+import {
+  ClientsQueryParams,
+  ClientsResponse,
+  SigleClientResponse,
+} from "@/types/clients";
 import { AddClientSchema } from "../validations/clients";
 export const getClients = async (
   params?: ClientsQueryParams,
@@ -10,5 +14,21 @@ export const getClients = async (
 };
 export const AddClient = async (data: AddClientSchema) => {
   const response = await axiosInstance.post("/clients", data);
+  return response.data;
+};
+export const editClient = async ({
+  data,
+  clientId,
+}: {
+  data: AddClientSchema;
+  clientId: string;
+}) => {
+  const response = await axiosInstance.patch(`/clients/${clientId}`, data);
+  return response.data;
+};
+export const getSingleClient = async (
+  clientId: string | undefined,
+): Promise<SigleClientResponse> => {
+  const response = await axiosInstance.get(`/clients/${clientId}`);
   return response.data;
 };

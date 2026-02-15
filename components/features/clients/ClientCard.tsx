@@ -7,6 +7,7 @@ import { EditIcon } from "@/components/ui/ActionsMenu";
 import { TrashIcon } from "@/components/ui/ActionsMenu";
 import { useState } from "react";
 import Link from "next/link";
+import EditClientModal from "./EditClientModal";
 interface Props {
   client: Client;
 }
@@ -39,7 +40,7 @@ export default function ClientCard({ client }: Props) {
         />
       </div>
 
-      <div className="flex flex-col items-stretch justify-center gap-6">
+      <div className="flex flex-col items-stretch pt-2 justify-center gap-6">
         <div className="flex items-center justify-start gap-4">
           <div className="relative flex  h-auto">
             <Image
@@ -67,7 +68,10 @@ export default function ClientCard({ client }: Props) {
         <div className="flex flex-col items-start justify-center gap-4">
           {client?.phones?.map((phone: string) => {
             return (
-              <div className="flex items-start justify-center gap-4">
+              <div
+                key={phone}
+                className="flex items-start justify-center gap-4"
+              >
                 <svg
                   width="22"
                   height="22"
@@ -137,6 +141,11 @@ export default function ClientCard({ client }: Props) {
           </div>
         </div>
       </div>
+      <EditClientModal
+        clientId={client.id}
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+      />
     </div>
   );
 }

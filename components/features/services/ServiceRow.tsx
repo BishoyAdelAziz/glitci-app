@@ -59,7 +59,7 @@ export default function ServiceRow({
           {formatDate(service?.updatedAt)}
         </td>
         <td
-          className={`text-[#85C6B0] col-span-1 dark:text-gray-400 flex items-center justify-center text-center rounded-lg ${getStatusFlagColor(service.isActive)} `}
+          className={` col-span-1  flex items-center justify-center text-center rounded-lg ${getStatusFlagColor(service.isActive)} `}
         >
           {service.isActive ? "Active" : "In Active"}
         </td>

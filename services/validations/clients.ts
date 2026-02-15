@@ -20,4 +20,5 @@ export const ClientSchema = z.object({
     .nonempty("Industry is Required"),
   notes: z.string("Notes Must be String"),
 });
+
 export type AddClientSchema = z.infer<typeof ClientSchema>;
