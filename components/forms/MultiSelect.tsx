@@ -104,7 +104,7 @@ export default function MultiSelect<
                   {getSelectedOptions(value)?.map((option) => (
                     <div
                       key={option.id}
-                      className="bg-secondary dark:bg-gray-900 flex items-center gap-2 rounded-md px-3 py-1 text-sm text-white"
+                      className="bg-secondary dark:bg-gray-900 flex items-center gap-2 rounded-md px-3 py-1 text-sm dark:text-white"
                     >
                       <span>{option.name}</span>
                       <button
@@ -136,7 +136,7 @@ export default function MultiSelect<
                   getAvailableOptions(value)?.map((option) => (
                     <div
                       key={option.id}
-                      className="hover:bg-secondary/10 cursor-pointer p-3 transition-colors border-b border-gray-100 last:border-b-0"
+                      className="hover:bg-secondary/10 cursor-pointer dark:hover:bg-gray-700 hover:bg-gray-50 p-3 transition-colors border-b border-gray-100 last:border-b-0"
                       onClick={() => {
                         const val = saveAs === "id" ? option.id : option.name;
                         const isSelected = value.includes(val);
@@ -145,7 +145,7 @@ export default function MultiSelect<
                             ? value.filter((item) => item !== val)
                             : [...value, val],
                         );
-                        setIsOpen(false); // Close after selection
+                        // setIsOpen(false); // Close after selection
                       }}
                     >
                       {option.name}

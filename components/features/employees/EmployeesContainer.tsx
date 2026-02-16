@@ -1,7 +1,14 @@
 "use client";
+import { Dispatch, SetStateAction } from "react";
+import AddEmployeeMddal from "./AddEmployeeModal";
 import EmployeeCard from "./EmployeeCard";
 import useEmployees from "@/hooks/useEmployees";
-export default function EmployeesCOntainer() {
+
+interface Props {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+}
+export default function EmployeesCOntainer({ isOpen, setIsOpen }: Props) {
   const { employees, isError, isLoading } = useEmployees();
   if (isLoading) {
     return (
@@ -22,10 +29,11 @@ export default function EmployeesCOntainer() {
     );
   }
   return (
-    <div className="grid grid-cols-4 items-center justify-center gap-x-6 gap-y-12">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center justify-center gap-x-6 gap-y-12">
       {employees?.map((employee) => {
         return <EmployeeCard employee={employee} key={employee.id} />;
       })}
+      <AddEmployeeMddal isOpen={isOpen} setIsOpen={() => setIsOpen(false)} />
     </div>
   );
 }

@@ -1,12 +1,42 @@
 import { Employee } from "@/types/employees";
 import { formatPhoneNumber } from "@/utils/functions";
+import ActionsMenu from "@/components/ui/ActionsMenu";
+import { EyeIcon } from "@/components/ui/ActionsMenu";
+import { EditIcon } from "@/components/ui/ActionsMenu";
+import { TrashIcon } from "@/components/ui/ActionsMenu";
 import Image from "next/image";
+import { useState } from "react";
+import EditEmployeeModal from "./EditEmployeeModal";
 interface Props {
   employee: Employee;
 }
 export default function EmployeeCard({ employee }: Props) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteIsOpen, setIsDeleteOpen] = useState(true);
   return (
-    <div className=" shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px] max-w-95 bg-white dark:bg-gray-800">
+    <div className=" relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px] max-w-95 bg-white dark:bg-gray-800">
+      <div className="absolute top-2 right-2">
+        <ActionsMenu
+          actions={[
+            {
+              label: "View",
+              icon: <EyeIcon />,
+              href: `/employees/${employee.id}`,
+            },
+            {
+              label: "Edit",
+              icon: <EditIcon />,
+              onClick: () => setIsEditOpen(true),
+            },
+            {
+              label: "Delete",
+              icon: <TrashIcon />,
+              onClick: () => setIsDeleteOpen(true),
+              variant: "danger",
+            },
+          ]}
+        />
+      </div>
       <div className="flex flex-col items-stretch justify-center gap-6 w-full">
         <div className="flex items-center justify-start gap-4">
           <div className="relative inline-block">
@@ -150,6 +180,11 @@ export default function EmployeeCard({ employee }: Props) {
           </p>
         </div>
       </div>
+      <EditEmployeeModal
+        employee={employee}
+        isOpen={isEditOpen}
+        setIsOpen={setIsEditOpen}
+      />
     </div>
   );
 }

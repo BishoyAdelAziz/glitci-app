@@ -41,7 +41,7 @@ export default function AddProjectModal({ isOpen, onClose }: Props) {
 
   const departmentId = watch("department");
 
-  const { employees } = UseEmployees({ limit: 1000 });
+  const { employees } = UseEmployees({ limit: 1000, employeeId: undefined });
   const { departments } = useDepartments({ limit: 1000 });
   const { services } = useServices({ department: departmentId });
   const { clients } = useClients({ limit: 1000 });

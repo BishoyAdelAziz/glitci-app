@@ -61,6 +61,10 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
     setEditProjectId(projectId);
     setIsEditModalOpen(true);
   };
+  const handleDelete = (projectId) => {
+    setEditProjectId(projectId);
+    setIsDeleteModalOpen(true);
+  };
   if (isLoading) {
     return (
       <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">
@@ -131,6 +135,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                     setEditProjectId={setEditProjectId}
                     isEditModalOpen={isEditModalOpen}
                     onDeleteClose={() => onDeleteClose}
+                    handleDelete={() => handleDelete(project.id)}
                   />
                 ))}
               </tbody>
@@ -178,7 +183,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                         {
                           label: "Delete",
                           icon: <TrashIcon />,
-                          onClick: () => setIsDeleteModalOpen(true),
+                          onClick: () => handleDelete(project.id),
                           variant: "danger",
                         },
                       ]}
@@ -229,17 +234,6 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                     </span>
                   </div>
                 </div>
-                <DeleteProjectModal
-                  isOpen={isDeleteModalOpen}
-                  onClose={onDeleteClose}
-                  projectId={project.id}
-                  project={project}
-                />
-                <EditProjectModal
-                  isOpen={isEditModalOpen}
-                  onClose={() => setIsEditModalOpen(false)}
-                  projectId={editProjectId}
-                />
               </React.Fragment>
             ))}
           </div>
@@ -257,6 +251,16 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
           )}
         </div>
       </div>
+      <DeleteProjectModal
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteClose}
+        projectId={editProjectId}
+      />
+      <EditProjectModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        projectId={editProjectId}
+      />
     </>
   );
 }

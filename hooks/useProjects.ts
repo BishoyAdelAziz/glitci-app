@@ -59,6 +59,7 @@ export function useProjects(options?: UseProjectsOptions) {
     isLoading: singleProjectIsPending,
     isError: singleProjectIsError,
     error: singleProjectError,
+    refetch: refetchSingleProject,
   } = useQuery({
     queryKey: projectKeys.detail(options?.id || ""),
     queryFn: () => getProjectById(options?.id as string),
@@ -138,10 +139,22 @@ export function useProjects(options?: UseProjectsOptions) {
   });
 
   // Delete project mutation
-  const deleteMutation = useMutation({
+  const {
+    mutate: DeleteProjetMutation,
+    isPending: DeleteProjectIsPending,
+    error: DeleteProjectError,
+    isError: deleteProjectIsError,
+  } = useMutation({
     mutationFn: deleteProject,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
+    onSuccess: (data, variables) => {
+      // ✅ Invalidate the deleted project's cache
+      queryClient.invalidateQueries({
+        queryKey: ["project", variables],
+      });
+      // ✅ Refetch the projects list
+      queryClient.invalidateQueries({
+        queryKey: ["projects"],
+      });
     },
   });
 
@@ -176,6 +189,7 @@ export function useProjects(options?: UseProjectsOptions) {
     singleProjectIsPending,
     singleProjectIsError,
     singleProjectError,
+    refetchSingleProject,
     // update Project
     paginationParams, // { page, limit } - for Pagination component
     setPage,
@@ -203,14 +217,15 @@ export function useProjects(options?: UseProjectsOptions) {
 
     // Mutations
     createProject: createMutation.mutate,
-    deleteProject: deleteMutation.mutate,
 
     // Mutation states
     isCreating: createMutation.isPending,
-
-    isDeleting: deleteMutation.isPending,
+    // delete Project Mutations
+    DeleteProjectError,
+    DeleteProjectIsPending,
+    DeleteProjetMutation,
+    deleteProjectIsError,
     CreateError: createMutation.error,
-    DeleteError: deleteMutation.error,
     isCreateError: createMutation.isError,
     // Utils
     refetch,

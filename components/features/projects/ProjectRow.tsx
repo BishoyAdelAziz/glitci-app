@@ -21,6 +21,7 @@ interface ProjectRowProps {
   setEditProjectId: (id: string | null) => void;
   isEditModalOpen: boolean;
   onDeleteClose: () => void;
+  handleDelete: () => void;
 }
 
 export default function ProjectRow({
@@ -31,8 +32,7 @@ export default function ProjectRow({
   setIsDeleteModalOpen,
   setIsEditModalOpen,
   setEditProjectId,
-  isEditModalOpen,
-  onDeleteClose,
+  handleDelete,
 }: ProjectRowProps) {
   const handleEdit = () => {
     setEditProjectId(project.id);
@@ -101,28 +101,13 @@ export default function ProjectRow({
               {
                 label: "Delete",
                 icon: <TrashIcon />,
-                onClick: () => setIsDeleteModalOpen(true),
+                onClick: handleDelete,
                 variant: "danger",
               },
             ]}
           />
         </td>
       </tr>
-
-      {/* Edit Modal */}
-      <EditProjectModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        projectId={project.id}
-      />
-
-      {/* TODO: Add Delete Confirmation Modal */}
-      <DeleteProjectModal
-        isOpen={isDeleteModalOpen}
-        onClose={onDeleteClose}
-        projectId={project.id}
-        project={project}
-      />
     </>
   );
 }
