@@ -8,6 +8,7 @@ import { TrashIcon } from "@/components/ui/ActionsMenu";
 import { useState } from "react";
 import Link from "next/link";
 import EditClientModal from "./EditClientModal";
+import DeleteClientModal from "./DeleteClientModal";
 interface Props {
   client: Client;
 }
@@ -145,6 +146,11 @@ export default function ClientCard({ client }: Props) {
         clientId={client.id}
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
+      />
+      <DeleteClientModal
+        client={client}
+        isOpen={isDeleteOpen}
+        setIsOpen={setIsDeleteOpen}
       />
     </div>
   );

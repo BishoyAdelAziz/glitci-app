@@ -1,5 +1,6 @@
 import {
   addEmployee,
+  deleteEmployee,
   getEmployees,
   updateEmployee,
 } from "@/services/api/employees";
@@ -35,6 +36,17 @@ export default function useEmployees(params?: EmployeesQueryParams) {
       queryCLient.invalidateQueries({ queryKey: ["employees", params] });
     },
   });
+  const {
+    mutate: DeleteEMployeeMutation,
+    isPending: DeleteEMployeeIsPending,
+    isError: DeleteEMployeeIsError,
+    error: DeleteEMployeeError,
+  } = useMutation({
+    mutationFn: deleteEmployee,
+    onSuccess: () => {
+      queryCLient.invalidateQueries({ queryKey: ["employees", params] });
+    },
+  });
   return {
     employees: data?.data,
     pagination: data
@@ -57,5 +69,9 @@ export default function useEmployees(params?: EmployeesQueryParams) {
     updateEmployeeIsError,
     updateEmployeeIsPending,
     updateEmployeeError,
+    DeleteEMployeeMutation,
+    DeleteEMployeeIsPending,
+    DeleteEMployeeIsError,
+    DeleteEMployeeError,
   };
 }

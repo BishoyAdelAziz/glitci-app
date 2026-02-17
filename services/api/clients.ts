@@ -32,3 +32,7 @@ export const getSingleClient = async (
   const response = await axiosInstance.get(`/clients/${clientId}`);
   return response.data;
 };
+export const deleteClient = async (clientId: string) => {
+  const response = await axiosInstance.delete(`/clients/${clientId}`);
+  return response.data;
+};

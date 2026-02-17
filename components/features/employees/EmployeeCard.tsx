@@ -7,12 +7,13 @@ import { TrashIcon } from "@/components/ui/ActionsMenu";
 import Image from "next/image";
 import { useState } from "react";
 import EditEmployeeModal from "./EditEmployeeModal";
+import DeleteEMployeeModal from "./DeleteEmployeeModal";
 interface Props {
   employee: Employee;
 }
 export default function EmployeeCard({ employee }: Props) {
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteIsOpen, setIsDeleteOpen] = useState(true);
+  const [isDeleteIsOpen, setIsDeleteOpen] = useState(false);
   return (
     <div className=" relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px] max-w-95 bg-white dark:bg-gray-800">
       <div className="absolute top-2 right-2">
@@ -184,6 +185,11 @@ export default function EmployeeCard({ employee }: Props) {
         employee={employee}
         isOpen={isEditOpen}
         setIsOpen={setIsEditOpen}
+      />
+      <DeleteEMployeeModal
+        emplyee={employee}
+        isOpen={isDeleteIsOpen}
+        setIsOpen={setIsDeleteOpen}
       />
     </div>
   );

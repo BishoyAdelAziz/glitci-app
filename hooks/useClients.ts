@@ -1,5 +1,6 @@
 import {
   AddClient,
+  deleteClient,
   editClient,
   getClients,
   getSingleClient,
@@ -52,7 +53,18 @@ export default function useClients(params?: ClientsQueryParams) {
     queryFn: () => getSingleClient(params?.clientId),
     enabled: !!params?.clientId,
   });
-
+  const {
+    mutate: DeleteClientMutation,
+    isPending: DeleteClientIsPending,
+    isError: DeleteClientisError,
+    error: DeleteClientError,
+  } = useMutation({
+    mutationFn: deleteClient,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["Client", params?.clientId] });
+    },
+  });
   return {
     clients: data?.data,
     pagination: data
@@ -79,5 +91,9 @@ export default function useClients(params?: ClientsQueryParams) {
     updateClientIsPending,
     updateClientError,
     UpdateClientIsError,
+    DeleteClientMutation,
+    DeleteClientIsPending,
+    DeleteClientisError,
+    DeleteClientError,
   };
 }
