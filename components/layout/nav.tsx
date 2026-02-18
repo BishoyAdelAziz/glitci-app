@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -78,7 +78,26 @@ function DesktopNavItem({ route }: { route: Route }) {
   const isActive = pathname === route.path;
   const isChildActive =
     route.children?.some((c) => pathname === c.path) ?? false;
+
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // ✅ Close on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
   if (!hasChildren) {
     return (
@@ -96,7 +115,7 @@ function DesktopNavItem({ route }: { route: Route }) {
   }
 
   return (
-    <div className="relative">
+    <div ref={menuRef} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
         className={`capitalize px-4 py-2 rounded-2xl transition-colors flex items-center gap-1.5 ${
@@ -111,7 +130,6 @@ function DesktopNavItem({ route }: { route: Route }) {
 
       {open && (
         <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden min-w-40 py-1">
-          {/* Parent link at top of dropdown */}
           <Link
             href={route.path}
             className={`block capitalize px-4 py-2 text-sm transition-colors border-b dark:border-gray-700 ${
@@ -119,15 +137,18 @@ function DesktopNavItem({ route }: { route: Route }) {
                 ? "bg-gray-100 dark:bg-gray-800 font-medium"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
             }`}
+            onClick={() => setOpen(false)}
           >
             all {route.name}
           </Link>
+
           {route.children!.map((child) => {
             const isChildItemActive = pathname === child.path;
             return (
               <Link
                 key={child.id}
                 href={child.path}
+                onClick={() => setOpen(false)}
                 className={`block capitalize px-4 py-2 text-sm transition-colors ${
                   isChildItemActive
                     ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
@@ -143,7 +164,6 @@ function DesktopNavItem({ route }: { route: Route }) {
     </div>
   );
 }
-
 function DesktopNav() {
   const pathname = usePathname();
   const { user, isPending } = useUser();

@@ -96,7 +96,7 @@ export default function SkillsTable({ isOpen, setIsOpen }: Props) {
   ];
   return (
     <>
-      <div className="mb-5 w-[30%]">
+      <div className="mb-5 w-[60%] lg:w-[30%]">
         <SelectInput
           register={register}
           control={control}
