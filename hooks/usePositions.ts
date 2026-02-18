@@ -16,6 +16,9 @@ export default function usePositions(params?: PositionsQueryParams) {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["positions", params],
     queryFn: () => getPositions(params),
+    placeholderData: (data) => {
+      return data;
+    },
   });
 
   // Get single position
@@ -28,6 +31,9 @@ export default function usePositions(params?: PositionsQueryParams) {
     queryKey: ["position", params?.positionId],
     queryFn: () => getSinglePosition(params?.positionId),
     enabled: !!params?.positionId,
+    placeholderData: (data) => {
+      return data;
+    },
   });
 
   // Create position mutation

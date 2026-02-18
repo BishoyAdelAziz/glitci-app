@@ -1,17 +1,18 @@
 import { formatDate, getStatusFlagColor } from "@/utils/functions";
 import ActionsMenu, { EditIcon, TrashIcon } from "@/components/ui/ActionsMenu";
 import { Position } from "@/types/positions";
+import { Skill } from "@/types/skills";
 
 interface ProjectRowProps {
-  Position: Position;
+  Skill: Skill;
   isSelected: boolean | undefined;
   onSelect: (id: string) => void;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-export default function PositionsRow({
-  Position,
+export default function SkillRow({
+  Skill,
   isSelected,
   onSelect,
   onDelete,
@@ -24,21 +25,21 @@ export default function PositionsRow({
           <input
             type="checkbox"
             checked={isSelected}
-            onChange={() => onSelect(Position?.id)}
+            onChange={() => onSelect(Skill?.id)}
             className="w-4 h-4 accent-[#B72D2D] rounded border-gray-300 dark:border-gray-600 text-[#B72D2D] focus:ring-2 focus:ring-[#B72D2D]"
           />
         </td>
         <td className="font-medium col-span-6 flex items-center justify-start text-center ">
-          {Position?.name}
+          {Skill?.name}
         </td>
         <td className="font-medium col-span-2 flex items-center justify-center text-center    ">
-          {Position?.department?.name}
+          {Skill?.position?.name}
         </td>
         <td className="text-gray-600 col-span-2 dark:text-gray-400 flex items-center justify-center text-center ">
-          {formatDate(Position?.createdAt)}
+          {formatDate(Skill?.createdAt)}
         </td>
         <td className="text-gray-600 col-span-2 dark:text-gray-400 flex items-center justify-center text-center ">
-          {formatDate(Position?.updatedAt)}
+          {formatDate(Skill?.updatedAt)}
         </td>
 
         <td className="flex items-center justify-center col-span-1">

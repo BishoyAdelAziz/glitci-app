@@ -6,10 +6,11 @@ import {
   CreateSkillDto,
   UpdateSkillDto,
 } from "@/types/skills";
+import { AddSkillFormFIelds } from "../validations/skill";
 
 // Get all skills with optional filters
 export const getSkills = async (
-  params?: SkillsQueryParams
+  params?: SkillsQueryParams,
 ): Promise<SkillsResponse> => {
   const response = await axiosInstance.get("/skills", { params });
   return response.data;
@@ -17,7 +18,7 @@ export const getSkills = async (
 
 // Get single skill by ID
 export const getSingleSkill = async (
-  skillId?: string
+  skillId?: string,
 ): Promise<SingleSkill> => {
   if (!skillId) throw new Error("Skill ID is required");
   const response = await axiosInstance.get(`/skills/${skillId}`);
@@ -26,7 +27,7 @@ export const getSingleSkill = async (
 
 // Create a new skill
 export const createSkill = async (
-  data: CreateSkillDto
+  data: AddSkillFormFIelds,
 ): Promise<SingleSkill> => {
   const response = await axiosInstance.post("/skills", data);
   return response.data;

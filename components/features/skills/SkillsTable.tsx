@@ -3,23 +3,23 @@
 // import ServiceRow from "./ServiceRow";
 import { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
-import usePositions from "@/hooks/usePositions";
-import PositionsRow from "./PositionsRaw";
-import { Position } from "@/types/positions";
-import AddPositionModal from "./AddPositionModal";
-import DeletePositionModal from "./DeletePositionModal";
-import EditPositionModal from "./EditPositionModal";
-import { useForm } from "react-hook-form";
-import useDepartments from "@/hooks/useDepartments";
+import useSkills from "@/hooks/useSkills";
+// import SkillsRow from "./SkillsRaw";
+import { Skill } from "@/types/skills";
+import SkillRow from "./SkillRow";
+import AddSkillModal from "./AddSkillModal";
 import { SelectInput } from "@/components/forms/SelectInput";
+import { useForm } from "react-hook-form";
+import usePositions from "@/hooks/usePositions";
+// import AddSkillModal from "./AddSkillModal";
+// import DeleteSkillModal from "./DeleteSkillModal";
+// import EditSkillModal from "./EditSkillModal";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
-export default function PositionsTable({ isOpen, setIsOpen }: Props) {
-  const [selectedPosition, setSelectedPosition] = useState<Position | null>(
-    null,
-  );
+export default function SkillsTable({ isOpen, setIsOpen }: Props) {
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const {
     control,
     register,
@@ -27,19 +27,14 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
     watch,
     setValue,
   } = useForm();
-  const filterDepartment = watch("department");
-
-  const { departments } = useDepartments();
   const [selectAll, setSelectAll] = useState(false);
-  const [isEditOpen, setIsEditOPen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOPen] = useState(false);
-  const [SelectedPositions, SetSlectedPositions] = useState<
-    string[] | undefined
-  >([]);
 
-  const { isError, error, isLoading, pagination, positions } = usePositions({
-    department: filterDepartment,
+  const [SelectedSkills, SetSlectedSkills] = useState<string[] | undefined>([]);
+  const filterPosition = watch("position");
+  const { Skills, SkillsIsError, SkillsIsPending } = useSkills({
+    position: filterPosition,
   });
+  const { positions } = usePositions();
   const onClose = () => {
     setIsOpen(false);
   };
@@ -49,26 +44,30 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
 
   const handleSelectAll = () => {
     if (selectAll) {
-      SetSlectedPositions([]);
+      SetSlectedSkills([]);
     } else {
-      SetSlectedPositions(positions?.map((p) => p.id));
+      SetSlectedSkills(Skills?.data.map((p) => p.id));
     }
     setSelectAll(!selectAll);
   };
 
   const handleSelectService = (id: string) => {
     // Use optional chaining and a fallback to ensure we are always working with an array
-    const currentServices = SelectedPositions ?? [];
+    const currentServices = SelectedSkills ?? [];
 
     if (currentServices.includes(id)) {
-      SetSlectedPositions(currentServices.filter((pId) => pId !== id));
+      SetSlectedSkills(currentServices.filter((pId) => pId !== id));
     } else {
       // Spreading the fallback ensures no 'undefined' iterator error
-      SetSlectedPositions([...currentServices, id]);
+      SetSlectedSkills([...currentServices, id]);
     }
   };
 
-  if (isLoading) {
+  const handleEdit = (projectId) => {
+    // setEditProjectId(projectId);
+    // setIsEditModalOpen(true);
+  };
+  if (SkillsIsPending) {
     return (
       <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">
         <div className="flex items-center justify-center">
@@ -78,47 +77,45 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
     );
   }
 
-  if (isError) {
+  if (SkillsIsError) {
     return (
       <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">
         <div className="text-center text-red-600 dark:text-red-400">
-          Error loading Positions. Please try again.
+          Error loading Skills. Please try again.
         </div>
       </div>
     );
   }
 
-  const refinedDepartments = [
+  const refinedPosition = [
     { id: undefined, name: "All" },
-    ...(departments?.map((position) => ({
+    ...(positions?.map((position) => ({
       id: position.id,
       name: position.name,
     })) ?? []),
   ];
-  if (!positions || positions.length === 0) {
-    return (
-      <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">
-        <div className="text-center text-gray-500 dark:text-gray-400">
-          No Positions found.
-        </div>
+  return (
+    <>
+      <div className="mb-5 w-[30%]">
+        <SelectInput
+          register={register}
+          control={control}
+          errors={errors}
+          label="Filter By Position"
+          name="position"
+          options={refinedPosition}
+          saveAsId
+          setValue={setValue}
+          required
+        />
       </div>
-    );
-  } else {
-    return (
-      <>
-        <div className="mb-5 w-[30%]">
-          <SelectInput
-            register={register}
-            control={control}
-            errors={errors}
-            label="Filter By Department"
-            name="department"
-            options={refinedDepartments}
-            saveAsId
-            setValue={setValue}
-            required
-          />
+      {!Skills || Skills?.data.length <= 0 ? (
+        <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">
+          <div className="text-center text-gray-500 dark:text-gray-400">
+            No Skills found.
+          </div>
         </div>
+      ) : (
         <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm ring-[0.02rem] ring-gray-300 ">
           {/* Desktop Table */}
           <div className="hidden lg:block overflow-x-auto ring-1 ring-gray-700/20 dark:ring-white/15">
@@ -134,10 +131,10 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
                     />
                   </th>
                   <th className="col-span-6 flex items-center justify-start text-center ">
-                    Positions
+                    Skills
                   </th>
                   <th className="col-span-2 flex items-center justify-center text-center ">
-                    Department
+                    Position
                   </th>
                   <th className="col-span-2 flex items-center justify-center text-center ">
                     Created At
@@ -149,22 +146,18 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {positions.map((position) => (
-                  <PositionsRow
-                    key={position.id}
-                    Position={position}
-                    isSelected={SelectedPositions?.includes(position.id)}
-                    onSelect={handleSelectService}
-                    onEdit={() => {
-                      setSelectedPosition(position);
-                      setIsEditOPen(true);
-                    }}
-                    onDelete={() => {
-                      setSelectedPosition(position);
-                      setIsDeleteOPen(true);
-                    }}
-                  />
-                ))}
+                {Skills?.data?.map((Skill: Skill) => {
+                  return (
+                    <SkillRow
+                      key={Skill.id}
+                      Skill={Skill}
+                      isSelected={SelectedSkills?.includes(Skill.id)}
+                      onDelete={() => {}}
+                      onEdit={() => {}}
+                      onSelect={() => {}}
+                    />
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -178,23 +171,24 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
           )} */}
           </div>
         </div>
-        <AddPositionModal setIsOpen={setIsOpen} isOpen={isOpen} />
-        {selectedPosition && (
-          <>
-            <EditPositionModal
-              isOpen={isEditOpen}
-              position={selectedPosition}
-              setIsOpen={setIsEditOPen}
-            />
+      )}
 
-            <DeletePositionModal
-              isOpen={isDeleteOpen}
-              position={selectedPosition}
-              setIsOpen={setIsDeleteOPen}
-            />
-          </>
-        )}
-      </>
-    );
-  }
+      <AddSkillModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      {selectedSkill && (
+        <>
+          {/* <EditSkillModal
+            isOpen={isEditOpen}
+            Skill={selectedSkill}
+            setIsOpen={setIsEditOPen}
+          /> */}
+
+          {/* <DeleteSkillModal
+            isOpen={isDeleteOpen}
+            Skill={selectedSkill}
+            setIsOpen={setIsDeleteOPen}
+          /> */}
+        </>
+      )}
+    </>
+  );
 }

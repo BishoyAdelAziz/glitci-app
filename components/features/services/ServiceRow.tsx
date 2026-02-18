@@ -5,34 +5,28 @@ import ActionsMenu, {
   EyeIcon,
 } from "@/components/ui/ActionsMenu";
 import { Service } from "@/types/services";
+import { Dispatch, SetStateAction } from "react";
 // import EditProjectModal from "./EditProjectModal";
 // import DeleteProjectModal from "./DeleteProjectModal";
 interface ProjectRowProps {
   service: Service;
   isSelected: boolean | undefined;
   onSelect: (id: string) => void;
-  isDeleteModalOpen: boolean;
-  setIsDeleteModalOpen: (isOpen: boolean) => void;
-  setIsEditModalOpen: (isOpen: boolean) => void;
-  setEditProjectId: (id: string | null) => void;
-  isEditModalOpen: boolean;
-  onDeleteClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
 export default function ServiceRow({
   service,
   isSelected,
   onSelect,
-  isDeleteModalOpen,
-  setIsDeleteModalOpen,
-  setIsEditModalOpen,
-  setEditProjectId,
-  isEditModalOpen,
+  onDelete,
+  onEdit,
 }: ProjectRowProps) {
-  const handleEdit = () => {
-    setEditProjectId(service.id);
-    setIsEditModalOpen(true);
-  };
+  // const handleEdit = () => {
+  //   setEditProjectId(service.id);
+  //   setIsEditModalOpen(true);
+  // };
 
   return (
     <>
@@ -67,19 +61,14 @@ export default function ServiceRow({
           <ActionsMenu
             actions={[
               {
-                label: "View",
-                icon: <EyeIcon />,
-                href: `/projects/${service.id}`,
-              },
-              {
                 label: "Edit",
                 icon: <EditIcon />,
-                onClick: handleEdit,
+                onClick: onEdit,
               },
               {
                 label: "Delete",
                 icon: <TrashIcon />,
-                onClick: () => setIsDeleteModalOpen(true),
+                onClick: onDelete,
                 variant: "danger",
               },
             ]}

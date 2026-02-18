@@ -13,8 +13,8 @@ import Label from "./Label";
 import ValidationError from "../errors/validationError";
 
 interface Option {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
 }
 
 interface SelectProps<

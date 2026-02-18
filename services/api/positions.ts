@@ -4,10 +4,8 @@ import {
   PositionsResponse,
   SinglePosition,
 } from "@/types/positions";
-import {
-  AddPositionFormFields,
-  EditPositionFormFields,
-} from "../validations/positions";
+import { EditPositionFormFields } from "../validations/positions";
+import { AddSkillFormFIelds } from "../validations/skill";
 
 // Get all positions with optional filters
 export const getPositions = async (
@@ -28,7 +26,7 @@ export const getSinglePosition = async (
 
 // Create a new position
 export const createPosition = async (
-  data: AddPositionFormFields,
+  data: AddSkillFormFIelds,
 ): Promise<SinglePosition> => {
   const response = await axiosInstance.post("/positions", data);
   return response.data;

@@ -45,7 +45,7 @@ export default function AddEmployeeMddal({ isOpen, setIsOpen }: Props) {
   const Position = watch("position");
   const { departments, error, isError, isLoading } = useDepartments();
   const { positions } = usePositions({ department: Department });
-  const { skills } = useSkills({ position: Position });
+  const { Skills } = useSkills({ position: Position });
   const {
     AddEmployeeError,
     AddEmployeeIsError,
@@ -61,7 +61,7 @@ export default function AddEmployeeMddal({ isOpen, setIsOpen }: Props) {
     name: position.name,
   }));
 
-  const refinedSkills = skills?.map((skill) => ({
+  const refinedSkills = Skills?.data.map((skill) => ({
     id: skill.id,
     name: skill.name,
   }));

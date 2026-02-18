@@ -12,9 +12,17 @@ export default function useSkills(params?: SkillsQueryParams) {
   const queryClient = useQueryClient();
 
   // Get all skills
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const {
+    data: Skills,
+    isPending: SkillsIsPending,
+    isError: SkillsIsError,
+    error: SkillsError,
+  } = useQuery({
     queryKey: ["skills", params],
     queryFn: () => getSkills(params),
+    placeholderData: (data) => {
+      return data;
+    },
   });
 
   // Get single skill
@@ -70,21 +78,10 @@ export default function useSkills(params?: SkillsQueryParams) {
   });
 
   return {
-    // List data
-    skills: data?.data,
-    pagination: data
-      ? {
-          totalPages: data.totalPages,
-          currentPage: data.page,
-          limit: data.limit,
-          results: data.results,
-        }
-      : undefined,
-    isLoading,
-    isError,
-    error,
-    refetch,
-
+    Skills,
+    SkillsError,
+    SkillsIsPending,
+    SkillsIsError,
     // Single skill
     singleSkill,
     singleSkillIsPending,
