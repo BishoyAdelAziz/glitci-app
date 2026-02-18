@@ -99,7 +99,7 @@ export default function ServicesTable({ isOpen, setIsOpen }: Props) {
   if (!services || services.length === 0) {
     return (
       <>
-        <div className="mb-5 w-[30%]">
+        <div className="mb-5 w-[60%] lg:w-[30%]">
           <SelectInput
             register={register}
             control={control}
@@ -122,7 +122,7 @@ export default function ServicesTable({ isOpen, setIsOpen }: Props) {
   } else {
     return (
       <>
-        <div className="mb-5 w-[30%]">
+        <div className="mb-5 w-[60%] lg:w-[30%]">
           <SelectInput
             register={register}
             control={control}

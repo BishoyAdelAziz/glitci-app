@@ -106,7 +106,7 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
   } else {
     return (
       <>
-        <div className="mb-5 w-[30%]">
+        <div className="mb-5 w-[60%] lg:w-[30%]">
           <SelectInput
             register={register}
             control={control}
@@ -185,12 +185,14 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
               isOpen={isEditOpen}
               position={selectedPosition}
               setIsOpen={setIsEditOPen}
+              setSelectedPosition={setSelectedPosition}
             />
 
             <DeletePositionModal
               isOpen={isDeleteOpen}
               position={selectedPosition}
               setIsOpen={setIsDeleteOPen}
+              setSelectedPosition={setSelectedPosition}
             />
           </>
         )}

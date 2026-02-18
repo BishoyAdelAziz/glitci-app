@@ -123,14 +123,12 @@ export default function DepartmentsTable({ isOpen, setIsOpen }: Props) {
                   isSelected={selectedServices?.includes(department?.id)}
                   onSelect={handleSelectService}
                   onEdit={() => {
-                    setSelectedDepartment(department);
-                    setIsDeleteOPen(false);
                     setIsEditOPen(true);
+                    setSelectedDepartment(department);
                   }}
                   onDelete={() => {
-                    setSelectedDepartment(department);
-                    setIsEditOPen(false);
                     setIsDeleteOPen(true);
+                    setSelectedDepartment(department);
                   }}
                 />
               ))}
@@ -148,16 +146,20 @@ export default function DepartmentsTable({ isOpen, setIsOpen }: Props) {
         </div>
       </div>
       <AddDepartmentModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      <EditDepartmentModal
-        department={selectedDepartment}
-        isOpen={isEditOpen}
-        setIsOpen={setIsEditOPen}
-      />
-      <DeleteDepartmentModal
-        department={selectedDepartment}
-        isOpen={isDeleteOpen}
-        setIsOpen={setIsDeleteOPen}
-      />
+      {selectedDepartment && (
+        <>
+          <EditDepartmentModal
+            department={selectedDepartment}
+            isOpen={isEditOpen}
+            setIsOpen={setIsEditOPen}
+          />
+          <DeleteDepartmentModal
+            department={selectedDepartment}
+            isOpen={isDeleteOpen}
+            setIsOpen={setIsDeleteOPen}
+          />
+        </>
+      )}
     </>
   );
 }

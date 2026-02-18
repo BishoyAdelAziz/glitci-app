@@ -35,8 +35,8 @@ export const createSkill = async (
 
 // Update an existing skill
 export const updateSkill = async ({
-  data,
   skillId,
+  data,
 }: {
   data: UpdateSkillDto;
   skillId: string;

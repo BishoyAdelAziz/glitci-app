@@ -18,7 +18,7 @@ import {
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  department: Department | null;
+  department: Department;
 }
 
 export default function EditDepartmentModal({
@@ -73,7 +73,7 @@ export default function EditDepartmentModal({
         <TextInput
           errors={errors}
           register={register}
-          label="Employee Name"
+          label="Department Name"
           name="name"
           required
         />
@@ -81,7 +81,7 @@ export default function EditDepartmentModal({
           <SubmitButton
             isError={EditDepartmentIsError}
             isPending={EditDepartmentIsPending}
-            error={EditDepartmentIsError}
+            error={EditDepartmentError}
             text="Update Department"
           />
         </div>

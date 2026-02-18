@@ -11,6 +11,8 @@ import AddSkillModal from "./AddSkillModal";
 import { SelectInput } from "@/components/forms/SelectInput";
 import { useForm } from "react-hook-form";
 import usePositions from "@/hooks/usePositions";
+import EditSkillModal from "./EditSkillModal";
+import DeleteSkillModal from "./DeleteSkillModal";
 // import AddSkillModal from "./AddSkillModal";
 // import DeleteSkillModal from "./DeleteSkillModal";
 // import EditSkillModal from "./EditSkillModal";
@@ -20,6 +22,8 @@ interface Props {
 }
 export default function SkillsTable({ isOpen, setIsOpen }: Props) {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const {
     control,
     register,
@@ -38,8 +42,8 @@ export default function SkillsTable({ isOpen, setIsOpen }: Props) {
   const onClose = () => {
     setIsOpen(false);
   };
-  const onDeleteClose = () => {
-    // setIsDeleteModalOpen(false);
+  const onDelte = (skil) => {
+    setSelectedSkill;
   };
 
   const handleSelectAll = () => {
@@ -51,7 +55,7 @@ export default function SkillsTable({ isOpen, setIsOpen }: Props) {
     setSelectAll(!selectAll);
   };
 
-  const handleSelectService = (id: string) => {
+  const handleSkillSelect = (id: string) => {
     // Use optional chaining and a fallback to ensure we are always working with an array
     const currentServices = SelectedSkills ?? [];
 
@@ -152,9 +156,17 @@ export default function SkillsTable({ isOpen, setIsOpen }: Props) {
                       key={Skill.id}
                       Skill={Skill}
                       isSelected={SelectedSkills?.includes(Skill.id)}
-                      onDelete={() => {}}
-                      onEdit={() => {}}
-                      onSelect={() => {}}
+                      onDelete={() => {
+                        setSelectedSkill(Skill);
+                        setIsDeleteOpen(true);
+                      }}
+                      onEdit={() => {
+                        setSelectedSkill(Skill);
+                        setIsEditOpen(true);
+                      }}
+                      onSelect={() => {
+                        handleSkillSelect;
+                      }}
                     />
                   );
                 })}
@@ -176,17 +188,19 @@ export default function SkillsTable({ isOpen, setIsOpen }: Props) {
       <AddSkillModal isOpen={isOpen} setIsOpen={setIsOpen} />
       {selectedSkill && (
         <>
-          {/* <EditSkillModal
+          <EditSkillModal
             isOpen={isEditOpen}
-            Skill={selectedSkill}
-            setIsOpen={setIsEditOPen}
-          /> */}
+            skill={selectedSkill}
+            setIsOpen={setIsEditOpen}
+            setSelectedSkill={setSelectedSkill}
+          />
 
-          {/* <DeleteSkillModal
+          <DeleteSkillModal
             isOpen={isDeleteOpen}
             Skill={selectedSkill}
-            setIsOpen={setIsDeleteOPen}
-          /> */}
+            setIsOpen={setIsDeleteOpen}
+            setSelectedSkill={setSelectedSkill}
+          />
         </>
       )}
     </>

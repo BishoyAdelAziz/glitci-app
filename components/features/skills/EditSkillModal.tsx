@@ -2,33 +2,36 @@ import Modal from "@/components/ui/Modal";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateDepartmentSchema } from "@/services/validations/departments";
 import TextInput from "@/components/forms/TextInput";
 import SubmitButton from "@/components/forms/SubmitButton";
-import useDepartments from "@/hooks/useDepartments";
 import usePositions from "@/hooks/usePositions";
-import { AddPositionSchema } from "@/services/validations/positions";
+
 import { SelectInput } from "@/components/forms/SelectInput";
-import { Position } from "@/types/positions";
+import {
+  AddSkillFormFIelds,
+  AddSkillSchema,
+} from "@/services/validations/skill";
+import useSkills from "@/hooks/useSkills";
+import { Skill } from "@/types/skills";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  position: Position;
-  setSelectedPosition: Dispatch<SetStateAction<Position | null>>;
+  skill: Skill;
+  setSelectedSkill: Dispatch<SetStateAction<Skill | null>>;
 }
-export default function EditPositionModal({
+export default function EditSkillModal({
   isOpen,
   setIsOpen,
-  position,
-  setSelectedPosition,
+  skill,
+  setSelectedSkill,
 }: Props) {
   const {
-    updatePositionError,
-    updatePositionIsError,
-    updatePositionIsPending,
-    updatePositionMutation,
-  } = usePositions();
-  const { departments } = useDepartments();
+    updateSkillError,
+    updateSkillIsError,
+    updateSkillIsPending,
+    updateSkillMutation,
+  } = useSkills();
+  const { positions } = usePositions();
   const {
     register,
     handleSubmit,
@@ -36,18 +39,22 @@ export default function EditPositionModal({
     control,
     setValue,
     reset,
-  } = useForm({
-    resolver: zodResolver(AddPositionSchema),
+  } = useForm<AddSkillFormFIelds>({
+    resolver: zodResolver(AddSkillSchema),
     reValidateMode: "onChange",
     defaultValues: {
-      name: position.name,
-      description: position.description,
-      department: position.department?.id,
+      name: skill?.name || "",
+      position: skill?.position?.id || "",
     },
   });
   const onSubmit = (data) => {
-    updatePositionMutation(
-      { positionId: position.id, data },
+    const refinedData = {
+      ...data,
+      name: data.name.trim().split(/\s+/),
+    };
+
+    updateSkillMutation(
+      { skillId: skill.id, data },
       {
         onSuccess: () => {
           reset();
@@ -56,16 +63,17 @@ export default function EditPositionModal({
       },
     );
   };
-  const refinedDepartments = departments?.map((department) => ({
-    id: department.id,
-    name: department.name,
+  const refinedDepartments = positions?.map((position) => ({
+    id: position.id,
+    name: position.name,
   }));
   return (
     <Modal
+      key={skill.id}
       isOpen={isOpen}
       onClose={() => {
         setIsOpen(false);
-        setSelectedPosition(null);
+        setSelectedSkill(null);
       }}
       size="full"
     >
@@ -75,36 +83,30 @@ export default function EditPositionModal({
       >
         <TextInput
           errors={errors}
-          label="Position Name"
+          label="Skills"
           name="name"
           register={register}
           required={true}
+          placeholder="Leave Space between each skill"
         />
         <SelectInput
           register={register}
           setValue={setValue}
           control={control}
           errors={errors}
-          label="department"
+          label="Position"
           options={refinedDepartments}
-          name="department"
+          name="position"
           saveAsId
           required
-          placeholder="Select Department"
-        />
-        <TextInput
-          errors={errors}
-          label="Description"
-          name="description"
-          register={register}
-          required={true}
+          placeholder="Select Position"
         />
 
         <SubmitButton
-          isError={updatePositionIsError}
-          isPending={updatePositionIsPending}
-          text="Edit Position"
-          error={updatePositionError}
+          isError={updateSkillIsError}
+          isPending={updateSkillIsPending}
+          text="Edit Skil"
+          error={updateSkillError}
         />
       </form>
     </Modal>

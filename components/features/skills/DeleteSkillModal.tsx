@@ -1,27 +1,22 @@
 import Modal from "@/components/ui/Modal";
-import usePositions from "@/hooks/usePositions";
-import { Position } from "@/types/positions";
+import useSkills from "@/hooks/useSkills";
+import { Skill } from "@/types/skills";
 import { Dispatch, SetStateAction } from "react";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  position: Position;
-  setSelectedPosition: Dispatch<SetStateAction<Position | null>>;
+  Skill: Skill;
+  setSelectedSkill: Dispatch<SetStateAction<Skill | null>>;
 }
-export default function DeletePositionModal({
+export default function DeleteSkillModal({
   isOpen,
   setIsOpen,
-  position,
-  setSelectedPosition,
+  Skill,
+  setSelectedSkill,
 }: Props) {
-  const {
-    deletePositionError,
-    deletePositionIsError,
-    deletePositionIsPending,
-    deletePositionMutation,
-  } = usePositions();
-  const handleDelete = (PositionId: string) => {
-    deletePositionMutation(PositionId, {
+  const { deleteSkillIsPending, deleteSkillMutation } = useSkills();
+  const handleDelete = (SkillId: string) => {
+    deleteSkillMutation(SkillId, {
       onSuccess: () => {
         setIsOpen(false);
       },
@@ -32,7 +27,7 @@ export default function DeletePositionModal({
       isOpen={isOpen}
       onClose={() => {
         setIsOpen(false);
-        setSelectedPosition(null);
+        setSelectedSkill(null);
       }}
       size="xl"
     >
@@ -56,11 +51,11 @@ export default function DeletePositionModal({
         {/* Message */}
         <div className="text-center space-y-2">
           <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Delete Position
+            Delete Skill
           </p>
           <p className="text-gray-600 dark:text-gray-400">
             Are you sure you want to delete
-            <span className="font-semibold text-red-600">{position.name}</span>?
+            <span className="font-semibold text-red-600">{Skill.name}</span>?
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             This action cannot be undone.
@@ -71,17 +66,17 @@ export default function DeletePositionModal({
         <div className="w-full flex items-center justify-center gap-4">
           <button
             onClick={() => setIsOpen(false)}
-            disabled={deletePositionIsPending}
+            disabled={deleteSkillIsPending}
             className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
-            onClick={() => handleDelete(position.id)}
-            disabled={deletePositionIsPending}
+            onClick={() => handleDelete(Skill.id)}
+            disabled={deleteSkillIsPending}
             className="px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-25 justify-center"
           >
-            {deletePositionIsPending ? (
+            {deleteSkillIsPending ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
             ) : (
               "Delete"
