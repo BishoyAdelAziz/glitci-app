@@ -8,14 +8,58 @@ import useUser from "@/hooks/useUser";
 import { useTheme } from "@/providers/themeProvider";
 import ButtonLoader from "@/components/Loaders/ButtonLoader";
 import { useRouter } from "next/navigation";
-const Routes = [
+
+type Route = {
+  id: number;
+  name: string;
+  path: string;
+  children?: Route[];
+};
+
+const Routes: Route[] = [
   { id: 1, name: "overview", path: "/overview" },
-  { id: 2, name: "projects", path: "/projects" },
-  { id: 3, name: "clients", path: "/clients" },
+  {
+    id: 2,
+    name: "projects",
+    path: "/projects",
+  },
+  {
+    id: 3,
+    name: "clients",
+    path: "/clients",
+  },
   { id: 4, name: "employees", path: "/employees" },
-  { id: 5, name: "services", path: "/services" },
+  {
+    id: 5,
+    name: "services",
+    path: "/services",
+    children: [
+      { id: 1, name: "Departments", path: "/services/departments" },
+      { id: 2, name: "Positions", path: "/services/positions" },
+      { id: 3, name: "Skills", path: "/services/skills" },
+    ],
+  },
   { id: 6, name: "transactions", path: "/transactions" },
 ];
+
+// Chevron Arrow SVG
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? "rotate-180" : "rotate-0"}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2.5}
+        d="M19 9l-7 7-7-7"
+      />
+    </svg>
+  );
+}
 
 export default function AppNav() {
   return (
@@ -23,6 +67,80 @@ export default function AppNav() {
       <DesktopNav />
       <MobileNav />
     </>
+  );
+}
+
+// ─── Desktop Nav ───────────────────────────────────────────────────────────────
+
+function DesktopNavItem({ route }: { route: Route }) {
+  const pathname = usePathname();
+  const hasChildren = !!route.children?.length;
+  const isActive = pathname === route.path;
+  const isChildActive =
+    route.children?.some((c) => pathname === c.path) ?? false;
+  const [open, setOpen] = useState(false);
+
+  if (!hasChildren) {
+    return (
+      <Link
+        href={route.path}
+        className={`capitalize px-4 py-2 rounded-2xl transition-colors ${
+          isActive
+            ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
+            : "hover:bg-gray-100 dark:hover:bg-gray-800"
+        }`}
+      >
+        {route.name}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`capitalize px-4 py-2 rounded-2xl transition-colors flex items-center gap-1.5 ${
+          isActive || isChildActive
+            ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
+            : "hover:bg-gray-100 dark:hover:bg-gray-800"
+        }`}
+      >
+        {route.name}
+        <ChevronIcon open={open} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden min-w-40 py-1">
+          {/* Parent link at top of dropdown */}
+          <Link
+            href={route.path}
+            className={`block capitalize px-4 py-2 text-sm transition-colors border-b dark:border-gray-700 ${
+              isActive
+                ? "bg-gray-100 dark:bg-gray-800 font-medium"
+                : "hover:bg-gray-100 dark:hover:bg-gray-800"
+            }`}
+          >
+            all {route.name}
+          </Link>
+          {route.children!.map((child) => {
+            const isChildItemActive = pathname === child.path;
+            return (
+              <Link
+                key={child.id}
+                href={child.path}
+                className={`block capitalize px-4 py-2 text-sm transition-colors ${
+                  isChildItemActive
+                    ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                {child.name}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -47,23 +165,10 @@ function DesktopNav() {
         </p>
       </div>
 
-      <nav className="h-20 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl">
-        {Routes.map((route) => {
-          const isActive = pathname === route.path;
-          return (
-            <Link
-              key={route.id}
-              href={route.path}
-              className={`capitalize px-4 py-2 rounded-2xl transition-colors ${
-                isActive
-                  ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
-                  : "hover:bg-gray-100 dark:hover:bg-gray-800"
-              }`}
-            >
-              {route.name}
-            </Link>
-          );
-        })}
+      <nav className="h-20 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl relative">
+        {Routes.map((route) => (
+          <DesktopNavItem key={route.id} route={route} />
+        ))}
       </nav>
 
       <div className="h-20 flex min-w-[10%] items-center justify-evenly px-6 bg-white dark:bg-gray-900 rounded-4xl gap-x-6">
@@ -124,15 +229,95 @@ function DesktopNav() {
   );
 }
 
-function MobileNav() {
+// ─── Mobile Nav ────────────────────────────────────────────────────────────────
+
+function MobileNavItem({
+  route,
+  onClose,
+}: {
+  route: Route;
+  onClose: () => void;
+}) {
   const pathname = usePathname();
+  const hasChildren = !!route.children?.length;
+  const isActive = pathname === route.path;
+  const isChildActive =
+    route.children?.some((c) => pathname === c.path) ?? false;
+  const [open, setOpen] = useState(isChildActive);
+
+  if (!hasChildren) {
+    return (
+      <Link
+        href={route.path}
+        onClick={onClose}
+        className={`block capitalize px-4 py-2 rounded-2xl transition-colors ${
+          isActive
+            ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
+            : "hover:bg-gray-100 dark:hover:bg-gray-800"
+        }`}
+      >
+        {route.name}
+      </Link>
+    );
+  }
+
+  return (
+    <div>
+      {/* Parent row */}
+      <div
+        className={`flex items-center justify-between capitalize px-4 py-2 rounded-2xl transition-colors cursor-pointer ${
+          isActive || isChildActive
+            ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
+            : "hover:bg-gray-100 dark:hover:bg-gray-800"
+        }`}
+      >
+        <Link href={route.path} onClick={onClose} className="flex-1">
+          {route.name}
+        </Link>
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="pl-2 flex items-center"
+          aria-label="toggle submenu"
+        >
+          <ChevronIcon open={open} />
+        </button>
+      </div>
+
+      {/* Children */}
+      {open && (
+        <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-3">
+          {route.children!.map((child) => {
+            const isChildItemActive = pathname === child.path;
+            return (
+              <Link
+                key={child.id}
+                href={child.path}
+                onClick={onClose}
+                className={`block capitalize px-4 py-2 rounded-2xl text-sm transition-colors ${
+                  isChildItemActive
+                    ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                {child.name}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MobileNav() {
   const { user } = useUser();
   const { toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const router = useRouter();
+
   return (
     <>
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50  flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow">
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => router.push("/projects")}
@@ -153,7 +338,6 @@ function MobileNav() {
           onClick={() => setOpen(true)}
           className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
         >
-          {/* Burger/Hamburger menu icon */}
           <svg
             className="w-6 h-6"
             fill="none"
@@ -192,24 +376,14 @@ function MobileNav() {
               </div>
             </div>
 
-            <nav className="flex-1 p-5 space-y-2">
-              {Routes.map((route) => {
-                const isActive = pathname === route.path;
-                return (
-                  <Link
-                    key={route.id}
-                    href={route.path}
-                    onClick={() => setOpen(false)}
-                    className={`block capitalize px-4 py-2 rounded-2xl transition-colors ${
-                      isActive
-                        ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    {route.name}
-                  </Link>
-                );
-              })}
+            <nav className="flex-1 p-5 space-y-2 overflow-y-auto">
+              {Routes.map((route) => (
+                <MobileNavItem
+                  key={route.id}
+                  route={route}
+                  onClose={() => setOpen(false)}
+                />
+              ))}
             </nav>
 
             <div className="p-4 border-t dark:border-gray-700 flex flex-col gap-4">
@@ -223,6 +397,8 @@ function MobileNav() {
   );
 }
 
+// ─── Controllers ───────────────────────────────────────────────────────────────
+
 function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
   return (
     <div className="flex justify-evenly items-center bg-white dark:bg-gray-900 rounded-4xl py-5 px-3 gap-y-5 shadow-lg">
@@ -231,7 +407,6 @@ function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
         onClick={toggleTheme}
         className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
       >
-        {/* Sun icon - visible in dark mode */}
         <svg
           className="w-5 h-5 hidden dark:block"
           fill="none"
@@ -246,8 +421,6 @@ function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
             d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"
           />
         </svg>
-
-        {/* Moon icon - visible in light mode */}
         <svg
           className="w-5 h-5 block dark:hidden"
           fill="none"
@@ -267,7 +440,6 @@ function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
         className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
         aria-label="calendar"
       >
-        {/* Calendar icon - changes color based on theme */}
         <svg
           className="w-5 h-5"
           fill="none"
@@ -311,11 +483,11 @@ function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
           />
         </svg>
       </button>
+
       <button
         className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
         aria-label="settings"
       >
-        {/* Settings/Gear icon */}
         <svg
           className="w-5 h-5"
           fill="none"
@@ -347,7 +519,6 @@ function ControllerBottom() {
         className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
         aria-label="quiz"
       >
-        {/* Question mark in circle icon */}
         <svg
           className="w-6 h-6"
           fill="none"
@@ -379,7 +550,6 @@ function ControllerBottom() {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          {/* Door frame (right bracket) */}
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

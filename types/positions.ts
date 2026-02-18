@@ -30,6 +30,7 @@ export interface PositionsQueryParams {
   limit?: number;
   name?: string;
   department?: string; // department id
+  positionId?: string;
 }
 
 // API response structure

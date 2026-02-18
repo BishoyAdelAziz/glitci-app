@@ -5,6 +5,7 @@ import {
   updatePosition,
   deletePosition,
 } from "@/services/api/positions";
+import { AddPositionFormFields } from "@/services/validations/positions";
 import { PositionsQueryParams } from "@/types/positions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -18,16 +19,16 @@ export default function usePositions(params?: PositionsQueryParams) {
   });
 
   // Get single position
-  //   const {
-  //     data: singlePosition,
-  //     isPending: singlePositionIsPending,
-  //     isError: singlePositionIsError,
-  //     error: singlePositionError,
-  //   } = useQuery({
-  //     queryKey: ["position", params?.positionId],
-  //     queryFn: () => getSinglePosition(params?.positionId),
-  //     enabled: !!params?.positionId,
-  //   });
+  const {
+    data: singlePosition,
+    isPending: singlePositionIsPending,
+    isError: singlePositionIsError,
+    error: singlePositionError,
+  } = useQuery({
+    queryKey: ["position", params?.positionId],
+    queryFn: () => getSinglePosition(params?.positionId),
+    enabled: !!params?.positionId,
+  });
 
   // Create position mutation
   const {
@@ -42,21 +43,26 @@ export default function usePositions(params?: PositionsQueryParams) {
     },
   });
 
-  // Update position mutation
-  //   const {
-  //     mutate: updatePositionMutation,
-  //     isPending: updatePositionIsPending,
-  //     isError: updatePositionIsError,
-  //     error: updatePositionError,
-  //   } = useMutation({
-  //     mutationFn: updatePosition,
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries({ queryKey: ["positions"] });
-  //       queryClient.invalidateQueries({
-  //         queryKey: ["position", params?.positionId],
-  //       });
-  //     },
-  //   });
+  const {
+    mutate: updatePositionMutation,
+    isPending: updatePositionIsPending,
+    isError: updatePositionIsError,
+    error: updatePositionError,
+  } = useMutation({
+    mutationFn: ({
+      positionId,
+      data,
+    }: {
+      positionId: string;
+      data: AddPositionFormFields;
+    }) => updatePosition(positionId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({
+        queryKey: ["position", params?.positionId],
+      });
+    },
+  });
 
   // Delete position mutation
   const {
@@ -100,10 +106,10 @@ export default function usePositions(params?: PositionsQueryParams) {
     createPositionError,
 
     // Update mutation
-    // updatePositionMutation,
-    // updatePositionIsPending,
-    // updatePositionIsError,
-    // updatePositionError,
+    updatePositionMutation,
+    updatePositionIsPending,
+    updatePositionIsError,
+    updatePositionError,
 
     // Delete mutation
     deletePositionMutation,

@@ -41,12 +41,12 @@ export default function EditEmployeeModal({
   } = useForm<AddEmployeeFormFIelds>({
     resolver: zodResolver(AddEmployeeSchema),
     defaultValues: {
-      name: employee.user.name,
-      email: employee.user.email,
-      phone: employee.user.phone,
-      department: employee.department.id,
-      position: employee.position.id,
-      skills: employee.skills.map((skill) => skill.id),
+      name: employee?.user?.name,
+      email: employee?.user?.email,
+      phone: employee?.user?.phone,
+      department: employee?.department?.id,
+      position: employee?.position?.id,
+      skills: employee?.skills?.map((skill) => skill?.id),
     },
   });
 

@@ -3,9 +3,11 @@ import {
   PositionsQueryParams,
   PositionsResponse,
   SinglePosition,
-  CreatePositionDto,
-  UpdatePositionDto,
 } from "@/types/positions";
+import {
+  AddPositionFormFields,
+  EditPositionFormFields,
+} from "../validations/positions";
 
 // Get all positions with optional filters
 export const getPositions = async (
@@ -26,20 +28,17 @@ export const getSinglePosition = async (
 
 // Create a new position
 export const createPosition = async (
-  data: CreatePositionDto,
+  data: AddPositionFormFields,
 ): Promise<SinglePosition> => {
   const response = await axiosInstance.post("/positions", data);
   return response.data;
 };
 
 // Update an existing position
-export const updatePosition = async ({
-  data,
-  positionId,
-}: {
-  data: UpdatePositionDto;
-  positionId: string;
-}): Promise<SinglePosition> => {
+export const updatePosition = async (
+  positionId: string,
+  data: EditPositionFormFields,
+) => {
   const response = await axiosInstance.patch(`/positions/${positionId}`, data);
   return response.data;
 };

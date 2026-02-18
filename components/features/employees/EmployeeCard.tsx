@@ -52,10 +52,10 @@ export default function EmployeeCard({ employee }: Props) {
           </div>
           <div className="flex flex-col items-start justify-center">
             <h4 className="font-poppins font-bold text-nowrap">
-              {employee.user.name}
+              {employee?.user?.name}
             </h4>
             <p className="font-poppins font-normal text-[#979797] text-nowrap">
-              {employee.position.name}
+              {employee?.position?.name}
             </p>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function EmployeeCard({ employee }: Props) {
             />
           </svg>
           <p className="font-poppins font-normal text-[#979797] text-md">
-            {formatPhoneNumber(employee.user.phone)}
+            {formatPhoneNumber(employee?.user?.phone)}
           </p>
         </div>
         <div className="h-0.5 bg-gray-400/30 w-ful"></div>
@@ -123,7 +123,7 @@ export default function EmployeeCard({ employee }: Props) {
           </svg>
 
           <p className="font-poppins font-normal text-[#979797] text-md">
-            {employee.user.email}
+            {employee?.user?.email}
           </p>
         </div>
         <div className="h-0.5 bg-gray-400/30 w-ful"></div>
@@ -177,7 +177,7 @@ export default function EmployeeCard({ employee }: Props) {
           </svg>
 
           <p className="font-poppins font-normal text-[#979797] text-md">
-            {employee.employmentType}
+            {employee?.employmentType}
           </p>
         </div>
       </div>

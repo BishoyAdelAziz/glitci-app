@@ -28,7 +28,6 @@ export default function ServiceRow({
   setIsEditModalOpen,
   setEditProjectId,
   isEditModalOpen,
-  onDeleteClose,
 }: ProjectRowProps) {
   const handleEdit = () => {
     setEditProjectId(service.id);
@@ -50,7 +49,7 @@ export default function ServiceRow({
           {service?.name}
         </td>
         <td className="font-medium col-span-2 flex items-center justify-center text-center    ">
-          {service?.department.name}
+          {service?.department?.name}
         </td>
         <td className="text-gray-600 col-span-2 dark:text-gray-400 flex items-center justify-center text-center ">
           {formatDate(service?.createdAt)}
@@ -59,9 +58,9 @@ export default function ServiceRow({
           {formatDate(service?.updatedAt)}
         </td>
         <td
-          className={` col-span-1  flex items-center justify-center text-center rounded-lg ${getStatusFlagColor(service.isActive)} `}
+          className={` col-span-1  flex items-center justify-center text-center rounded-lg ${getStatusFlagColor(service?.isActive)} `}
         >
-          {service.isActive ? "Active" : "In Active"}
+          {service?.isActive ? "Active" : "In Active"}
         </td>
 
         <td className="flex items-center justify-center col-span-1">
