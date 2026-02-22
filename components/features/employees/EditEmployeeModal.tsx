@@ -1,9 +1,9 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import MultiSelect from "@/components/forms/MultiSelect";
+import { MultiSelect } from "@/components/forms/MultiSelect";
 import { SelectInput } from "@/components/forms/SelectInput";
 import SubmitButton from "@/components/forms/SubmitButton";
 import TextInput from "@/components/forms/TextInput";
@@ -22,12 +22,14 @@ interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   employee: Employee;
+  onClose: () => void;
 }
 
 export default function EditEmployeeModal({
   isOpen,
   setIsOpen,
   employee,
+  onClose,
 }: Props) {
   // ✅ Add type and zodResolver
   const {
@@ -49,13 +51,23 @@ export default function EditEmployeeModal({
       skills: employee?.skills?.map((skill) => skill?.id),
     },
   });
-
+  // Add this after useForm
+  useEffect(() => {
+    reset({
+      name: employee?.user?.name,
+      email: employee?.user?.email,
+      phone: employee?.user?.phone,
+      department: employee?.department?.id,
+      position: employee?.position?.id,
+      skills: employee?.skills?.map((skill) => skill?.id),
+    });
+  }, [employee?.id]); // ← re-initialize when a different employee is opened
   const departmentId = watch("department");
   const positionId = watch("position");
 
   const { departments } = useDepartments();
   const { positions } = usePositions({ department: departmentId });
-  const { skills } = useSkills({ position: positionId });
+  const { Skills } = useSkills({ position: positionId });
   const {
     updateEmployeeError,
     updateEmployeeIsError,
@@ -73,7 +85,7 @@ export default function EditEmployeeModal({
     name: position.name,
   }));
 
-  const refinedSkills = skills?.map((skill) => ({
+  const refinedSkills = Skills?.data.map((skill) => ({
     id: skill.id,
     name: skill.name,
   }));
@@ -91,13 +103,7 @@ export default function EditEmployeeModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => {
-        setIsOpen(false);
-      }}
-      size="full"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} size="full">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-6 p-8 bg-white overflow-y-scroll scrollbar-hidden dark:bg-gray-900 grid grid-cols-2 gap-x-6"
@@ -147,9 +153,9 @@ export default function EditEmployeeModal({
             label="Skills"
             name="skills"
             options={refinedSkills}
-            saveAs="id"
-            placeHolder="Select Skills"
             required
+            saveAsId
+            placeholder="Select Skills"
           />
         </div>
         <TextInput

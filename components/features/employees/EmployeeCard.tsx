@@ -5,15 +5,12 @@ import { EyeIcon } from "@/components/ui/ActionsMenu";
 import { EditIcon } from "@/components/ui/ActionsMenu";
 import { TrashIcon } from "@/components/ui/ActionsMenu";
 import Image from "next/image";
-import { useState } from "react";
-import EditEmployeeModal from "./EditEmployeeModal";
-import DeleteEMployeeModal from "./DeleteEmployeeModal";
 interface Props {
-  employee: Employee;
+  employee: Employee; // ← remove null, card always has real employee
+  onEdit: (employee: Employee) => void;
+  onDelete: (employee: Employee) => void;
 }
-export default function EmployeeCard({ employee }: Props) {
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteIsOpen, setIsDeleteOpen] = useState(false);
+export default function EmployeeCard({ employee, onDelete, onEdit }: Props) {
   return (
     <div className=" relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px] max-w-95 bg-white dark:bg-gray-800">
       <div className="absolute top-2 right-2">
@@ -22,17 +19,17 @@ export default function EmployeeCard({ employee }: Props) {
             {
               label: "View",
               icon: <EyeIcon />,
-              href: `/employees/${employee.id}`,
+              href: `/employees/${employee?.id}`,
             },
             {
               label: "Edit",
               icon: <EditIcon />,
-              onClick: () => setIsEditOpen(true),
+              onClick: () => onEdit(employee), // ← wrap to pass employee
             },
             {
               label: "Delete",
               icon: <TrashIcon />,
-              onClick: () => setIsDeleteOpen(true),
+              onClick: () => onEdit(employee), // ← wrap to pass employee
               variant: "danger",
             },
           ]}
@@ -181,16 +178,6 @@ export default function EmployeeCard({ employee }: Props) {
           </p>
         </div>
       </div>
-      <EditEmployeeModal
-        employee={employee}
-        isOpen={isEditOpen}
-        setIsOpen={setIsEditOpen}
-      />
-      <DeleteEMployeeModal
-        emplyee={employee}
-        isOpen={isDeleteIsOpen}
-        setIsOpen={setIsDeleteOpen}
-      />
     </div>
   );
 }

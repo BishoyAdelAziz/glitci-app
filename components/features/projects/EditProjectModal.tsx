@@ -7,7 +7,7 @@ import { useEffect, useMemo } from "react";
 
 import TextInput from "@/components/forms/TextInput";
 import { SelectInput } from "@/components/forms/SelectInput";
-import MultiSelect from "@/components/forms/MultiSelect";
+import { MultiSelect } from "@/components/forms/MultiSelect";
 import { EmployeeArrayInput } from "@/components/forms/EmployeeInput";
 import DateInput from "@/components/forms/DateInput";
 import SubmitButton from "@/components/forms/SubmitButton";

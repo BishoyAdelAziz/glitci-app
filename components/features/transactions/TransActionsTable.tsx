@@ -5,5 +5,5 @@ interface Props {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 export default function TransactionsTable({ isOpen, setIsOpen }: Props) {
-  return <div>hi</div>;
+  return <div></div>;
 }

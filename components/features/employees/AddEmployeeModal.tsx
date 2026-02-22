@@ -1,7 +1,7 @@
 "use client";
 
 import { MultiPhonesInput } from "@/components/forms/MultiPhone";
-import MultiSelect from "@/components/forms/MultiSelect";
+import { MultiSelect } from "@/components/forms/MultiSelect";
 import { SelectInput } from "@/components/forms/SelectInput";
 import SubmitButton from "@/components/forms/SubmitButton";
 import TextInput from "@/components/forms/TextInput";
@@ -65,6 +65,7 @@ export default function AddEmployeeMddal({ isOpen, setIsOpen }: Props) {
     id: skill.id,
     name: skill.name,
   }));
+  console.log(refinedSkills);
   const onSubmit: SubmitHandler<AddEmployeeFormFIelds> = async (data) => {
     AddEmployeeMutation(data, {
       onSuccess: () => {
@@ -117,16 +118,17 @@ export default function AddEmployeeMddal({ isOpen, setIsOpen }: Props) {
           setValue={setValue}
           required
         />
-        <div className="col-span-2">
+        <div className="col-span-2 h-auto">
           <MultiSelect
             control={control}
             errors={errors}
             label="Skills"
             name="skills"
             options={refinedSkills}
-            saveAs="id"
-            placeHolder="SelectSkills"
+            saveAsId
+            placeholder="SelectSkills"
             required
+            disabled={!Position} // disable until position is selected
           />
         </div>
         <TextInput

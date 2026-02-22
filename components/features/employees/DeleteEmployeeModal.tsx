@@ -5,12 +5,14 @@ import { Dispatch, SetStateAction } from "react";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  emplyee: Employee;
+  employee: Employee;
+  onClose: () => void;
 }
 export default function DeleteEMployeeModal({
   isOpen,
   setIsOpen,
-  emplyee,
+  employee,
+  onClose,
 }: Props) {
   const {
     DeleteEMployeeError,
@@ -26,7 +28,7 @@ export default function DeleteEMployeeModal({
     });
   };
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900 space-y-6">
         <div className="text-red-500 w-20 h-20">
           <svg
@@ -50,9 +52,9 @@ export default function DeleteEMployeeModal({
             Delete Employee
           </p>
           <p className="text-gray-600 dark:text-gray-400">
-            Are you sure you want to delete
+            Are you sure you want to delete{" "}
             <span className="font-semibold text-red-600">
-              {emplyee?.user.name}
+              {employee?.user.name}
             </span>
             ?
           </p>
@@ -71,7 +73,7 @@ export default function DeleteEMployeeModal({
             Cancel
           </button>
           <button
-            onClick={() => handleDelete(emplyee.id)}
+            onClick={() => handleDelete(employee.id)}
             disabled={DeleteEMployeeIsPending}
             className="px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-25 justify-center"
           >

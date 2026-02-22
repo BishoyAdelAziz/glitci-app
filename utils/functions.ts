@@ -59,7 +59,7 @@ export const formatDate = (dateString: string) => {
   });
 };
 export const toDateInput = (iso?: string) => (iso ? iso.split("T")[0] : "");
-export const formatPhoneNumber = (phone: string): string => {
+export const formatPhoneNumber = (phone: string | undefined | null): string => {
   if (!phone) return "";
 
   // 1. Handle the prefix adjustment (+20 -> +02)

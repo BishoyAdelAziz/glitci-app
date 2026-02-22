@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateInput from "@/components/forms/DateInput";
 import { EmployeeArrayInput } from "@/components/forms/EmployeeInput";
-import MultiSelect from "@/components/forms/MultiSelect";
+import { MultiSelect } from "@/components/forms/MultiSelect";
 import { SelectInput } from "@/components/forms/SelectInput";
 import SubmitButton from "@/components/forms/SubmitButton";
 import TextInput from "@/components/forms/TextInput";
@@ -210,7 +210,7 @@ export default function AddProjectModal({ isOpen, onClose }: Props) {
             label="Services"
             name="services"
             required
-            saveAs="id"
+            saveAsId
             options={refinedServices}
           />
 
