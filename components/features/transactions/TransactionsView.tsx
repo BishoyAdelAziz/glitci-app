@@ -73,7 +73,7 @@ export default function TransactionsView({ type }: Props) {
       </div>
 
       {/* Category Tabs — nested under each type */}
-      <div className="flex gap-2 flex-wrap border-b border-gray-200 dark:border-gray-700 pb-1">
+      <div className="flex gap-2 flex-wrap border-b border-gray-200 dark:border-gray-700 p-2">
         <button
           onClick={() => handleCategorySwitch(undefined)}
           className={`px-4 py-1.5 text-sm font-medium transition-colors border-b-2 -mb-px ${

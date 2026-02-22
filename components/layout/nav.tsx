@@ -75,7 +75,8 @@ export default function AppNav() {
 function DesktopNavItem({ route }: { route: Route }) {
   const pathname = usePathname();
   const hasChildren = !!route.children?.length;
-  const isActive = pathname === route.path;
+  const isActive =
+    pathname === route.path || pathname.startsWith(route.path + "/");
   const isChildActive =
     route.children?.some((c) => pathname === c.path) ?? false;
 
@@ -260,7 +261,10 @@ function MobileNavItem({
 }) {
   const pathname = usePathname();
   const hasChildren = !!route.children?.length;
-  const isActive = pathname === route.path;
+
+  const isActive =
+    pathname === route.path || pathname.startsWith(route.path + "/");
+
   const isChildActive =
     route.children?.some((c) => pathname === c.path) ?? false;
   const [open, setOpen] = useState(isChildActive);
