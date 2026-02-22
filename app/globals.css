@@ -3,8 +3,6 @@
 /* 🔑 Force class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@tailwind utilities;
-
 /* Light theme */
 :root {
   --color-background: #f2f0f0;
@@ -36,6 +34,15 @@ body {
 }
 @theme inline {
   --font-poppins: var(--font-poppins);
+}
+@theme {
+  --font-size-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  --font-size-lg: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+  --font-size-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+  --font-size-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --font-size-3xl: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem);
+  --font-size-4xl: clamp(2.25rem, 1.8rem + 2vw, 3rem);
 }
 @layer utilities {
   .white-dark {
