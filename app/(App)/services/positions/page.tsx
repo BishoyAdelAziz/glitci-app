@@ -11,7 +11,7 @@ export default function PositionsPage() {
         isOpen={isCreatePositionOpen}
         setIsOpen={setIsCreatePositionOpen}
       />
-      <div className="mt-20">
+      <div className="mt-10">
         <PositionsTable
           isOpen={isCreatePositionOpen}
           setIsOpen={setIsCreatePositionOpen}
