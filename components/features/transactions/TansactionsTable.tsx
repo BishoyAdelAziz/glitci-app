@@ -12,6 +12,8 @@ import Pagination from "@/components/ui/Pagination";
 interface Props {
   transactions?: Transaction[];
   isLoading: boolean;
+  category?: string;
+
   isError: boolean;
   pagination?: {
     totalPages: number;
@@ -46,7 +48,7 @@ export default function TransactionsTable({
   pagination,
   onPageChange,
   onDelete,
-  isDeleting,
+  category,
 }: Props) {
   if (isLoading) {
     return (
@@ -71,6 +73,15 @@ export default function TransactionsTable({
       </div>
     );
   }
+  const showProject =
+    category === "client_payment" ||
+    category === "employee_payment" ||
+    category === "utilities" ||
+    category === "marketing";
+  const showCategory =
+    category !== "employee_salary" &&
+    category !== "employee_bonus" &&
+    category !== "employee_payment";
 
   return (
     <div className="space-y-4">
@@ -81,8 +92,8 @@ export default function TransactionsTable({
             <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <tr className="text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 <th className="px-6 py-4">Description</th>
-                <th className="px-6 py-4">Project</th>
-                <th className="px-6 py-4">Category</th>
+                {showProject && <th className="px-6 py-4">Project</th>}
+                {showCategory && <th className="px-6 py-4">Category</th>}
                 <th className="px-6 py-4">Amount</th>
                 <th className="px-6 py-4">Method</th>
                 <th className="px-6 py-4">Date</th>
@@ -100,12 +111,16 @@ export default function TransactionsTable({
                   <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 max-w-50 truncate">
                     {t.description}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                    {t.project.name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 capitalize">
-                    {t.category.replace(/_/g, " ")}
-                  </td>
+                  {showProject && (
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                      {t?.project?.name}
+                    </td>
+                  )}
+                  {showCategory && (
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 capitalize">
+                      {t.category.replace(/_/g, " ")}
+                    </td>
+                  )}
                   <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {t.amount.toLocaleString()} {t.currency}
                   </td>
@@ -147,16 +162,16 @@ export default function TransactionsTable({
         <div className="lg:hidden space-y-4 p-4">
           {transactions.map((t) => (
             <div
-              key={t._id}
+              key={t?._id}
               className="bg-white dark:bg-gray-800 rounded-xl p-4 space-y-3  outline-1 outline-gray-200 dark:outline-gray-700"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-                    {t.description}
+                    {t?.description}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {t.project.name}
+                    {t?.project?.name}
                   </p>
                 </div>
                 <ActionsMenu

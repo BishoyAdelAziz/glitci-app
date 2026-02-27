@@ -12,5 +12,9 @@ export const AddEmployeeSchema = z.object({
   department: z.string().nonempty("Department is required"),
   position: z.string().nonempty("Position is required"),
   skills: z.array(z.string()).min(1, "at least one number required"),
+  employmentType: z.enum(
+    ["freelancer", "full_time", "part_time"],
+    "Employment Type is required",
+  ),
 });
 export type AddEmployeeFormFIelds = z.infer<typeof AddEmployeeSchema>;

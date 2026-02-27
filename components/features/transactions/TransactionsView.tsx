@@ -4,14 +4,20 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useTransactions from "@/hooks/useTransactions";
 import TransactionsTable from "./TansactionsTable";
+import AddClientPaymentModal from "./AddClientPayment";
+import AddEmployeePaymentModal from "./Addemployeepaymentmodal";
+import AddGeneralExpenseModal from "./Addgeneralexpensemodal";
 import {
-  TransactionType,
-  TransactionCategory,
-  CATEGORIES_BY_TYPE,
-} from "@/types/transactions";
+  ROUTES_BY_TYPE,
+  CategoryRoute,
+  findRoute,
+} from "@/config/Transactionroutes";
+import { TransactionType } from "@/types/transactions";
+import type { GeneralExpenseFormData } from "@/services/validations/transactions";
 
 interface Props {
   type: TransactionType;
+  category: string; // raw slug from URL
 }
 
 const TYPE_TABS: { label: string; value: TransactionType }[] = [
@@ -19,13 +25,47 @@ const TYPE_TABS: { label: string; value: TransactionType }[] = [
   { label: "Expenses", value: "expense" },
 ];
 
-export default function TransactionsView({ type }: Props) {
+// Which modal to show per category slug
+type ModalType =
+  | "client_payment"
+  | "employee_payment"
+  | "general_expense"
+  | null;
+
+const GENERAL_EXPENSE_SLUGS: GeneralExpenseFormData["category"][] = [
+  "equipment",
+  "software",
+  "marketing",
+  "office",
+  "utilities",
+  "other_expense",
+];
+
+function getModalType(category: string): ModalType {
+  if (category === "client_payment") return "client_payment";
+  if (
+    category === "employee_salary" ||
+    category === "employee_bonus" ||
+    category === "employee_payment"
+  )
+    return "employee_payment";
+  if (
+    GENERAL_EXPENSE_SLUGS.includes(
+      category as GeneralExpenseFormData["category"],
+    )
+  )
+    return "general_expense";
+  return null;
+}
+
+export default function TransactionsView({ type, category }: Props) {
   const router = useRouter();
-  const [activeCategory, setActiveCategory] = useState<TransactionCategory>();
-
   const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const categories = CATEGORIES_BY_TYPE[type];
+  const activeRoute: CategoryRoute | undefined = findRoute(type, category);
+  const categoryRoutes = ROUTES_BY_TYPE[type];
+  const modalType = getModalType(category);
 
   const {
     transactions,
@@ -36,65 +76,71 @@ export default function TransactionsView({ type }: Props) {
     deleteTransactionIsPending,
   } = useTransactions({
     type,
-    category: activeCategory,
+    category: activeRoute?.category,
     page,
     limit: 10,
   });
 
-  // Reset category when switching type tabs
   const handleTypeSwitch = (newType: TransactionType) => {
-    setActiveCategory(undefined);
+    const firstCategory = ROUTES_BY_TYPE[newType][0].slug;
     setPage(1);
-    router.push(`/transactions/${newType}`);
+    router.push(`/transactions/${newType}/${firstCategory}`);
   };
 
-  const handleCategorySwitch = (cat: TransactionCategory | undefined) => {
-    setActiveCategory(cat);
+  const handleCategorySwitch = (slug: string) => {
     setPage(1);
+    router.push(`/transactions/${type}/${slug}`);
   };
 
   return (
     <div className="space-y-4 p-6">
-      {/* Type Tabs — Income / Expense */}
-      <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
-        {TYPE_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => handleTypeSwitch(tab.value)}
-            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
-              type === tab.value
-                ? "bg-linear-to-r from-[#DE4646] to-[#B72D2D]  transition-all  ease-in-out duration-700 font-noor-bold text-white hover:bg-linear-to-l hover:from-[#B72D2D] hover:to-[#DE4646]"
-                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="capitalize font-bold text-2xl">Transactions</h3>
+
+        <div className="flex items-center gap-3">
+          {/* Add button */}
+          {modalType && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-5 py-2 rounded-lg text-sm font-medium bg-linear-to-r from-[#DE4646] to-[#B72D2D] text-white hover:from-[#B72D2D] hover:to-[#DE4646] transition-all duration-300"
+            >
+              + Add {activeRoute?.label ?? "Transaction"}
+            </button>
+          )}
+
+          {/* Income / Expense type tabs */}
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
+            {TYPE_TABS.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => handleTypeSwitch(tab.value)}
+                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+                  type === tab.value
+                    ? "bg-linear-to-r from-[#DE4646] to-[#B72D2D] text-white font-bold"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Category Tabs — nested under each type */}
+      {/* Category tabs — route-based */}
       <div className="flex gap-2 flex-wrap border-b border-gray-200 dark:border-gray-700 p-2">
-        <button
-          onClick={() => handleCategorySwitch(undefined)}
-          className={`px-4 py-1.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-            !activeCategory
-              ? "border-primary text-primary"
-              : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-          }`}
-        >
-          All
-        </button>
-        {categories.map((cat) => (
+        {categoryRoutes.map((route) => (
           <button
-            key={cat.value}
-            onClick={() => handleCategorySwitch(cat.value)}
-            className={`px-4 py-1.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-              activeCategory === cat.value
-                ? "border-primary text-primary"
+            key={route.slug}
+            onClick={() => handleCategorySwitch(route.slug)}
+            className={`px-4 py-1.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+              category === route.slug
+                ? "border-[#DE4646] text-[#DE4646]"
                 : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
-            {cat.label}
+            {route.label}
           </button>
         ))}
       </div>
@@ -109,6 +155,35 @@ export default function TransactionsView({ type }: Props) {
         onDelete={deleteTransactionMutation}
         isDeleting={deleteTransactionIsPending}
       />
+
+      {/* Modals */}
+      {modalType === "client_payment" && (
+        <AddClientPaymentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      {modalType === "employee_payment" && (
+        <AddEmployeePaymentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          defaultTab={
+            category as
+              | "employee_salary"
+              | "employee_bonus"
+              | "employee_payment"
+          }
+        />
+      )}
+
+      {modalType === "general_expense" && (
+        <AddGeneralExpenseModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          defaultCategory={category as GeneralExpenseFormData["category"]}
+        />
+      )}
     </div>
   );
 }

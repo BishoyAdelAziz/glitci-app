@@ -60,6 +60,7 @@ export default function EditEmployeeModal({
       department: employee?.department?.id,
       position: employee?.position?.id,
       skills: employee?.skills?.map((skill) => skill?.id),
+      employmentType: employee?.employmentType,
     });
   }, [employee?.id]); // ← re-initialize when a different employee is opened
   const departmentId = watch("department");
@@ -89,7 +90,11 @@ export default function EditEmployeeModal({
     id: skill.id,
     name: skill.name,
   }));
-
+  const EmploymentTypesOptions = [
+    { id: "full_time", name: "Full Time" },
+    { id: "part_time", name: "Part Time" },
+    { id: "freelancer", name: "Freelancer" },
+  ];
   const onSubmit = async (data: AddEmployeeFormFIelds) => {
     updateEmployeeMutation(
       { id: employee.id, data },
@@ -143,6 +148,18 @@ export default function EditEmployeeModal({
           register={register}
           saveAsId
           placeholder="Select Position"
+          setValue={setValue}
+          required
+        />
+        <SelectInput
+          control={control}
+          errors={errors}
+          label="Employment Type"
+          name="employmentType"
+          options={EmploymentTypesOptions}
+          register={register}
+          saveAsId
+          placeholder="Select EmployeeTime"
           setValue={setValue}
           required
         />

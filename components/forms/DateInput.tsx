@@ -24,7 +24,7 @@ export default function DateInput({
   placeholder,
 }: Props) {
   return (
-    <div className="w-full flex flex-col items-start justify-center">
+    <div className="w-full gap-1 flex flex-col items-start justify-between">
       <Label label={label} name={name} required={required} />
 
       <Controller
@@ -42,7 +42,7 @@ export default function DateInput({
             showYearDropdown
             dropdownMode="select"
             className="
-              w-full rounded-lg border px-3 py-2 text-sm
+              w-full rounded-lg border p-3  text-sm
               bg-white text-black border-gray-300
               dark:bg-gray-900 dark:text-white dark:border-gray-600
               focus:outline-none focus:ring-1 focus:ring-primary

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function TransactionsIndexPage() {
-  redirect("/transactions/income");
+  redirect("/transactions/income/client_payment");
 }

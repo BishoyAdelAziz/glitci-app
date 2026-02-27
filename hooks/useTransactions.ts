@@ -1,7 +1,15 @@
+// 📁 src/hooks/useTransactions.ts
+// Replace your existing useTransactions hook with this.
+// Adds createTransactionMutation + isPending/isError/error states for it.
+
+"use client";
+
 import {
   getTransactions,
+  createTransaction,
   updateTransaction,
   deleteTransaction,
+  createSalaryTansaction,
 } from "@/services/api/transactions";
 import { TransactionsQueryParams, Transaction } from "@/types/transactions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,6 +20,19 @@ export default function useTransactions(params?: TransactionsQueryParams) {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["transactions", params],
     queryFn: () => getTransactions(params),
+  });
+
+  const {
+    mutate: createTransactionMutation,
+    isPending: createTransactionIsPending,
+    isError: createTransactionIsError,
+    error: createTransactionError,
+  } = useMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      createTransaction(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
   });
 
   const {
@@ -38,7 +59,17 @@ export default function useTransactions(params?: TransactionsQueryParams) {
       queryClient.invalidateQueries({ queryKey: ["transactions", params] });
     },
   });
-
+  const {
+    mutate: SalaryMutaiton,
+    isPending: SalaryMutaitonIsPending,
+    isError: SalaryMutaitonIsError,
+    error: SalaryMutaitonError,
+  } = useMutation({
+    mutationFn: createSalaryTansaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions", params] });
+    },
+  });
   return {
     transactions: data?.data,
     pagination: data
@@ -53,13 +84,25 @@ export default function useTransactions(params?: TransactionsQueryParams) {
     isError,
     error,
     refetch,
+    // Create
+    createTransactionMutation,
+    createTransactionIsPending,
+    createTransactionIsError,
+    createTransactionError,
+    // Update
     updateTransactionMutation,
     updateTransactionIsPending,
     updateTransactionIsError,
     updateTransactionError,
+    // Delete
     deleteTransactionMutation,
     deleteTransactionIsPending,
     deleteTransactionIsError,
     deleteTransactionError,
+    // Salary
+    SalaryMutaiton,
+    SalaryMutaitonError,
+    SalaryMutaitonIsError,
+    SalaryMutaitonIsPending,
   };
 }

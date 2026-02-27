@@ -2,25 +2,48 @@ import axiosInstance from "@/lib/axios";
 import {
   TransactionsQueryParams,
   TransactionsResponse,
+  SingleTransactionResponse,
   Transaction,
 } from "@/types/transactions";
 
-export const getTransactions = async (
+export async function getTransactions(
   params?: TransactionsQueryParams,
-): Promise<TransactionsResponse> => {
-  const response = await axiosInstance.get("/transactions", { params });
-  return response.data;
-};
+): Promise<TransactionsResponse> {
+  const { data } = await axiosInstance.get("/transactions", { params });
+  return data;
+}
 
-export const updateTransaction = async (
+export async function getTransactionById(
   id: string,
-  data: Partial<Transaction>,
-): Promise<Transaction> => {
-  const response = await axiosInstance.patch(`/transactions/${id}`, data);
-  return response.data;
-};
+): Promise<SingleTransactionResponse> {
+  const { data } = await axiosInstance.get(`/transactions/${id}`);
+  return data;
+}
 
-export const deleteTransaction = async (id: string): Promise<void> => {
-  const response = await axiosInstance.delete(`/transactions/${id}`);
+export async function createTransaction(
+  payload: Record<string, unknown>,
+): Promise<SingleTransactionResponse> {
+  const { data } = await axiosInstance.post("/transactions/expense", payload);
+  return data;
+}
+export async function createSalaryTansaction(
+  payload: Record<string, unknown>,
+): Promise<SingleTransactionResponse> {
+  const response = await axiosInstance.post(
+    "/transactions/employee-payment",
+    payload,
+  );
   return response.data;
-};
+}
+
+export async function updateTransaction(
+  id: string,
+  payload: Partial<Transaction>,
+): Promise<SingleTransactionResponse> {
+  const { data } = await axiosInstance.patch(`/transactions/${id}`, payload);
+  return data;
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  await axiosInstance.delete(`/transactions/${id}`);
+}

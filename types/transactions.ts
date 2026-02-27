@@ -40,6 +40,7 @@ export type IncomeCategory = "client_payment" | "other_income";
 export type ExpenseCategory =
   | "employee_salary"
   | "employee_bonus"
+  | "employee_payment"
   | "equipment"
   | "software"
   | "marketing"

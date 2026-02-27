@@ -65,6 +65,11 @@ export default function AddEmployeeMddal({ isOpen, setIsOpen }: Props) {
     id: skill.id,
     name: skill.name,
   }));
+  const EmploymentTypesOptions = [
+    { id: "full_time", name: "Full Time" },
+    { id: "part_time", name: "Part Time" },
+    { id: "freelancer", name: "Freelancer" },
+  ];
   console.log(refinedSkills);
   const onSubmit: SubmitHandler<AddEmployeeFormFIelds> = async (data) => {
     AddEmployeeMutation(data, {
@@ -115,6 +120,18 @@ export default function AddEmployeeMddal({ isOpen, setIsOpen }: Props) {
           register={register}
           saveAsId
           placeholder="Select Department"
+          setValue={setValue}
+          required
+        />
+        <SelectInput
+          control={control}
+          errors={errors}
+          label="Employment Type"
+          name="employmentType"
+          options={EmploymentTypesOptions}
+          register={register}
+          saveAsId
+          placeholder="Select EmployeeTime"
           setValue={setValue}
           required
         />
