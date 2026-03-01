@@ -23,7 +23,7 @@ interface Props {
   };
   onPageChange: (page: number) => void;
   onDelete: (id: string) => void;
-  isDeleting: boolean;
+  onEdit: (transaction: Transaction) => void;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -49,6 +49,7 @@ export default function TransactionsTable({
   onPageChange,
   onDelete,
   category,
+  onEdit,
 }: Props) {
   if (isLoading) {
     return (
@@ -73,15 +74,6 @@ export default function TransactionsTable({
       </div>
     );
   }
-  const showProject =
-    category === "client_payment" ||
-    category === "employee_payment" ||
-    category === "utilities" ||
-    category === "marketing";
-  const showCategory =
-    category !== "employee_salary" &&
-    category !== "employee_bonus" &&
-    category !== "employee_payment";
 
   return (
     <div className="space-y-4">
@@ -92,12 +84,12 @@ export default function TransactionsTable({
             <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <tr className="text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 <th className="px-6 py-4">Description</th>
-                {showProject && <th className="px-6 py-4">Project</th>}
-                {showCategory && <th className="px-6 py-4">Category</th>}
+                <th className="px-6 py-4">Project</th>
+                <th className="px-6 py-4">Category</th>
                 <th className="px-6 py-4">Amount</th>
                 <th className="px-6 py-4">Method</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-center">Date</th>
+                <th className="px-6 py-4 text-center">Status</th>
                 <th className="px-6 py-4">Added By</th>
                 <th className="px-6 py-4 text-center">Actions</th>
               </tr>
@@ -108,29 +100,28 @@ export default function TransactionsTable({
                   key={t._id}
                   className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                 >
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 max-w-50 truncate">
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 max-w-50 ">
                     {t.description}
                   </td>
-                  {showProject && (
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                      {t?.project?.name}
-                    </td>
-                  )}
-                  {showCategory && (
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 capitalize">
-                      {t.category.replace(/_/g, " ")}
-                    </td>
-                  )}
+
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                    {t?.project?.name || "-"}{" "}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 capitalize">
+                    {t.category.replace(/_/g, " ")}
+                  </td>
+
                   <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {t.amount.toLocaleString()} {t.currency}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {METHOD_LABELS[t.paymentMethod] ?? t.paymentMethod}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400">
                     {formatDate(t.date)}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 text-center py-4">
                     <span
                       className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${STATUS_COLORS[t.status]}`}
                     >
@@ -143,6 +134,12 @@ export default function TransactionsTable({
                   <td className="px-6 py-4 text-center">
                     <ActionsMenu
                       actions={[
+                        {
+                          label: "Edit",
+                          icon: <EditIcon />,
+                          onClick: () => onEdit(t),
+                          variant: "default",
+                        },
                         {
                           label: "Delete",
                           icon: <TrashIcon />,
@@ -236,14 +233,12 @@ export default function TransactionsTable({
 
       {/* Pagination */}
       {pagination && (
-        <div className="translate-y-8 relative transform">
-          <Pagination
-            total={pagination.totalPages}
-            limit={pagination.limit}
-            currentPage={pagination.currentPage}
-            onChange={onPageChange}
-          />
-        </div>
+        <Pagination
+          total={pagination.results} // ← total items count, not total pages
+          limit={pagination.limit}
+          currentPage={pagination.currentPage}
+          onChange={onPageChange}
+        />
       )}
     </div>
   );

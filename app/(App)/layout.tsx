@@ -17,7 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Main page content */}
         <main className="flex-1  pt-20 ">
-          <section className="bg-white dark:bg-gray-900 p-20 rounded-4xl">
+          <section className="bg-white dark:bg-gray-900 p-5 md:p-10 lg:p-20 rounded-4xl">
             {children}
           </section>
         </main>

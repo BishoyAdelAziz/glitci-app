@@ -7,12 +7,15 @@ import TransactionsTable from "./TansactionsTable";
 import AddClientPaymentModal from "./AddClientPayment";
 import AddEmployeePaymentModal from "./Addemployeepaymentmodal";
 import AddGeneralExpenseModal from "./Addgeneralexpensemodal";
+import EditTransactionModal from "./EditTransactionModal";
+import DeleteTransactionModal from "./DeleteTransactionModal";
+
 import {
   ROUTES_BY_TYPE,
   CategoryRoute,
   findRoute,
 } from "@/config/Transactionroutes";
-import { TransactionType } from "@/types/transactions";
+import { TransactionType, Transaction } from "@/types/transactions";
 import type { GeneralExpenseFormData } from "@/services/validations/transactions";
 
 interface Props {
@@ -62,6 +65,10 @@ export default function TransactionsView({ type, category }: Props) {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
+  const [deletingTransaction, setDeletingTransaction] =
+    useState<Transaction | null>(null);
 
   const activeRoute: CategoryRoute | undefined = findRoute(type, category);
   const categoryRoutes = ROUTES_BY_TYPE[type];
@@ -91,19 +98,21 @@ export default function TransactionsView({ type, category }: Props) {
     setPage(1);
     router.push(`/transactions/${type}/${slug}`);
   };
+  const handleEdit = (transaction: Transaction) =>
+    setEditingTransaction(transaction);
 
   return (
     <div className="space-y-4 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row  items-start md:items-center justify-between">
         <h3 className="capitalize font-bold text-2xl">Transactions</h3>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-stretch gap-3">
           {/* Add button */}
           {modalType && (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-5 py-2 rounded-lg text-sm font-medium bg-linear-to-r from-[#DE4646] to-[#B72D2D] text-white hover:from-[#B72D2D] hover:to-[#DE4646] transition-all duration-300"
+              className="px-5 py-2 rounded-lg text-xs text-nowrap font-medium bg-linear-to-r from-[#DE4646] to-[#B72D2D] text-white hover:from-[#B72D2D] hover:to-[#DE4646] transition-all duration-300"
             >
               + Add {activeRoute?.label ?? "Transaction"}
             </button>
@@ -152,8 +161,11 @@ export default function TransactionsView({ type, category }: Props) {
         isError={isError}
         pagination={pagination}
         onPageChange={setPage}
-        onDelete={deleteTransactionMutation}
-        isDeleting={deleteTransactionIsPending}
+        onDelete={(id) => {
+          const t = transactions?.find((t) => t._id === id);
+          if (t) setDeletingTransaction(t);
+        }}
+        onEdit={handleEdit}
       />
 
       {/* Modals */}
@@ -184,6 +196,14 @@ export default function TransactionsView({ type, category }: Props) {
           defaultCategory={category as GeneralExpenseFormData["category"]}
         />
       )}
+      <EditTransactionModal
+        transaction={editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+      />
+      <DeleteTransactionModal
+        transaction={deletingTransaction}
+        onClose={() => setDeletingTransaction(null)}
+      />
     </div>
   );
 }

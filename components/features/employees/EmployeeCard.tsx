@@ -12,7 +12,7 @@ interface Props {
 }
 export default function EmployeeCard({ employee, onDelete, onEdit }: Props) {
   return (
-    <div className=" relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px] max-w-95 bg-white dark:bg-gray-800">
+    <div className=" relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px]  bg-white dark:bg-gray-800">
       <div className="absolute top-2 right-2">
         <ActionsMenu
           actions={[

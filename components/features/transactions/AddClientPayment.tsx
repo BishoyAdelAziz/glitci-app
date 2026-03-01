@@ -21,10 +21,10 @@ export default function AddClientPaymentModal({ isOpen, onClose }: Props) {
   const { projects } = useProjects();
   const { clients } = useClients({ limit: 1000 });
   const {
-    createTransactionMutation,
-    createTransactionIsPending,
-    createTransactionIsError,
-    createTransactionError,
+    createClientPaymentTransactionError,
+    createClientPaymentTransactionIsError,
+    createClientPaymentTransactionIsPending,
+    createClientPaymentTransactionMutation,
   } = useTransactions();
 
   const {
@@ -47,8 +47,8 @@ export default function AddClientPaymentModal({ isOpen, onClose }: Props) {
   const refinedClients = clients?.map((c) => ({ id: c.id, name: c.name }));
 
   const onSubmit = (data: ClientPaymentFormData) => {
-    createTransactionMutation(
-      { ...data, type: "income", category: "client_payment" },
+    createClientPaymentTransactionMutation(
+      { ...data },
       {
         onSuccess: () => {
           reset();
@@ -186,9 +186,9 @@ export default function AddClientPaymentModal({ isOpen, onClose }: Props) {
         </div>
 
         <SubmitButton
-          isPending={createTransactionIsPending}
-          isError={createTransactionIsError}
-          error={createTransactionError}
+          isPending={createClientPaymentTransactionIsPending}
+          isError={createClientPaymentTransactionIsError}
+          error={createClientPaymentTransactionError}
           text="Add Payment"
         />
       </form>

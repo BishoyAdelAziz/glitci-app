@@ -1,7 +1,3 @@
-// 📁 src/hooks/useTransactions.ts
-// Replace your existing useTransactions hook with this.
-// Adds createTransactionMutation + isPending/isError/error states for it.
-
 "use client";
 
 import {
@@ -10,6 +6,7 @@ import {
   updateTransaction,
   deleteTransaction,
   createSalaryTansaction,
+  createClientPaymentTransaction,
 } from "@/services/api/transactions";
 import { TransactionsQueryParams, Transaction } from "@/types/transactions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,7 +31,18 @@ export default function useTransactions(params?: TransactionsQueryParams) {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
-
+  const {
+    mutate: createClientPaymentTransactionMutation,
+    isPending: createClientPaymentTransactionIsPending,
+    isError: createClientPaymentTransactionIsError,
+    error: createClientPaymentTransactionError,
+  } = useMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      createClientPaymentTransaction(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
   const {
     mutate: updateTransactionMutation,
     isPending: updateTransactionIsPending,
@@ -104,5 +112,10 @@ export default function useTransactions(params?: TransactionsQueryParams) {
     SalaryMutaitonError,
     SalaryMutaitonIsError,
     SalaryMutaitonIsPending,
+    // Client Payment
+    createClientPaymentTransactionMutation,
+    createClientPaymentTransactionError,
+    createClientPaymentTransactionIsError,
+    createClientPaymentTransactionIsPending,
   };
 }

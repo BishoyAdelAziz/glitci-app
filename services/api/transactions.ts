@@ -26,6 +26,16 @@ export async function createTransaction(
   const { data } = await axiosInstance.post("/transactions/expense", payload);
   return data;
 }
+export async function createClientPaymentTransaction(
+  payload: Record<string, unknown>,
+): Promise<SingleTransactionResponse> {
+  const response = await axiosInstance.post(
+    "/transactions/client-payment",
+    payload,
+  );
+  return response.data;
+}
+
 export async function createSalaryTansaction(
   payload: Record<string, unknown>,
 ): Promise<SingleTransactionResponse> {
