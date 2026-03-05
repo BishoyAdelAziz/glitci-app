@@ -140,7 +140,7 @@ export default function SingleProjectPage() {
           </div>
 
           {/* Department & Services card */}
-          <div className="dark:bg-gray-600 bg-[#f2f0f0] w-full rounded-2xl p-4 gap-3 flex flex-col items-start justify-center">
+          <div className="dark:bg-gray-600 bg-[#f2f0f0] w-full rounded-2xl p-4 gap-3 flex flex-col items-start justify-between">
             <h4 className="font-poppins font-medium text-xl">
               Department & Services
             </h4>
