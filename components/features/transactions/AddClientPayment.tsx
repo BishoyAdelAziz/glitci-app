@@ -3,7 +3,7 @@ import {
   clientPaymentSchema,
   ClientPaymentFormData,
 } from "@/services/validations/transactions";
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
 import useClients from "@/hooks/useClients";
 import useTransactions from "@/hooks/useTransactions";
 import { useForm } from "react-hook-form";

@@ -52,7 +52,7 @@ export default function useTransactions(params?: TransactionsQueryParams) {
     mutationFn: ({ id, data }: { id: string; data: Partial<Transaction> }) =>
       updateTransaction(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", params] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 

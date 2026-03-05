@@ -12,12 +12,13 @@ import DeleteServiceModal from "./DeleteServiceModal";
 import { SelectInput } from "@/components/forms/SelectInput";
 import { useForm } from "react-hook-form";
 import useDepartments from "@/hooks/useDepartments";
-
+import { useSearchParam } from "@/hooks/useSearchParam";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 export default function ServicesTable({ isOpen, setIsOpen }: Props) {
+  const search = useSearchParam();
   const [selectAll, setSelectAll] = useState(false);
   const {
     control,
@@ -37,6 +38,7 @@ export default function ServicesTable({ isOpen, setIsOpen }: Props) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { isError, error, isLoading, pagination, services } = useServices({
     department: filterDepartment,
+    name: search,
   });
   const onClose = () => {
     setIsOpen(false);

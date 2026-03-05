@@ -114,6 +114,7 @@ export interface TransactionsQueryParams {
   employeeId?: string;
   dateFrom?: string;
   dateTo?: string;
+  name: string;
 }
 
 // ─── API Responses ────────────────────────────────────────────────────────────

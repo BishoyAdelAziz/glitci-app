@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
 import ProjectRow from "./ProjectRow";
 import {
   formatDate,
@@ -20,17 +20,20 @@ import StackedPagination from "@/components/ui/Pagination";
 import DeleteProjectModal from "./DeleteProjectModal";
 // Types matching API response
 import { Project } from "@/types/projects";
+import { useSearchParam } from "@/hooks/useSearchParam";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
+  const search = useSearchParam();
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
   // onClose lives here in the parent component
   const onClose = () => {
     setIsOpen(false);
@@ -38,7 +41,10 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
   const onDeleteClose = () => {
     setIsDeleteModalOpen(false);
   };
-  const { projects, isLoading, isError, pagination, setPage } = useProjects();
+  const { projects, isLoading, isError, pagination } = useProjects({
+    page,
+    name: search,
+  });
 
   const handleSelectAll = () => {
     if (selectAll) {
@@ -243,10 +249,10 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
         <div className="translate-y-8 relative transform">
           {pagination && (
             <StackedPagination
-              total={pagination?.total}
+              total={pagination?.totalPages}
               limit={pagination?.limit}
               currentPage={pagination?.currentPage}
-              onChange={setPage}
+              onChange={(page) => setPage(page)}
             />
           )}
         </div>
@@ -255,6 +261,11 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
         isOpen={isDeleteModalOpen}
         onClose={onDeleteClose}
         projectId={editProjectId}
+        projectName={
+          selectedProjects.length === 1
+            ? projects.find((p) => p.id === selectedProjects[0])?.name
+            : undefined
+        }
       />
       <EditProjectModal
         isOpen={isEditModalOpen}

@@ -118,7 +118,7 @@ export default function ControllersNav() {
           selected={startDate}
           onChange={(update) => {
             if (!update) {
-              setRange(null, null); // ✅ clear state
+              setRange(null, null);
               return;
             }
 

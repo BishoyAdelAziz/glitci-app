@@ -10,7 +10,7 @@ import SubmitButton from "@/components/forms/SubmitButton";
 import TextInput from "@/components/forms/TextInput";
 import Modal from "@/components/ui/Modal";
 import UseEmployees from "@/hooks/useEmployees";
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
 import useDepartments from "@/hooks/useDepartments";
 import useClients from "@/hooks/useClients";
 import useServices from "@/hooks/useServices";
@@ -23,9 +23,12 @@ interface Props {
 
 export default function AddProjectModal({ isOpen, onClose }: Props) {
   // ✅ Fetch data and mutations only
-  const { createProject, isCreating, CreateError, isCreateError } =
-    useProjects();
-
+  const {
+    CreateProjectError,
+    CreateProjectIsError,
+    CreateProjectIsPending,
+    CreateProjectMutation,
+  } = useProjects();
   // ✅ Form is defined HERE in the component
   const {
     register,
@@ -68,7 +71,7 @@ export default function AddProjectModal({ isOpen, onClose }: Props) {
 
   const onSubmit = async (data: ProjectFormData) => {
     try {
-      createProject(data);
+      CreateProjectMutation(data);
       reset();
       onClose();
     } catch (error) {
@@ -228,10 +231,10 @@ export default function AddProjectModal({ isOpen, onClose }: Props) {
 
         <div className="col-span-2 w-[40%] mx-auto">
           <SubmitButton
-            isError={isCreateError}
-            isPending={isCreating}
+            isError={CreateProjectIsError}
+            isPending={CreateProjectIsPending}
             text="Create Project"
-            error={CreateError}
+            error={CreateProjectError}
           />
         </div>
       </form>

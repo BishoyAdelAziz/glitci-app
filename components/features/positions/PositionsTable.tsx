@@ -12,11 +12,13 @@ import EditPositionModal from "./EditPositionModal";
 import { useForm } from "react-hook-form";
 import useDepartments from "@/hooks/useDepartments";
 import { SelectInput } from "@/components/forms/SelectInput";
+import { useSearchParam } from "@/hooks/useSearchParam";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 export default function PositionsTable({ isOpen, setIsOpen }: Props) {
+  const search = useSearchParam();
   const [selectedPosition, setSelectedPosition] = useState<Position | null>(
     null,
   );
@@ -39,6 +41,7 @@ export default function PositionsTable({ isOpen, setIsOpen }: Props) {
 
   const { isError, error, isLoading, pagination, positions } = usePositions({
     department: filterDepartment,
+    name: search,
   });
   const onClose = () => {
     setIsOpen(false);

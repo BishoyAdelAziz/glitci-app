@@ -6,14 +6,15 @@ import DeleteEmployeeModal from "./DeleteEmployeeModal";
 import EmployeeCard from "./EmployeeCard";
 import useEmployees from "@/hooks/useEmployees";
 import { Employee } from "@/types/employees";
-
+import { useSearchParam } from "@/hooks/useSearchParam";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function EmployeesContainer({ isOpen, setIsOpen }: Props) {
-  const { employees, isError, isLoading } = useEmployees();
+  const search = useSearchParam();
+  const { employees, isError, isLoading } = useEmployees({ name: search });
 
   // ─── Source of truth ──────────────────────────────────────────────────────
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(

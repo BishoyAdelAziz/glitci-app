@@ -3,12 +3,16 @@ import ClientCard from "./ClientCard";
 import useClients from "@/hooks/useClients";
 import { Dispatch, SetStateAction } from "react";
 import AddClient from "./AddClientModal";
+import { useSearchParam } from "@/hooks/useSearchParam";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 export default function ClientsContainer({ isOpen, setIsOpen }: Props) {
-  const { clients, error, isError, isLoading, pagination } = useClients();
+  const search = useSearchParam();
+  const { clients, error, isError, isLoading, pagination } = useClients({
+    name: search,
+  });
   if (isLoading) {
     return (
       <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">

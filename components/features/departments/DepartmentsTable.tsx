@@ -11,6 +11,7 @@ import DepartmentRow from "./DepartmentRow";
 import AddDepartmentModal from "./AddDepartmentModal";
 import EditDepartmentModal from "./EditDepartmentModal";
 import DeleteDepartmentModal from "./DeleteDepartmentModal";
+import { useSearchParam } from "@/hooks/useSearchParam";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -25,9 +26,11 @@ export default function DepartmentsTable({ isOpen, setIsOpen }: Props) {
   const [selectedServices, setSelectedServices] = useState<
     string[] | undefined
   >([]);
+  const search = useSearchParam();
 
-  const { departments, error, isError, isLoading, pagination } =
-    useDepartments();
+  const { departments, error, isError, isLoading, pagination } = useDepartments(
+    { name: search },
+  );
   const onClose = () => {
     setIsOpen(false);
   };

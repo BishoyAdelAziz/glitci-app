@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import useUser from "@/hooks/useUser";
 import { useTheme } from "@/providers/themeProvider";
 import ButtonLoader from "@/components/Loaders/ButtonLoader";
-import { useRouter } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
+
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
 type Route = {
   id: number;
@@ -16,18 +18,12 @@ type Route = {
   children?: Route[];
 };
 
+// ─── Config ────────────────────────────────────────────────────────────────────
+
 const Routes: Route[] = [
   { id: 1, name: "overview", path: "/overview" },
-  {
-    id: 2,
-    name: "projects",
-    path: "/projects",
-  },
-  {
-    id: 3,
-    name: "clients",
-    path: "/clients",
-  },
+  { id: 2, name: "projects", path: "/projects" },
+  { id: 3, name: "clients", path: "/clients" },
   { id: 4, name: "employees", path: "/employees" },
   {
     id: 5,
@@ -42,7 +38,72 @@ const Routes: Route[] = [
   { id: 6, name: "transactions", path: "/transactions" },
 ];
 
-// Chevron Arrow SVG
+const SEARCH_PLACEHOLDERS: Record<string, string> = {
+  "/overview": "Search overview...",
+  "/projects": "Search projects...",
+  "/clients": "Search clients...",
+  "/employees": "Search employees...",
+  "/services/departments": "Search departments...",
+  "/services/positions": "Search positions...",
+  "/services/skills": "Search skills...",
+  "/services": "Search services...",
+  "/transactions": "Search transactions...",
+};
+
+// ─── Hooks ─────────────────────────────────────────────────────────────────────
+
+function usePlaceholder() {
+  const pathname = usePathname();
+  const match = Object.keys(SEARCH_PLACEHOLDERS)
+    .sort((a, b) => b.length - a.length) // longest first → most specific wins
+    .find((key) => pathname.startsWith(key));
+  return match ? SEARCH_PLACEHOLDERS[match] : "Search...";
+}
+
+function useSearchInput() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const placeholder = usePlaceholder();
+
+  const [inputValue, setInputValue] = useState(
+    searchParams.get("search") ?? "",
+  );
+
+  // Keep input in sync when navigating between pages
+  useEffect(() => {
+    setInputValue(searchParams.get("search") ?? "");
+  }, [pathname, searchParams]);
+
+  const pushSearch = useDebouncedCallback((value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("search", value);
+    } else {
+      params.delete("search");
+    }
+    params.delete("page"); // reset pagination on new search
+    router.replace(`${pathname}?${params.toString()}`);
+  }, 400);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.target.value);
+      pushSearch(e.target.value);
+    },
+    [pushSearch],
+  );
+
+  const handleClear = useCallback(() => {
+    setInputValue("");
+    pushSearch("");
+  }, [pushSearch]);
+
+  return { inputValue, handleChange, handleClear, placeholder };
+}
+
+// ─── Chevron ───────────────────────────────────────────────────────────────────
+
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
@@ -61,16 +122,208 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-export default function AppNav() {
+// ─── Desktop Search ────────────────────────────────────────────────────────────
+
+function DesktopSearch() {
+  const { inputValue, handleChange, handleClear, placeholder } =
+    useSearchInput();
+  const [expanded, setExpanded] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const openSearch = () => {
+    setExpanded(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const tryCollapse = useCallback(() => {
+    if (!inputValue) setExpanded(false);
+  }, [inputValue]);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        tryCollapse();
+      }
+    }
+    if (expanded) document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [expanded, tryCollapse]);
+
+  return (
+    <div ref={wrapperRef} className="flex items-center gap-1">
+      {/* Expanding input */}
+      <div
+        className={`
+          flex items-center gap-2 overflow-hidden transition-all duration-300 ease-in-out
+          rounded-2xl bg-gray-100 dark:bg-gray-800
+          ${expanded ? "w-52 px-3 py-1.5" : "w-0 px-0 opacity-0"}
+        `}
+      >
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleChange}
+          onBlur={tryCollapse}
+          placeholder={placeholder}
+          className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 min-w-0"
+        />
+        {inputValue && (
+          <button
+            onMouseDown={(e) => e.preventDefault()} // prevent blur before clear fires
+            onClick={handleClear}
+            aria-label="Clear search"
+            className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Icon button */}
+      <button
+        onClick={expanded ? undefined : openSearch}
+        aria-label="Open search"
+        className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors
+          hover:bg-gray-100 dark:hover:bg-gray-800
+          ${expanded ? "text-[#DE4646]" : ""}`}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+// ─── Mobile Search ─────────────────────────────────────────────────────────────
+
+function MobileSearch() {
+  const { inputValue, handleChange, handleClear, placeholder } =
+    useSearchInput();
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const openSearch = () => {
+    setOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const closeSearch = () => {
+    setOpen(false);
+    // Don't clear the value — keep the search active after closing overlay
+  };
+
   return (
     <>
-      <DesktopNav />
-      <MobileNav />
+      <button
+        aria-label="Search"
+        onClick={openSearch}
+        className={`p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors
+          ${inputValue ? "text-[#DE4646]" : ""}`}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </button>
+
+      {/* Full-width takeover overlay — sits inside the fixed header */}
+      {open && (
+        <div className="absolute inset-0 flex items-center gap-2 bg-white dark:bg-gray-900 px-4 z-10">
+          <svg
+            className="w-4 h-4 text-gray-400 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={handleChange}
+            placeholder={placeholder}
+            className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
+          />
+
+          {inputValue && (
+            <button
+              onClick={handleClear}
+              aria-label="Clear search"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+
+          <button
+            onClick={closeSearch}
+            className="text-sm text-[#DE4646] font-medium shrink-0 ml-1"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
     </>
   );
 }
 
-// ─── Desktop Nav ───────────────────────────────────────────────────────────────
+// ─── Desktop Nav Item ──────────────────────────────────────────────────────────
 
 function DesktopNavItem({ route }: { route: Route }) {
   const pathname = usePathname();
@@ -83,21 +336,14 @@ function DesktopNavItem({ route }: { route: Route }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Close on outside click
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
-
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
   if (!hasChildren) {
@@ -133,12 +379,12 @@ function DesktopNavItem({ route }: { route: Route }) {
         <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden min-w-40 py-1">
           <Link
             href={route.path}
+            onClick={() => setOpen(false)}
             className={`block capitalize px-4 py-2 text-sm transition-colors border-b dark:border-gray-700 ${
               isActive
                 ? "bg-gray-100 dark:bg-gray-800 font-medium"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
             }`}
-            onClick={() => setOpen(false)}
           >
             all {route.name}
           </Link>
@@ -165,12 +411,16 @@ function DesktopNavItem({ route }: { route: Route }) {
     </div>
   );
 }
+
+// ─── Desktop Nav ───────────────────────────────────────────────────────────────
+
 function DesktopNav() {
-  const pathname = usePathname();
   const { user, isPending } = useUser();
   const router = useRouter();
+
   return (
-    <header className="hidden md:flex  mx-auto items-center justify-between pt-[5vh]">
+    <header className="hidden md:flex mx-auto items-center justify-between pt-[5vh]">
+      {/* Logo */}
       <div
         className="h-20 flex items-center gap-x-2 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
         onClick={() => router.push("/projects")}
@@ -186,31 +436,19 @@ function DesktopNav() {
         </p>
       </div>
 
+      {/* Routes */}
       <nav className="h-20 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl relative">
         {Routes.map((route) => (
           <DesktopNavItem key={route.id} route={route} />
         ))}
       </nav>
 
-      <div className="h-20 flex min-w-[10%] items-center justify-evenly px-6 bg-white dark:bg-gray-900 rounded-4xl gap-x-6">
-        {/* Search Icon */}
-        <button>
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-        {/* Bell Icon */}
-        <button>
+      {/* Actions — search replaces the old static button */}
+      <div className="h-20 flex min-w-[10%] items-center justify-evenly px-6 bg-white dark:bg-gray-900 rounded-4xl gap-x-4">
+        <DesktopSearch />
+
+        {/* Bell */}
+        <button className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
           <svg
             className="w-5 h-5"
             fill="none"
@@ -227,16 +465,17 @@ function DesktopNav() {
         </button>
       </div>
 
+      {/* User */}
       {isPending ? (
         <ButtonLoader />
       ) : (
         <div className="h-20 flex items-center gap-x-3 bg-white dark:bg-gray-900 px-4 rounded-4xl">
           {user && (
             <Image
-              alt={user?.name}
+              alt={user.name}
               width={60}
               height={60}
-              src={user?.image || "/icons/App-Icon.svg"}
+              src={user.image || "/icons/App-Icon.svg"}
               className="rounded-full"
             />
           )}
@@ -250,7 +489,7 @@ function DesktopNav() {
   );
 }
 
-// ─── Mobile Nav ────────────────────────────────────────────────────────────────
+// ─── Mobile Nav Item ───────────────────────────────────────────────────────────
 
 function MobileNavItem({
   route,
@@ -261,10 +500,8 @@ function MobileNavItem({
 }) {
   const pathname = usePathname();
   const hasChildren = !!route.children?.length;
-
   const isActive =
     pathname === route.path || pathname.startsWith(route.path + "/");
-
   const isChildActive =
     route.children?.some((c) => pathname === c.path) ?? false;
   const [open, setOpen] = useState(isChildActive);
@@ -287,7 +524,6 @@ function MobileNavItem({
 
   return (
     <div>
-      {/* Parent row */}
       <div
         className={`flex items-center justify-between capitalize px-4 py-2 rounded-2xl transition-colors cursor-pointer ${
           isActive || isChildActive
@@ -307,7 +543,6 @@ function MobileNavItem({
         </button>
       </div>
 
-      {/* Children */}
       {open && (
         <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-3">
           {route.children!.map((child) => {
@@ -333,6 +568,8 @@ function MobileNavItem({
   );
 }
 
+// ─── Mobile Nav ────────────────────────────────────────────────────────────────
+
 function MobileNav() {
   const { user } = useUser();
   const { toggleTheme } = useTheme();
@@ -341,7 +578,8 @@ function MobileNav() {
 
   return (
     <>
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow">
+      {/* Fixed top bar — `relative` is required for the search overlay to position correctly */}
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow ">
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => router.push("/projects")}
@@ -357,27 +595,33 @@ function MobileNav() {
           </p>
         </div>
 
-        <button
-          aria-label="Open menu"
-          onClick={() => setOpen(true)}
-          className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="flex items-center gap-1">
+          {/* Search overlays the header when open */}
+          <MobileSearch />
+
+          <button
+            aria-label="Open menu"
+            onClick={() => setOpen(true)}
+            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
       </header>
 
+      {/* Drawer */}
       {open && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
@@ -421,7 +665,7 @@ function MobileNav() {
   );
 }
 
-// ─── Controllers ───────────────────────────────────────────────────────────────
+// ─── Controllers (unchanged) ───────────────────────────────────────────────────
 
 function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
   return (
@@ -583,5 +827,16 @@ function ControllerBottom() {
         </svg>
       </button>
     </div>
+  );
+}
+
+// ─── Export ────────────────────────────────────────────────────────────────────
+
+export default function AppNav() {
+  return (
+    <>
+      <DesktopNav />
+      <MobileNav />
+    </>
   );
 }

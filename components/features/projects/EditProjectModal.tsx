@@ -1,31 +1,27 @@
+// components/projects/EditProjectModal.tsx
 "use client";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 
 import TextInput from "@/components/forms/TextInput";
 import { SelectInput } from "@/components/forms/SelectInput";
-import { MultiSelect } from "@/components/forms/MultiSelect";
 import { EmployeeArrayInput } from "@/components/forms/EmployeeInput";
-import DateInput from "@/components/forms/DateInput";
 import SubmitButton from "@/components/forms/SubmitButton";
 import Modal from "@/components/ui/Modal";
 
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
+import { useProject } from "@/hooks/useProject";
 import useClients from "@/hooks/useClients";
 import useDepartments from "@/hooks/useDepartments";
 import useServices from "@/hooks/useServices";
-import UseEmployees from "@/hooks/useEmployees";
+import useEmployees from "@/hooks/useEmployees";
 
 import {
-  projectSchema,
-  ProjectFormData,
   ProjectEditFormData,
   ProjectEditSchema,
 } from "@/services/validations/project";
-import { toDateInput } from "@/utils/functions";
 
 interface Props {
   isOpen: boolean;
@@ -38,13 +34,11 @@ export default function EditProjectModal({
   onClose,
   projectId,
 }: Props) {
-  // ----- FORM -----
   const {
     register,
     handleSubmit,
     setValue,
     reset,
-    watch,
     control,
     formState: { errors },
   } = useForm<ProjectEditFormData>({
@@ -58,99 +52,66 @@ export default function EditProjectModal({
     },
   });
 
-  // ----- FETCH DATA -----
+  // ─── Data fetching ─────────────────────────────────────────────────────────
   const {
-    singleProject,
-    singleProjectIsPending,
-    singleProjectIsError,
-    updateProjectError,
-    updateProjectIsPending,
-    updateProjectMutation,
+    project,
+    isLoading: singleProjectIsPending,
+    isError: singleProjectIsError,
+  } = useProject(projectId);
+
+  const {
+    UpdateProjectMutation,
+    UpdateProjectIsPending,
     UpdateProjectIsError,
-  } = useProjects({ id: projectId });
+    UpdateProjectError,
+  } = useProjects();
+
   const { clients } = useClients({ limit: 1000 });
   const { departments } = useDepartments({ limit: 1000 });
   const { services } = useServices();
-  const { employees } = UseEmployees({ limit: 1000 });
+  const { employees } = useEmployees({ limit: 1000 });
 
-  // ----- REFINED OPTIONS -----
-  const refinedClients = useMemo(
-    () => clients?.map((c) => ({ id: c.id, name: c.name })) || [],
-    [clients],
-  );
-  const refinedDepartments = useMemo(
-    () => departments?.map((d) => ({ id: d.id, name: d.name })) || [],
-    [departments],
-  );
-  const refinedServices = useMemo(
-    () => services?.map((s) => ({ id: s.id, name: s.name })) || [],
-    [services],
-  );
   const refinedEmployees = useMemo(
-    () => employees?.map((e) => ({ id: e.id, name: e.user.name })) || [],
+    () => employees?.map((e) => ({ id: e.id, name: e.user.name })) ?? [],
     [employees],
   );
 
-  // ----- FIELD ARRAY FOR EMPLOYEES -----
+  const isReady = !!project && refinedEmployees.length > 0 && isOpen;
 
-  // ----- CHECK IF READY -----
-  const isReady =
-    singleProject &&
-    refinedClients.length &&
-    refinedDepartments.length &&
-    refinedServices.length &&
-    refinedEmployees.length;
-
-  // ----- POPULATE FORM -----
   useEffect(() => {
-    if (!isReady || !isOpen) return;
+    if (!isReady) return;
 
-    // 1️⃣ Flat fields
-
-    // 2️⃣ Employee array
     const employeeData =
-      singleProject.employees?.map((e) => ({
+      project.employees?.map((e) => ({
         employee: e.id,
-        compensation: e.compensation?.toString() || "",
-        currency: e.currency || "EGP",
-      })) || [];
+        compensation: e.compensation?.toString() ?? "",
+        currency: e.currency ?? "EGP",
+      })) ?? [];
 
-    setValue("employees", employeeData);
-    // replaceEmployees(employeeData || []);
     reset({
-      name: singleProject.name,
-      budget: String(singleProject.budget),
-      currency: singleProject.currency,
-      status: singleProject.status,
+      name: project.name,
+      budget: String(project.budget),
+      currency: project.currency,
+      status: project.status,
       employees: employeeData,
-
-      // startDate: toDateInput(singleProject.startDate),
-      // endDate: toDateInput(singleProject.endDate),
-      // client: singleProject.client?._id,
-      // department: singleProject.department?._id,
-      // services: singleProject.services?.map((s) => s._id) || [],
     });
-  }, [isReady, singleProject, isOpen, reset, setValue]);
+  }, [isReady, project, reset]);
 
   useEffect(() => {
     if (!isOpen) reset();
   }, [isOpen, reset]);
 
-  const onSubmit: SubmitHandler<ProjectEditFormData> = async (data) => {
+  const onSubmit: SubmitHandler<ProjectEditFormData> = (data) => {
     if (!projectId) return;
-    try {
-      updateProjectMutation(
-        { id: projectId, data },
-        {
-          onSuccess: () => {
-            onClose();
-            reset();
-          },
+    UpdateProjectMutation(
+      { id: projectId, data },
+      {
+        onSuccess: () => {
+          onClose();
+          reset();
         },
-      );
-    } catch (err) {
-      console.error("Update failed:", err);
-    }
+      },
+    );
   };
 
   if (!projectId) return null;
@@ -159,7 +120,7 @@ export default function EditProjectModal({
     <Modal isOpen={isOpen} onClose={onClose} size="full">
       {singleProjectIsPending ? (
         <div className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
         </div>
       ) : singleProjectIsError ? (
         <div className="p-8 text-center text-red-600 dark:text-red-400">
@@ -170,7 +131,6 @@ export default function EditProjectModal({
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 p-8 bg-white dark:bg-gray-900 grid grid-cols-2 gap-x-6"
         >
-          {/* Text Inputs */}
           <TextInput
             errors={errors}
             label="Project Name"
@@ -187,31 +147,6 @@ export default function EditProjectModal({
             numbersOnly
           />
 
-          {/* Select Inputs */}
-          {/* <SelectInput
-            errors={errors}
-            label="Client"
-            name="client"
-            register={register}
-            setValue={setValue}
-            options={refinedClients}
-            placeholder="Select Client"
-            required
-            saveAsId
-            control={control}
-          /> */}
-          {/* <SelectInput
-            errors={errors}
-            label="Department"
-            name="department"
-            register={register}
-            setValue={setValue}
-            options={refinedDepartments}
-            placeholder="Select Department"
-            required
-            saveAsId
-            control={control}
-          /> */}
           <SelectInput
             errors={errors}
             label="Status"
@@ -230,18 +165,6 @@ export default function EditProjectModal({
             control={control}
           />
 
-          {/* MultiSelect */}
-          {/* <MultiSelect
-            control={control}
-            errors={errors}
-            label="Services"
-            name="services"
-            saveAs="id"
-            options={refinedServices}
-            required
-          /> */}
-
-          {/* Employee Array */}
           <div className="col-span-2">
             <EmployeeArrayInput
               label="Employees"
@@ -255,29 +178,12 @@ export default function EditProjectModal({
             />
           </div>
 
-          {/* Date Inputs */}
-          {/* <DateInput
-            control={control}
-            errors={errors}
-            label="Start Date"
-            name="startDate"
-            required
-          /> */}
-          {/* <DateInput
-            control={control}
-            errors={errors}
-            label="End Date"
-            name="endDate"
-            required
-          /> */}
-
-          {/* Submit */}
           <div className="col-span-2 w-[40%] mx-auto">
             <SubmitButton
               isError={UpdateProjectIsError}
-              isPending={updateProjectIsPending}
+              isPending={UpdateProjectIsPending}
               text="Update Project"
-              error={updateProjectError}
+              error={UpdateProjectError}
             />
           </div>
         </form>

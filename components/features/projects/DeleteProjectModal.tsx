@@ -1,61 +1,32 @@
-import { useEffect } from "react";
+// components/projects/DeleteProjectModal.tsx
+"use client";
+
 import Modal from "@/components/ui/Modal";
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   projectId: string | null;
+  projectName?: string; // ← passed from parent, no extra fetch needed
 }
 
 export default function DeleteProjectModal({
   isOpen,
   onClose,
   projectId,
+  projectName,
 }: Props) {
-  const {
-    singleProject,
-    singleProjectIsPending,
-    DeleteProjetMutation,
-    DeleteProjectIsPending,
-    refetchSingleProject,
-  } = useProjects({ id: projectId });
-
-  // ✅ Refetch whenever projectId changes (even if modal is already open)
-  useEffect(() => {
-    if (projectId) {
-      refetchSingleProject();
-    }
-  }, [projectId, refetchSingleProject]);
+  const { DeleteProjectMutation, DeleteProjectIsPending } = useProjects();
 
   const handleDelete = () => {
     if (!projectId) return;
-
-    DeleteProjetMutation(projectId, {
-      onSuccess: () => {
-        onClose();
-      },
+    DeleteProjectMutation(projectId, {
+      onSuccess: () => onClose(),
     });
   };
 
-  if (!isOpen || !projectId) {
-    return null;
-  }
-
-  // Show loading while fetching or if data doesn't match
-  if (
-    singleProjectIsPending ||
-    !singleProject ||
-    singleProject._id !== projectId
-  ) {
-    return (
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
-        <div className="w-full flex items-center justify-center p-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </Modal>
-    );
-  }
+  if (!isOpen || !projectId) return null;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -85,7 +56,7 @@ export default function DeleteProjectModal({
           <p className="text-gray-600 dark:text-gray-400">
             Are you sure you want to delete{" "}
             <span className="font-semibold text-red-600">
-              {singleProject?.name}
+              {projectName ?? "this project"}
             </span>
             ?
           </p>

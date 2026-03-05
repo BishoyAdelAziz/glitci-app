@@ -6,7 +6,7 @@ import { z } from "zod";
 import { SelectInput } from "@/components/forms/SelectInput";
 import TextInput from "@/components/forms/TextInput";
 import SubmitButton from "@/components/forms/SubmitButton";
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
 import useEmployees from "@/hooks/useEmployees";
 import useTransactions from "@/hooks/useTransactions";
 

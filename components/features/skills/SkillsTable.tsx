@@ -16,11 +16,13 @@ import DeleteSkillModal from "./DeleteSkillModal";
 // import AddSkillModal from "./AddSkillModal";
 // import DeleteSkillModal from "./DeleteSkillModal";
 // import EditSkillModal from "./EditSkillModal";
+import { useSearchParam } from "@/hooks/useSearchParam";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 export default function SkillsTable({ isOpen, setIsOpen }: Props) {
+  const search = useSearchParam();
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -37,6 +39,7 @@ export default function SkillsTable({ isOpen, setIsOpen }: Props) {
   const filterPosition = watch("position");
   const { Skills, SkillsIsError, SkillsIsPending } = useSkills({
     position: filterPosition,
+    name: search,
   });
   const { positions } = usePositions();
   const onClose = () => {

@@ -4,16 +4,13 @@ import {
   generalExpenseSchema,
   GeneralExpenseFormData,
 } from "@/services/validations/transactions";
-import { useProjects } from "@/hooks/useProjects";
-import useEmployees from "@/hooks/useEmployees";
+import useProjects from "@/hooks/useProjects";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Modal from "@/components/ui/Modal";
 import { SelectInput } from "@/components/forms/SelectInput";
 import TextInput from "@/components/forms/TextInput";
-import DateInput from "@/components/forms/DateInput";
 import SubmitButton from "@/components/forms/SubmitButton";
-import type { ExpenseCategory } from "@/types/transactions";
 
 interface Props {
   isOpen: boolean;

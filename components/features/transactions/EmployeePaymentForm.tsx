@@ -7,7 +7,7 @@ import { SelectInput } from "@/components/forms/SelectInput";
 import TextInput from "@/components/forms/TextInput";
 import DateInput from "@/components/forms/DateInput";
 import SubmitButton from "@/components/forms/SubmitButton";
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
 import useEmployees from "@/hooks/useEmployees";
 import useTransactions from "@/hooks/useTransactions";
 

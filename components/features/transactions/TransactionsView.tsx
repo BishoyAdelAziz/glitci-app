@@ -9,7 +9,7 @@ import AddEmployeePaymentModal from "./Addemployeepaymentmodal";
 import AddGeneralExpenseModal from "./Addgeneralexpensemodal";
 import EditTransactionModal from "./EditTransactionModal";
 import DeleteTransactionModal from "./DeleteTransactionModal";
-
+import { useSearchParam } from "@/hooks/useSearchParam";
 import {
   ROUTES_BY_TYPE,
   CategoryRoute,
@@ -62,6 +62,7 @@ function getModalType(category: string): ModalType {
 }
 
 export default function TransactionsView({ type, category }: Props) {
+  const search = useSearchParam();
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,6 +87,7 @@ export default function TransactionsView({ type, category }: Props) {
     category: activeRoute?.category,
     page,
     limit: 10,
+    name: search,
   });
 
   const handleTypeSwitch = (newType: TransactionType) => {
