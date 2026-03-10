@@ -12,7 +12,7 @@ export default function ServicesPage() {
         isOpen={isCreateServiceOpen}
         setIsOpen={setIsCreateServiceOpen}
       />
-      <div className="mt-20">
+      <div className="mt-10">
         <ServicesTable
           isOpen={isCreateServiceOpen}
           setIsOpen={setIsCreateServiceOpen}

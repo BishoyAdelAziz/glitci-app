@@ -109,7 +109,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
           <div className="hidden lg:block overflow-x-auto ring-1 ring-gray-700/20 dark:ring-white/15">
             <table className="w-full grid">
               <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                <tr className="grid grid-cols-15 gap-4 px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <tr className="grid grid-cols-14 gap-4 px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                   <th className="flex items-center col-span-1">
                     <input
                       type="checkbox"
@@ -122,7 +122,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                   <th className="col-span-2">Start Date</th>
                   <th className="col-span-2">End Date</th>
                   <th className="col-span-2">Client</th>
-                  <th className="text-center col-span-2">Status</th>
+                  <th className="text-center col-span-1">Status</th>
                   <th className="col-span-1 text-center">Team</th>
                   <th className="text-center col-span-2">Priority</th>
                   <th className="text-center col-span-1">Actions</th>

@@ -1,3 +1,5 @@
+import PriorityBadge from "@/components/ui/flags/PriorityFlag";
+
 interface TimelineSectionProps {
   startDate: string;
   endDate: string;
@@ -190,30 +192,9 @@ export default function TimelineSection({
       <div className="w-full h-px bg-gray-300 dark:bg-gray-500" />
 
       {/* Priority row */}
-      <div className="flex items-center justify-start gap-2 w-full">
+      <div className="flex items-start max-w-14 justify-start gap-2 w-full">
         <h4 className="font-poppins  text-base">Priority</h4>
-        <div className="flex items-center gap-3">
-          {/* Bullets */}
-
-          {/* Badge */}
-          <span
-            className={`text-sm font-semibold px-3 py-1 rounded-full ring-1 ${priorityStyles?.badge}`}
-          >
-            {priorityStyles?.label}
-          </span>
-          <div className="flex items-center gap-1.5">
-            {[1, 2, 3].map((level) => (
-              <div
-                key={level}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                  level <= priorityStyles?.activeCount
-                    ? priorityStyles?.activeColor
-                    : "bg-gray-300 dark:bg-gray-500"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+        <PriorityBadge priority={priority} />
       </div>
     </div>
   );

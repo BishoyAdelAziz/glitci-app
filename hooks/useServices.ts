@@ -6,7 +6,7 @@ import {
 } from "@/services/api/services";
 import { ServicesQueryParams } from "@/types/services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
+import { useState } from "react";
 export default function useServices(params?: ServicesQueryParams) {
   const queryCLient = useQueryClient();
   const { data, isLoading, isError, error, refetch } = useQuery({

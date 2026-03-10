@@ -2,47 +2,43 @@ import { NextRequest, NextResponse } from "next/server";
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
   if (pathname.startsWith("/api/")) return NextResponse.next();
 
-  const authRoutes = [
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/reset-password",
-  ];
+  const authRoutes = ["/login", "/register", "/forgot-password"];
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  const expiryCookie = request.cookies.get("GlitciTokenExpiry")?.value;
   const accessToken = request.cookies.get("GlitciAccessToken")?.value;
+  const expiryCookie = request.cookies.get("GlitciTokenExpiry")?.value;
 
+  // Determine validity
   let isTokenValid = false;
   if (expiryCookie) {
     isTokenValid = new Date(expiryCookie).getTime() > Date.now();
+  } else if (accessToken) {
+    // If we have a token but no expiry cookie yet (race condition),
+    // allow the request but don't mark as "fully valid" for refresh logic
+    isTokenValid = true;
   }
 
-  // 1. Valid session → block auth pages
+  // 1. Redirect logged-in users away from Auth pages
   if (isTokenValid && isAuthRoute) {
     return NextResponse.redirect(new URL("/projects", request.url));
   }
 
-  // 2. Valid session → allow through
-  if (isTokenValid) {
-    return NextResponse.next();
-  }
+  // 2. Allow valid sessions
+  if (isTokenValid) return NextResponse.next();
 
-  // 3. No token at all → go to login
+  // 3. No token? Direct to login
   if (!accessToken) {
     if (isAuthRoute) return NextResponse.next();
     return redirectToLogin(request, pathname);
   }
 
-  // 4. Has accessToken but expiry says expired → attempt refresh
+  // 4. Token exists but expired? Try Refresh
   if (accessToken && !isTokenValid && !isAuthRoute) {
     return await attemptRefresh(request, pathname);
   }
 
-  // 5. Expired but on auth route → let them through
   return NextResponse.next();
 }
 
