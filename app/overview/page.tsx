@@ -149,7 +149,7 @@ export default function OverViewPage() {
 
       {/* INCOME BY DEPARTMENT */}
       <div className="col-span-1 lg:col-span-2 bg-white dark:bg-gray-800 rounded-4xl p-4">
-        <IncomeByDepartment />
+        <IncomeByDepartment data={overview?.charts?.incomeByDepartment} />
       </div>
 
       {/* SPEND DASHBOARD */}
