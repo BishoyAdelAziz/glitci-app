@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import { useDateFilter } from "@/stores/useDateFilter"; // Import your Zustand store
 import "react-datepicker/dist/react-datepicker.css";
 import Link from "next/link";
+import useAuth from "@/hooks/useAuth";
 interface CalendarTriggerProps {
   value?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -13,7 +14,7 @@ interface CalendarTriggerProps {
 export default function ControllersNav() {
   const { theme, toggleTheme } = useTheme();
   const { startDate, endDate, setRange } = useDateFilter();
-
+  const { LogoutMutation } = useAuth();
   const iconBtn =
     "flex items-center justify-center w-10 h-10 rounded-full transition hover:bg-gray-200 dark:hover:bg-gray-700";
 
@@ -193,7 +194,13 @@ export default function ControllersNav() {
           </svg>
         </button>
 
-        <button className={iconBtn} aria-label="logout">
+        <button
+          onClick={() => {
+            LogoutMutation();
+          }}
+          className={iconBtn}
+          aria-label="logout"
+        >
           <svg
             className="w-6 h-6 rotate-180"
             fill="none"
