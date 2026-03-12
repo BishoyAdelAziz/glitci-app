@@ -1,14 +1,14 @@
 // components/PriorityBadge.tsx
 
-type Priority = "low" | "medium" | "high";
+type Priority = "normal" | "medium" | "high";
 
 const PRIORITY_STYLES: Record<
   Priority,
   { badge: string; label: string; activeColor: string; activeCount: number }
 > = {
-  low: {
+  normal: {
     badge: "bg-green-100 text-green-700 ring-green-300",
-    label: "Low",
+    label: "Normal",
     activeColor: "bg-green-500",
     activeCount: 1,
   },
@@ -32,7 +32,7 @@ export default function PriorityBadge({ priority }: { priority: Priority }) {
   return (
     <div className="flex items-center justify-between w-full gap-3">
       <span
-        className={`text-sm font-semibold w-40 text-center px-3 py-1 rounded-full ring-1 ${styles.badge}`}
+        className={`text-xs font-semibold w-40 text-center px-3 py-1 rounded-full ring-1 ${styles.badge}`}
       >
         {styles.label}
       </span>
@@ -40,7 +40,7 @@ export default function PriorityBadge({ priority }: { priority: Priority }) {
         {[1, 2, 3].map((level) => (
           <div
             key={level}
-            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
               level <= styles.activeCount
                 ? styles.activeColor
                 : "bg-gray-300 dark:bg-gray-500"

@@ -176,7 +176,7 @@ export default function AddProjectModal({ isOpen, onClose }: Props) {
           label="Priority"
           name="priority"
           options={[
-            { name: "low", id: "low" },
+            { name: "normal", id: "normal" },
             { name: "medium", id: "medium" },
             { name: "high", id: "high" },
           ]}

@@ -21,6 +21,7 @@ import DeleteProjectModal from "./DeleteProjectModal";
 // Types matching API response
 import { Project } from "@/types/projects";
 import { useSearchParam } from "@/hooks/useSearchParam";
+import PriorityBadge from "@/components/ui/flags/PriorityFlag";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -218,19 +219,15 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                   {/* Status & Priority */}
                   <div className="flex gap-2 flex-wrap">
                     <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusColor(
+                      className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusColor(
                         project.status,
                       )}`}
                     >
                       {project.status.replace("_", " ")}
                     </span>
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${getPriorityColor(
-                        project.priority,
-                      )}`}
-                    >
-                      {project.priority}
-                    </span>
+                    <div className="flex items-center max-w-7 justify-start">
+                      <PriorityBadge priority={project?.priority} />
+                    </div>
                   </div>
 
                   {/* Team Members */}

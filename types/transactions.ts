@@ -98,6 +98,11 @@ export interface Transaction {
   createdAt: string;
   updatedAt: string;
   __v: number;
+  client: {
+    _id: string;
+    name: string;
+    companyName: string;
+  };
 }
 
 // ─── Query Params ─────────────────────────────────────────────────────────────

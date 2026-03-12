@@ -7,15 +7,15 @@ interface ProjectMetaProps {
   clientName: string;
 }
 
-type Priority = "low" | "medium" | "high";
+type Priority = "normal" | "medium" | "high";
 
 const PRIORITY_STYLES: Record<
   Priority,
   { badge: string; label: string; activeColor: string; activeCount: number }
 > = {
-  low: {
+  normal: {
     badge: "bg-green-100 text-green-700 ring-green-300",
-    label: "Low",
+    label: "Normal",
     activeColor: "bg-green-500",
     activeCount: 1,
   },

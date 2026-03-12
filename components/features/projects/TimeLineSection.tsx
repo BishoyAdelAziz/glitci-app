@@ -6,16 +6,16 @@ interface TimelineSectionProps {
   priority: Priority;
 }
 
-type Priority = "low" | "medium" | "high";
+type Priority = "normal" | "medium" | "high";
 type ProgressStatus = "on-track" | "at-risk" | "overdue" | "completed";
 
 const PRIORITY_STYLES: Record<
   Priority,
   { badge: string; label: string; activeColor: string; activeCount: number }
 > = {
-  low: {
+  normal: {
     badge: "bg-green-100 text-green-700 ring-green-300",
-    label: "Low",
+    label: "Normal",
     activeColor: "bg-green-500",
     activeCount: 1,
   },

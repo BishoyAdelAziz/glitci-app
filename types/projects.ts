@@ -1,7 +1,7 @@
 import { ParamValue } from "next/dist/server/request/params";
 
 export type ProjectStatus = "planning" | "active" | "on_hold" | "completed";
-export type ProjectPriority = "low" | "medium" | "high";
+export type ProjectPriority = "normal" | "medium" | "high";
 export type Currency = "EGP" | "SAR" | "AED" | "USD" | "EUR";
 
 export interface BudgetConverted {
