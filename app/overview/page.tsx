@@ -32,7 +32,7 @@ export default function OverViewPage() {
               Revenues
             </p>
             <p className="inline-flex items-start text-white font-poppins font-semibold text-4xl justify-start">
-              ${overview?.financials.totalRevenue}
+              ${overview?.financials.totalIncome}
               <svg
                 width="25"
                 height="32"
@@ -74,33 +74,33 @@ export default function OverViewPage() {
         <div className="col-span-1 bg-white dark:bg-gray-800 p-4 grid rounded-4xl grid-cols-1 md:grid-cols-2 items-stretch gap-x-2 gap-y-4 justify-center">
           <div className="flex flex-col items-start justify-center gap-3 bg-linear-to-bl rounded-2xl p-2 from-[#DE4646] to-[#B72D2D] col-span-1 ">
             <h4 className="text-sm font-poppins font-medium text-white">
-              Total earnings
+              Total salaries
             </h4>
             <p className="font-poppins font-medium text-2xl text-white">
-              ${overview?.financials.totalEarning}
+              ${overview?.financials.totalSalaries}
             </p>
             <p className="text-sm font-normal text-white">this month</p>
           </div>
           <div className="flex flex-col items-start justify-center gap-3 bg-linear-to-bl rounded-2xl p-2 bg-[#F6F6F6] dark:bg-gray-600 col-span-1 ">
             <h4 className="text-sm font-poppins font-medium ">
-              Total Spending
+              other expenses
             </h4>
             <p className="font-poppins font-medium text-2xl ">
-              ${overview?.financials.totalSpending}
+              ${overview?.financials.otherExpenses}
             </p>
             <p className="text-sm font-normal ">this month</p>
           </div>
           <div className="flex flex-col items-start justify-center gap-3 rounded-2xl p-2  bg-[#F6F6F6] dark:bg-gray-600 col-span-1 ">
-            <h4 className="text-sm font-poppins font-medium">Total Income</h4>
+            <h4 className="text-sm font-poppins font-medium">Profit Margin</h4>
             <p className="font-poppins font-medium text-2xl ">
-              ${overview?.financials.netProfit}
+              ${overview?.financials.profitMargin}
             </p>
             <p className="text-sm font-normal ">this month</p>
           </div>
           <div className="flex flex-col items-start justify-center gap-3 bg-linear-to-bl rounded-2xl p-2 bg-[#F6F6F6] dark:bg-gray-600 col-span-1 ">
-            <h4 className="text-sm font-poppins font-medium ">Total Revenue</h4>
+            <h4 className="text-sm font-poppins font-medium ">Net Profit</h4>
             <p className="font-poppins font-medium text-2xl ">
-              ${overview?.financials.totalRevenue}
+              ${overview?.financials.netProfit}
             </p>
             <p className="text-sm font-normal ">this month</p>
           </div>
