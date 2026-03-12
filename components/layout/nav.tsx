@@ -8,7 +8,10 @@ import useUser from "@/hooks/useUser";
 import { useTheme } from "@/providers/themeProvider";
 import ButtonLoader from "@/components/Loaders/ButtonLoader";
 import { useDebouncedCallback } from "use-debounce";
-
+import { useDateFilter } from "@/stores/useDateFilter";
+import { forwardRef } from "react";
+import DatePicker from "react-datepicker";
+import useAuth from "@/hooks/useAuth";
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 type Route = {
@@ -17,7 +20,10 @@ type Route = {
   path: string;
   children?: Route[];
 };
-
+interface CalendarTriggerProps {
+  value?: string;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
 // ─── Config ────────────────────────────────────────────────────────────────────
 
 const Routes: Route[] = [
@@ -417,7 +423,12 @@ function DesktopNavItem({ route }: { route: Route }) {
 function DesktopNav() {
   const { user, isPending } = useUser();
   const router = useRouter();
-
+  const {
+    LogoutMutation,
+    LogoutMutationError,
+    LogoutMutationIsError,
+    LogoutMutationIsPending,
+  } = useAuth();
   return (
     <header className="hidden md:flex mx-auto items-center justify-between pt-[5vh]">
       {/* Logo */}
@@ -469,19 +480,72 @@ function DesktopNav() {
       {isPending ? (
         <ButtonLoader />
       ) : (
-        <div className="h-20 flex items-center gap-x-3 bg-white dark:bg-gray-900 px-4 rounded-4xl">
-          {user && (
-            <Image
-              alt={user.name}
-              width={60}
-              height={60}
-              src={user.image || "/icons/App-Icon.svg"}
-              className="rounded-full"
-            />
-          )}
-          <div className="flex flex-col">
-            <p className="font-medium">{user?.name}</p>
-            <p className="font-extralight text-sm">{user?.email}</p>
+        <div className="relative group">
+          {/* Trigger */}
+          <div className="h-20 flex items-center gap-x-3 bg-white dark:bg-gray-900 px-4 rounded-4xl cursor-pointer">
+            {user && (
+              <Image
+                alt={user.name}
+                width={60}
+                height={60}
+                src={user.image || "/icons/App-Icon.svg"}
+                className="rounded-full"
+              />
+            )}
+            <div className="flex flex-col">
+              <p className="font-medium">{user?.name}</p>
+              <p className="font-extralight text-sm">{user?.email}</p>
+            </div>
+          </div>
+
+          {/* Dropdown */}
+          <div
+            className="absolute right-0 top-full mt-1 w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden
+                    opacity-0 invisible translate-y-1
+                    group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
+                    transition-all duration-200 ease-in-out z-50"
+          >
+            <Link
+              href="/profile"
+              className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <svg
+                className="w-4 h-4 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              Profile
+            </Link>
+
+            <div className="h-px bg-gray-100 dark:bg-gray-800 mx-3" />
+
+            <button
+              onClick={() => LogoutMutation()}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+            >
+              <svg
+                className="w-4 h-4 shrink-0 rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              Log Out
+            </button>
           </div>
         </div>
       )}
@@ -575,7 +639,8 @@ function MobileNav() {
   const { toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
+  const PathName = usePathname();
+  const isProfileActive = PathName.startsWith("/profile");
   return (
     <>
       {/* Fixed top bar — `relative` is required for the search overlay to position correctly */}
@@ -629,8 +694,13 @@ function MobileNav() {
             onClick={() => setOpen(false)}
           />
 
-          <aside className="absolute right-0 top-0 h-full w-72 bg-white dark:bg-gray-900 flex flex-col rounded-tl-4xl rounded-bl-4xl shadow-xl">
-            <div className="flex items-center gap-3 p-5 border-b dark:border-gray-700">
+          <aside className="absolute right-0 top-0 h-full w-72 bg-white dark:bg-gray-900 flex flex-col rounded-tl-4xl rounded-bl-4xl shadow-xl z-50">
+            <div
+              onClick={() => {
+                router.push("/profile");
+              }}
+              className={`flex items-center cursor-pointer ${isProfileActive ? `bg-[linear-gradient(90deg,#DE4646,#B72D2D)] m-3 rounded-2xl text-white` : ""} gap-3 p-5 border-b dark:border-gray-700`}
+            >
               <Image
                 src={user?.image ?? "/icons/App-Icon.svg"}
                 alt={user?.name ?? "User"}
@@ -640,7 +710,11 @@ function MobileNav() {
               />
               <div>
                 <p className="font-medium">{user?.name}</p>
-                <p className="text-sm text-gray-500">{user?.email}</p>
+                <p
+                  className={`text-sm ${isProfileActive ? "text-white" : "text-gray-500"}`}
+                >
+                  {user?.email}
+                </p>
               </div>
             </div>
 
@@ -667,9 +741,70 @@ function MobileNav() {
 
 // ─── Controllers (unchanged) ───────────────────────────────────────────────────
 
+const CalendarTrigger = forwardRef<HTMLButtonElement, CalendarTriggerProps>(
+  ({ onClick }, ref) => (
+    <button
+      ref={ref}
+      onClick={onClick}
+      aria-label="calendar"
+      className="flex items-center justify-center w-10 h-10 rounded-full transition hover:bg-gray-200 dark:hover:bg-gray-700"
+    >
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <rect
+          x="3"
+          y="4"
+          width="18"
+          height="18"
+          rx="2"
+          ry="2"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <line
+          x1="16"
+          y1="2"
+          x2="16"
+          y2="6"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <line
+          x1="8"
+          y1="2"
+          x2="8"
+          y2="6"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <line
+          x1="3"
+          y1="10"
+          x2="21"
+          y2="10"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  ),
+);
+CalendarTrigger.displayName = "CalendarTrigger";
+
 function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
+  const { startDate, endDate, setRange } = useDateFilter();
+
   return (
     <div className="flex justify-evenly items-center bg-white dark:bg-gray-900 rounded-4xl py-5 px-3 gap-y-5 shadow-lg">
+      {/* Theme toggle */}
       <button
         aria-label="toggle theme"
         onClick={toggleTheme}
@@ -681,7 +816,7 @@ function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
+          <circle cx="12" cy="12" r="4" strokeWidth="2" />
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -704,57 +839,31 @@ function ControllerTop({ toggleTheme }: { toggleTheme: () => void }) {
         </svg>
       </button>
 
-      <button
-        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-        aria-label="calendar"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <rect
-            x="3"
-            y="4"
-            width="18"
-            height="18"
-            rx="2"
-            ry="2"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <line
-            x1="16"
-            y1="2"
-            x2="16"
-            y2="6"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="8"
-            y1="2"
-            x2="8"
-            y2="6"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="3"
-            y1="10"
-            x2="21"
-            y2="10"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </button>
+      {/* Date picker */}
+      <div className="relative flex items-center justify-center w-10 h-10">
+        <DatePicker
+          selected={startDate}
+          onChange={(update) => {
+            if (!update) return setRange(null, null);
+            const [start, end] = update;
+            setRange(start, end);
+          }}
+          startDate={startDate}
+          endDate={endDate}
+          selectsRange
+          isClearable
+          portalId="root-portal"
+          customInput={<CalendarTrigger />}
+          popperPlacement="right"
+          popperClassName="!z-[9999]"
+          clearButtonClassName="!absolute !top-0 !right-0 !translate-x-1/2 !-translate-y-1/2 !w-5 !h-5 !flex !items-center !justify-center !rounded-full !text-[10px] !shadow-none !border-none"
+        />
+      </div>
 
+      {/* Settings */}
       <button
-        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
         aria-label="settings"
+        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
       >
         <svg
           className="w-5 h-5"
