@@ -9,7 +9,6 @@ import type { ProjectsQueryParams, UpdateProjectDto } from "@/types/projects";
 import { ProjectFormData } from "@/services/validations/project";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSingleProject } from "@/services/api/SingleProject";
-import id from "zod/v4/locales/id.js";
 
 export default function useProjects(params?: ProjectsQueryParams) {
   const queryClient = useQueryClient();

@@ -44,7 +44,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
   };
   const { projects, isLoading, isError, pagination } = useProjects({
     page,
-    name: search,
+    search: search,
   });
 
   const handleSelectAll = () => {

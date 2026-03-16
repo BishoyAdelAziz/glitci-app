@@ -105,6 +105,7 @@ export interface ProjectsQueryParams {
   isActive?: boolean;
   name?: string;
   id?: ParamValue;
+  search: string;
 }
 
 export interface ProjectsResponse {
