@@ -12,6 +12,7 @@ import { useDateFilter } from "@/stores/useDateFilter";
 import { forwardRef } from "react";
 import DatePicker from "react-datepicker";
 import useAuth from "@/hooks/useAuth";
+import { Suspense } from "react";
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 type Route = {
@@ -944,8 +945,12 @@ function ControllerBottom() {
 export default function AppNav() {
   return (
     <>
-      <DesktopNav />
-      <MobileNav />
+      <Suspense fallback={null}>
+        <DesktopNav />
+      </Suspense>
+      <Suspense fallback={null}>
+        <MobileNav />
+      </Suspense>
     </>
   );
 }
