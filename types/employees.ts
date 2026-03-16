@@ -45,6 +45,7 @@ export interface EmployeesQueryParams {
   position?: string; // position ID
   skill?: string; // skill ID
   isActive?: boolean;
+  employeeId?: string;
 }
 
 // Matches the Paginated JSON structure exactly

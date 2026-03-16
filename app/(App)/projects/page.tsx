@@ -11,7 +11,7 @@ export default function ProjectsPage() {
         isOpen={isCreateProjectOpen}
         setIsOpen={setIsCreateProjectOpen}
       />
-      <div className="mt-20">
+      <div className="mt-10 md:mt-20">
         <ProjectsTable
           isOpen={isCreateProjectOpen}
           setIsOpen={setIsCreateProjectOpen}

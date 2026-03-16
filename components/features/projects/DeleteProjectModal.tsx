@@ -1,21 +1,38 @@
+// components/projects/DeleteProjectModal.tsx
+"use client";
+
 import Modal from "@/components/ui/Modal";
-import { Project } from "@/types/projects";
+import useProjects from "@/hooks/useProjects";
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   projectId: string | null;
-  project: Project;
+  projectName?: string; // ← passed from parent, no extra fetch needed
 }
+
 export default function DeleteProjectModal({
   isOpen,
   onClose,
   projectId,
-  project,
+  projectName,
 }: Props) {
+  const { DeleteProjectMutation, DeleteProjectIsPending } = useProjects();
+
+  const handleDelete = () => {
+    if (!projectId) return;
+    DeleteProjectMutation(projectId, {
+      onSuccess: () => onClose(),
+    });
+  };
+
+  if (!isOpen || !projectId) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
-      <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900">
-        <div className="text-xs font-medium text-red-500 w-20 h-20">
+      <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900 space-y-6">
+        {/* Icon */}
+        <div className="text-red-500 w-20 h-20">
           <svg
             fill="none"
             stroke="currentColor"
@@ -30,17 +47,44 @@ export default function DeleteProjectModal({
             />
           </svg>
         </div>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Are you sure you want to delete this project?
-        </p>
-        <p>
-          once you delete Project{" "}
-          <span className="text-red-600 stroke-red-400">{project.name}</span>{" "}
-          you cannot retrive it{" "}
-        </p>
-        <div className="w-full flex items-center justify-evenly">
-          <button onClick={onClose}>Cancle</button>
-          <button>Delete</button>
+
+        {/* Message */}
+        <div className="text-center space-y-2">
+          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Delete Project
+          </p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-red-600">
+              {projectName ?? "this project"}
+            </span>
+            ?
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            This action cannot be undone.
+          </p>
+        </div>
+
+        {/* Buttons */}
+        <div className="w-full flex items-center justify-center gap-4">
+          <button
+            onClick={onClose}
+            disabled={DeleteProjectIsPending}
+            className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={DeleteProjectIsPending}
+            className="px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[100px] justify-center"
+          >
+            {DeleteProjectIsPending ? (
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            ) : (
+              "Delete"
+            )}
+          </button>
         </div>
       </div>
     </Modal>

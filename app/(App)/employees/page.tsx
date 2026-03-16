@@ -13,7 +13,10 @@ export default function EmployeesPage() {
         setIsOpen={setIsCreateProjectOpen}
       />
       <div className="mt-20">
-        <EmployeesCOntainer />
+        <EmployeesCOntainer
+          isOpen={isCreateProjectOpen}
+          setIsOpen={setIsCreateProjectOpen}
+        />
       </div>
     </div>
   );

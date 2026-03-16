@@ -17,7 +17,7 @@ const OverViewLayout = function ({ children }: { children: React.ReactNode }) {
 
         {/* Main page content */}
         <main className="flex-1  pt-10 ">
-          <section className=" p-10 rounded-4xl">{children}</section>
+          <section className=" rounded-4xl">{children}</section>
         </main>
       </div>
     </main>

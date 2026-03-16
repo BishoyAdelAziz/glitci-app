@@ -39,6 +39,7 @@ export default function RootLayout({
         className={`${Poppins_Font.variable} antialiased  mx-auto`}
       >
         <ClientProviders>{children}</ClientProviders>
+        <div id="root-portal" className="relative z-9999" />
       </body>
     </html>
   );

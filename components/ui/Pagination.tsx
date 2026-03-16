@@ -59,10 +59,10 @@ const StackedPagination: React.FC<Props> = ({
         <button
           key={page}
           onClick={() => goToPage(page)}
-          className={`px-3 py-1 border rounded text-sm font-medium transition-all ${
+          className={`px-3 py-1  ring-[0.01rem] rounded text-sm font-medium transition-all ${
             page === currentPage
               ? "bg-linear-to-r from-[#DE4646] to-[#B72D2D] font-noor-bold text-white shadow-md"
-              : "hover:bg-gray-100 hover:shadow-sm text-gray-700"
+              : "hover:bg-gray-100 hover:shadow-sm font-noor-bold text-gray-700"
           }`}
         >
           {page}
