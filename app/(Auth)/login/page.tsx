@@ -25,9 +25,13 @@ export default function LoginPage() {
 
   const onSubmit = (data: LoginFormData) => {
     mutate(data, {
-      onSuccess: () => {
-        router.push("/overview");
-        router.refresh(); // refresh server components
+      onSuccess: (data) => {
+        if (data.mustChangePassword === true) {
+          router.push("/changePassword");
+        } else {
+          router.push("/overview");
+          router.refresh();
+        }
       },
     });
   };

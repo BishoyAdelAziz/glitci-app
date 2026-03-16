@@ -6,35 +6,45 @@ export default async function middleware(request: NextRequest) {
 
   const authRoutes = ["/login", "/register", "/forgot-password"];
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isInitialPasswordRoute = pathname.startsWith("/initial-password");
 
   const accessToken = request.cookies.get("GlitciAccessToken")?.value;
   const expiryCookie = request.cookies.get("GlitciTokenExpiry")?.value;
+  const mustChangePassword =
+    request.cookies.get("GlitciMustChangePassword")?.value === "true";
 
-  // Determine validity
   let isTokenValid = false;
   if (expiryCookie) {
     isTokenValid = new Date(expiryCookie).getTime() > Date.now();
   } else if (accessToken) {
-    // If we have a token but no expiry cookie yet (race condition),
-    // allow the request but don't mark as "fully valid" for refresh logic
     isTokenValid = true;
   }
 
-  // 1. Redirect logged-in users away from Auth pages
-  if (isTokenValid && isAuthRoute) {
+  // 1. Unauthenticated users cannot access initial-password
+  if (isInitialPasswordRoute && !isTokenValid) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // 2. Force mustChangePassword users to /initial-password
+  if (isTokenValid && mustChangePassword && !isInitialPasswordRoute) {
+    return NextResponse.redirect(new URL("/initial-password", request.url));
+  }
+
+  // 3. Redirect logged-in users (without mustChangePassword) away from auth pages
+  if (isTokenValid && !mustChangePassword && isAuthRoute) {
     return NextResponse.redirect(new URL("/projects", request.url));
   }
 
-  // 2. Allow valid sessions
+  // 4. Allow valid sessions
   if (isTokenValid) return NextResponse.next();
 
-  // 3. No token? Direct to login
+  // 5. No token? Direct to login
   if (!accessToken) {
     if (isAuthRoute) return NextResponse.next();
     return redirectToLogin(request, pathname);
   }
 
-  // 4. Token exists but expired? Try Refresh
+  // 6. Token exists but expired? Try Refresh
   if (accessToken && !isTokenValid && !isAuthRoute) {
     return await attemptRefresh(request, pathname);
   }

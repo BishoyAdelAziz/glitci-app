@@ -38,9 +38,16 @@ export async function POST() {
     path: "/",
     expires: new Date(0),
   });
-
+  const clearMustChange = serialize("GlitciMustChangePassword", "", {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    expires: new Date(0),
+  });
   response.headers.append("Set-Cookie", clearAccessToken);
   response.headers.append("Set-Cookie", clearExpiry);
+  response.headers.append("Set-Cookie", clearMustChange);
 
   return response;
 }

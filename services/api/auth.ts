@@ -14,3 +14,14 @@ export const LogOut = async () => {
   const res = await AuthInstance.post("/logout");
   return res.data;
 };
+export const ChangePassword = async (data) => {
+  const response = await axiosInstance.patch("/auth/change-password", data);
+  return response.data;
+};
+export const SetInitialPassword = async (data: { newPassword: string }) => {
+  const response = await axiosInstance.patch(
+    "/auth/set-initial-password",
+    data,
+  );
+  return response.data;
+};

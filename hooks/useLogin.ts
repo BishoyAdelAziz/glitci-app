@@ -9,7 +9,6 @@ export function useLogin() {
   const { mutate, isError, isPending, error } = useMutation({
     mutationFn: loginApi,
     onSuccess: () => {
-      // 🔥 Re-fetch authenticated user
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },
   });
