@@ -18,9 +18,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="relative flex">
         <ControllersNav />
         <main className="flex-1 pt-20">
-          <section className="bg-white dark:bg-gray-900 p-5 md:p-10 lg:p-20 rounded-4xl">
-            {children}
-          </section>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center p-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B72D2D]" />
+              </div>
+            }
+          >
+            <section className="bg-white dark:bg-gray-900 p-5 md:p-10 lg:p-20 rounded-4xl">
+              {children}
+            </section>
+          </Suspense>
         </main>
       </div>
     </section>
