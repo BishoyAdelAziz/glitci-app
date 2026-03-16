@@ -1,22 +1,37 @@
 "use client";
-import { useState } from "react";
-import PageHeader from "@/components/features/projects/PageHeader";
-import ProjectsTable from "@/components/features/projects/ProjectsTable";
-export default function ProjectsPage() {
-  const [isCreateProjectOpen, setIsCreateProjectOpen] =
+import { Suspense, useState } from "react";
+import DepartmentPageHeader from "@/components/features/departments/PageHeader";
+import DepartmentsTable from "@/components/features/departments/DepartmentsTable";
+
+function DepartmentsContent() {
+  const [isCreateDepartmentOpen, setIsCreateDepartmentOpen] =
     useState<boolean>(false);
   return (
     <div>
-      <PageHeader
-        isOpen={isCreateProjectOpen}
-        setIsOpen={setIsCreateProjectOpen}
+      <DepartmentPageHeader
+        isOpen={isCreateDepartmentOpen}
+        setIsOpen={setIsCreateDepartmentOpen}
       />
-      <div className="mt-10 md:mt-20">
-        <ProjectsTable
-          isOpen={isCreateProjectOpen}
-          setIsOpen={setIsCreateProjectOpen}
+      <div className="mt-20">
+        <DepartmentsTable
+          isOpen={isCreateDepartmentOpen}
+          setIsOpen={setIsCreateDepartmentOpen}
         />
       </div>
     </div>
+  );
+}
+
+export default function DepartmentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B72D2D]"></div>
+        </div>
+      }
+    >
+      <DepartmentsContent />
+    </Suspense>
   );
 }
