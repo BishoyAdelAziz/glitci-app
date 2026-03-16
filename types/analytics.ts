@@ -42,10 +42,11 @@ export interface AnalyticsOverview {
   };
   currency: string;
   financials: {
-    totalRevenue: number;
-    totalEarning: number;
-    totalSpending: number;
+    totalIncome: number;
+    totalSalaries: number;
+    otherExpenses: number;
     netProfit: number;
+    profitMargin: number;
   };
   charts: AnalyticsCharts;
   recentProjects: Project[];

@@ -18,6 +18,7 @@ export interface ServicesQueryParams {
   limit?: number;
   department?: string; // department id
   isActive?: boolean;
+  name?: string;
 }
 
 export interface ServicesResponse {

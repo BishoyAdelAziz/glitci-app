@@ -13,8 +13,8 @@ import Label from "./Label";
 import ValidationError from "../errors/validationError";
 
 interface Option {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
 }
 
 interface SelectProps<
@@ -153,7 +153,7 @@ export const SelectInput = <
 
         {/* Custom Styled Select */}
         <div
-          className={`mt-1 block w-full bg-white dark:bg-gray-900  border p-4 px-5 ring-black-400 dark:ring-white/30 cursor-pointer transition-all flex items-center justify-between min-h-[56px] ${
+          className={`mt-1  w-full bg-white dark:bg-gray-900 rounded-lg border p-3  ring-black-400 dark:ring-white/30 cursor-pointer transition-all flex items-center justify-between  ${
             disabled
               ? "bg-gray-100 cursor-not-allowed"
               : "bg-white dark:bg-gray-900 hover:border-primary focus-within:ring-1 focus-within:ring-primary focus-within:border-primary"

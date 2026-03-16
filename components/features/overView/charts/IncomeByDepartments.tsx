@@ -1,3 +1,4 @@
+import { IncomeDeptItem } from "@/types/analytics";
 import React from "react";
 import {
   BarChart,
@@ -10,14 +11,24 @@ import {
   Legend,
 } from "recharts";
 
-const data = [
-  { name: "Q1", Marketing: 32000, Software: 45000 },
-  { name: "Q2", Marketing: 25000, Software: 38000 },
-  { name: "Q3", Marketing: 41000, Software: 52000 },
-  { name: "Q4", Marketing: 80000, Software: 70000 },
-];
+type Props = {
+  data: IncomeDeptItem[] | undefined;
+};
 
-const IncomeByDepartment = () => {
+const COLORS = ["#010101", "#D83333", "#4A90D9", "#F5A623", "#7ED321"];
+
+const IncomeByDepartment = ({ data }: Props) => {
+  // Extract dynamic bar keys (everything except "quarter")
+  const barKeys = data?.length
+    ? Object.keys(data[0])?.filter((key) => key !== "quarter")
+    : [];
+
+  // Refine: rename "quarter" → "name" for recharts dataKey
+  const refined = data?.map(({ quarter, ...rest }) => ({
+    name: quarter,
+    ...rest,
+  }));
+
   return (
     <div
       style={{
@@ -32,9 +43,9 @@ const IncomeByDepartment = () => {
       <div style={{ flex: 1, minHeight: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
+            data={refined}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            barGap={8} // Space between the two bars in a group
+            barGap={8}
           >
             <CartesianGrid
               strokeDasharray="3 3"
@@ -52,7 +63,6 @@ const IncomeByDepartment = () => {
             <YAxis
               axisLine={false}
               tickLine={false}
-              ticks={[10000, 20000, 30000, 40000, 50000, 70000, 80000]}
               tickFormatter={(val) => val.toLocaleString()}
               tick={{ fill: "#666", fontSize: 12 }}
             />
@@ -73,25 +83,17 @@ const IncomeByDepartment = () => {
               wrapperStyle={{ paddingBottom: "20px" }}
             />
 
-            {/* Marketing Bar - Black */}
-            <Bar
-              dataKey="Marketing"
-              fill="#010101"
-              radius={[4, 4, 0, 0]} // Rounded tops for the "tube" look
-              barSize={40}
-              animationDuration={5000}
-              animationEasing={"linear"}
-            />
-
-            {/* Software Bar - Maroon */}
-            <Bar
-              dataKey="Software"
-              fill="#D83333"
-              radius={[4, 4, 0, 0]}
-              barSize={40}
-              animationDuration={5000}
-              animationEasing={"linear"}
-            />
+            {barKeys.map((key, index) => (
+              <Bar
+                key={key}
+                dataKey={key}
+                fill={COLORS[index % COLORS.length]}
+                radius={[4, 4, 0, 0]}
+                barSize={40}
+                animationDuration={5000}
+                animationEasing="linear"
+              />
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </div>

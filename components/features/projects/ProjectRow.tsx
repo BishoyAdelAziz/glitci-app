@@ -11,6 +11,7 @@ import ActionsMenu, {
 } from "@/components/ui/ActionsMenu";
 import EditProjectModal from "./EditProjectModal";
 import DeleteProjectModal from "./DeleteProjectModal";
+import PriorityBadge from "@/components/ui/flags/PriorityFlag";
 interface ProjectRowProps {
   project: Project;
   isSelected: boolean;
@@ -21,6 +22,7 @@ interface ProjectRowProps {
   setEditProjectId: (id: string | null) => void;
   isEditModalOpen: boolean;
   onDeleteClose: () => void;
+  handleDelete: () => void;
 }
 
 export default function ProjectRow({
@@ -31,8 +33,7 @@ export default function ProjectRow({
   setIsDeleteModalOpen,
   setIsEditModalOpen,
   setEditProjectId,
-  isEditModalOpen,
-  onDeleteClose,
+  handleDelete,
 }: ProjectRowProps) {
   const handleEdit = () => {
     setEditProjectId(project.id);
@@ -41,7 +42,7 @@ export default function ProjectRow({
 
   return (
     <>
-      <tr className="grid grid-cols-15 gap-4 scroll-hidden px-6 py-4 text-sm text-gray-700 dark:text-gray-300 transition-colors even:bg-gray-50 even:dark:bg-gray-800 odd:bg-white odd:dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-gray-700">
+      <tr className="grid grid-cols-14 gap-4 scroll-hidden px-6 py-4 text-sm text-gray-700 dark:text-gray-300 transition-colors even:bg-gray-50 even:dark:bg-gray-800 odd:bg-white odd:dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-gray-700">
         <td className="flex items-center col-span-1">
           <input
             type="checkbox"
@@ -62,9 +63,9 @@ export default function ProjectRow({
         <td className="truncate flex items-center col-span-2">
           {project?.client}
         </td>
-        <td className="inline-flex items-center justify-center col-span-2">
+        <td className="inline-flex min-w-16 items-center justify-center col-span-1">
           <span
-            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusColor(
+            className={`inline-flex px-2 py-1 w-full justify-center items-center  text-center text-xs font-semibold rounded-full capitalize ${getStatusColor(
               project?.status,
             )}`}
           >
@@ -76,14 +77,8 @@ export default function ProjectRow({
             {project?.employeeCount}
           </div>
         </td>
-        <td className="inline-flex items-center justify-center col-span-2">
-          <span
-            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${getPriorityColor(
-              project?.priority,
-            )}`}
-          >
-            {project?.priority}
-          </span>
+        <td className="inline-flex items-center justify-start col-span-2">
+          <PriorityBadge priority={project?.priority} />
         </td>
         <td className="flex items-center justify-center col-span-1">
           <ActionsMenu
@@ -101,28 +96,13 @@ export default function ProjectRow({
               {
                 label: "Delete",
                 icon: <TrashIcon />,
-                onClick: () => setIsDeleteModalOpen(true),
+                onClick: handleDelete,
                 variant: "danger",
               },
             ]}
           />
         </td>
       </tr>
-
-      {/* Edit Modal */}
-      <EditProjectModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        projectId={project.id}
-      />
-
-      {/* TODO: Add Delete Confirmation Modal */}
-      <DeleteProjectModal
-        isOpen={isDeleteModalOpen}
-        onClose={onDeleteClose}
-        projectId={project.id}
-        project={project}
-      />
     </>
   );
 }

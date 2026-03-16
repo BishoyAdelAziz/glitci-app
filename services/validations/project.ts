@@ -3,7 +3,7 @@ import { z } from "zod";
 // MongoDB ObjectId validation (24 hex characters)
 
 const CurrencyEnum = z.enum(["EGP", "SAR", "AED", "USD", "EUR"]);
-const PriorityEnum = z.enum(["low", "medium", "high"]);
+const PriorityEnum = z.enum(["normal", "medium", "high"]);
 const StatusEnum = z.enum(["planning", "active", "on_hold", "completed"]);
 
 const EmployeeSchema = z.object({

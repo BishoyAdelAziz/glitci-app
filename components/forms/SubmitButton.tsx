@@ -28,7 +28,7 @@ const SubmitButton = ({
         {isPending ? <ButtonLoader /> : text}
       </button>
 
-      {isError && error && <SubmitError isError={true} error={error} />}
+      <SubmitError isError={isError} error={error} />
     </div>
   );
 };

@@ -77,7 +77,7 @@ export const EmployeeArrayInput = ({
         <button
           type="button"
           onClick={addEmployee}
-          className="flex items-center gap-2 px-4 py-2 bg-primary  rounded hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-2  bg-primary  rounded-4xl hover:bg-primary/90 ] bg-linear-to-r from-[#DE4646] to-[#B72D2D] px-4 py-2 transition-all   ease-in-out duration-700 font-noor-bold text-white hover:bg-linear-to-l hover:from-[#B72D2D] hover:to-[#DE4646] "
         >
           <svg
             className="w-5 h-5"
@@ -92,7 +92,7 @@ export const EmployeeArrayInput = ({
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Add Employee
+          Employee
         </button>
       </div>
 

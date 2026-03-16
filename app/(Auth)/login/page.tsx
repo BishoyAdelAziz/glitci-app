@@ -13,7 +13,7 @@ import { useLogin } from "@/hooks/useLogin";
 
 export default function LoginPage() {
   const router = useRouter();
-  const loginMutation = useLogin();
+  const { error, isError, isPending, mutate } = useLogin();
 
   const {
     register,
@@ -24,10 +24,14 @@ export default function LoginPage() {
   });
 
   const onSubmit = (data: LoginFormData) => {
-    loginMutation.mutate(data, {
-      onSuccess: () => {
-        router.push("/overview");
-        router.refresh(); // refresh server components
+    mutate(data, {
+      onSuccess: (data) => {
+        if (data.mustChangePassword === true) {
+          router.push("/changePassword");
+        } else {
+          router.push("/overview");
+          router.refresh();
+        }
       },
     });
   };
@@ -64,9 +68,9 @@ export default function LoginPage() {
           register={register}
         />
         <SubmitButton
-          error={loginMutation.error}
-          isError={loginMutation.isError}
-          isPending={loginMutation.isPending}
+          error={error}
+          isError={isError}
+          isPending={isPending}
           text="LOGIN"
         />
       </form>
