@@ -2,7 +2,7 @@
 
 export type Currency = "EGP" | "USD" | "EUR" | "GBP";
 export type ProjectStatus = "planning" | "active" | "on_hold" | "completed";
-export type ProjectPriority = "low" | "medium" | "high";
+export type ProjectPriority = "normal" | "medium" | "high";
 export type EmploymentType = "full_time" | "part_time" | "freelancer";
 
 // ─── Nested Entities ──────────────────────────────────────────────────────────

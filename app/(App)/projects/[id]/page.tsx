@@ -5,6 +5,7 @@ import ProjectMeta from "@/components/features/projects/SingleProjectMeta";
 import TeamMembers from "@/components/features/projects/SingleProjectTeamMemebers";
 import TimelineSection from "@/components/features/projects/TimeLineSection";
 import useProjects from "@/hooks/useProjects";
+import { useSearchParam } from "@/hooks/useSearchParam";
 import { SingleProject } from "@/types/SingleProject";
 import { useParams } from "next/navigation";
 
@@ -26,11 +27,13 @@ function getInitials(name: string): string {
 
 export default function SingleProjectPage() {
   const { id } = useParams();
+  const search = useSearchParam();
+
   const {
     singleProjectData: project,
     SingleProjectIsLoading,
     SingleProjectIsError,
-  } = useProjects({ id });
+  } = useProjects({ id: id, search: search });
 
   if (SingleProjectIsLoading) {
     return (
@@ -71,7 +74,7 @@ export default function SingleProjectPage() {
           createdBy={project?.data?.createdBy?.name}
           endDate={project?.data?.endDate}
           startDate={project?.data?.startDate}
-          priority={project?.data?.priority}
+          priority={project?.data.priority}
           teamMembersCount={project?.data?.employees?.length}
         />
 
