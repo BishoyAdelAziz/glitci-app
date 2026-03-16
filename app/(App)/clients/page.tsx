@@ -13,7 +13,10 @@ export default function ClientsPage() {
         setIsOpen={setIsCreateProjectOpen}
       />
       <div className="mt-20">
-        <ClientsContainer />
+        <ClientsContainer
+          isOpen={isCreateProjectOpen}
+          setIsOpen={setIsCreateProjectOpen}
+        />
       </div>
     </div>
   );

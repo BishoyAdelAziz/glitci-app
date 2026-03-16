@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { useProjects } from "@/hooks/useProjects";
+import useProjects from "@/hooks/useProjects";
 import ProjectRow from "./ProjectRow";
 import {
   formatDate,
@@ -20,17 +20,21 @@ import StackedPagination from "@/components/ui/Pagination";
 import DeleteProjectModal from "./DeleteProjectModal";
 // Types matching API response
 import { Project } from "@/types/projects";
+import { useSearchParam } from "@/hooks/useSearchParam";
+import PriorityBadge from "@/components/ui/flags/PriorityFlag";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
+  const search = useSearchParam();
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
   // onClose lives here in the parent component
   const onClose = () => {
     setIsOpen(false);
@@ -38,7 +42,10 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
   const onDeleteClose = () => {
     setIsDeleteModalOpen(false);
   };
-  const { projects, isLoading, isError, pagination, setPage } = useProjects();
+  const { projects, isLoading, isError, pagination } = useProjects({
+    page,
+    search: search,
+  });
 
   const handleSelectAll = () => {
     if (selectAll) {
@@ -60,6 +67,10 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
   const handleEdit = (projectId) => {
     setEditProjectId(projectId);
     setIsEditModalOpen(true);
+  };
+  const handleDelete = (projectId) => {
+    setEditProjectId(projectId);
+    setIsDeleteModalOpen(true);
   };
   if (isLoading) {
     return (
@@ -99,7 +110,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
           <div className="hidden lg:block overflow-x-auto ring-1 ring-gray-700/20 dark:ring-white/15">
             <table className="w-full grid">
               <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                <tr className="grid grid-cols-15 gap-4 px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <tr className="grid grid-cols-14 gap-4 px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                   <th className="flex items-center col-span-1">
                     <input
                       type="checkbox"
@@ -112,7 +123,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                   <th className="col-span-2">Start Date</th>
                   <th className="col-span-2">End Date</th>
                   <th className="col-span-2">Client</th>
-                  <th className="text-center col-span-2">Status</th>
+                  <th className="text-center col-span-1">Status</th>
                   <th className="col-span-1 text-center">Team</th>
                   <th className="text-center col-span-2">Priority</th>
                   <th className="text-center col-span-1">Actions</th>
@@ -131,6 +142,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                     setEditProjectId={setEditProjectId}
                     isEditModalOpen={isEditModalOpen}
                     onDeleteClose={() => onDeleteClose}
+                    handleDelete={() => handleDelete(project.id)}
                   />
                 ))}
               </tbody>
@@ -178,7 +190,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                         {
                           label: "Delete",
                           icon: <TrashIcon />,
-                          onClick: () => setIsDeleteModalOpen(true),
+                          onClick: () => handleDelete(project.id),
                           variant: "danger",
                         },
                       ]}
@@ -207,19 +219,15 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                   {/* Status & Priority */}
                   <div className="flex gap-2 flex-wrap">
                     <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusColor(
+                      className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusColor(
                         project.status,
                       )}`}
                     >
                       {project.status.replace("_", " ")}
                     </span>
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${getPriorityColor(
-                        project.priority,
-                      )}`}
-                    >
-                      {project.priority}
-                    </span>
+                    <div className="flex items-center max-w-7 justify-start">
+                      <PriorityBadge priority={project?.priority} />
+                    </div>
                   </div>
 
                   {/* Team Members */}
@@ -229,17 +237,6 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
                     </span>
                   </div>
                 </div>
-                <DeleteProjectModal
-                  isOpen={isDeleteModalOpen}
-                  onClose={onDeleteClose}
-                  projectId={project.id}
-                  project={project}
-                />
-                <EditProjectModal
-                  isOpen={isEditModalOpen}
-                  onClose={() => setIsEditModalOpen(false)}
-                  projectId={editProjectId}
-                />
               </React.Fragment>
             ))}
           </div>
@@ -249,14 +246,29 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
         <div className="translate-y-8 relative transform">
           {pagination && (
             <StackedPagination
-              total={pagination?.total}
+              total={pagination?.totalPages}
               limit={pagination?.limit}
               currentPage={pagination?.currentPage}
-              onChange={setPage}
+              onChange={(page) => setPage(page)}
             />
           )}
         </div>
       </div>
+      <DeleteProjectModal
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteClose}
+        projectId={editProjectId}
+        projectName={
+          selectedProjects.length === 1
+            ? projects.find((p) => p.id === selectedProjects[0])?.name
+            : undefined
+        }
+      />
+      <EditProjectModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        projectId={editProjectId}
+      />
     </>
   );
 }

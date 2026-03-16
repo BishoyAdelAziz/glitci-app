@@ -8,7 +8,7 @@ export default function PageHeader({ isOpen, setIsOpen }: Props) {
 
   return (
     <div className="flex items-center justify-between ">
-      <h3 className="capitalize font-bold text-2xl "></h3>
+      <h3 className="capitalize font-bold text-2xl ">Clients</h3>
 
       <div className="flex items-center justify-evenly space-x-4">
         <button

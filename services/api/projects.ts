@@ -35,6 +35,6 @@ export const updateProject = async (
   return response.data.data;
 };
 
-export const deleteProject = async (id: string): Promise<void> => {
+export const deleteProject = async (id: string|null): Promise<void> => {
   await axiosInstance.delete(`/projects/${id}`);
 };

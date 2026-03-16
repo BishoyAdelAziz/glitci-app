@@ -18,6 +18,7 @@ export interface ClientsQueryParams {
   companyName?: string;
   industry?: string;
   isActive?: boolean;
+  clientId?: string;
 }
 
 export interface ClientsResponse {
@@ -26,4 +27,7 @@ export interface ClientsResponse {
   limit: number;
   results: number;
   data: Client[];
+}
+export interface SigleClientResponse {
+  data: Client;
 }

@@ -1,15 +1,49 @@
 import Image from "next/image";
 import { Client } from "@/types/clients";
 import { formatPhoneNumber } from "@/utils/functions";
+import ActionsMenu from "@/components/ui/ActionsMenu";
+import { EyeIcon } from "@/components/ui/ActionsMenu";
+import { EditIcon } from "@/components/ui/ActionsMenu";
+import { TrashIcon } from "@/components/ui/ActionsMenu";
+import { useState } from "react";
+import Link from "next/link";
+import EditClientModal from "./EditClientModal";
+import DeleteClientModal from "./DeleteClientModal";
 interface Props {
   client: Client;
 }
 export default function ClientCard({ client }: Props) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
   return (
-    <div className=" shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-16 rounded-[20px] max-w-95 bg-white dark:bg-gray-800">
-      <div className="flex flex-col items-stretch justify-center gap-6">
-        <div className="flex items-center justify-evenly gap-4">
-          <div className="relative flex w-60 h-auto">
+    <div className=" relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px]  bg-white dark:bg-gray-800">
+      <div className="absolute top-2 right-2">
+        <ActionsMenu
+          actions={[
+            {
+              label: "View",
+              icon: <EyeIcon />,
+              href: `/projects/${client.id}`,
+            },
+            {
+              label: "Edit",
+              icon: <EditIcon />,
+              onClick: () => setIsEditOpen(true),
+            },
+            {
+              label: "Delete",
+              icon: <TrashIcon />,
+              onClick: () => setIsDeleteOpen(true),
+              variant: "danger",
+            },
+          ]}
+        />
+      </div>
+
+      <div className="flex flex-col items-stretch pt-2 justify-center gap-6">
+        <div className="flex items-center justify-start gap-4">
+          <div className="relative flex  h-auto">
             <Image
               alt="User Profile"
               width={100}
@@ -35,7 +69,10 @@ export default function ClientCard({ client }: Props) {
         <div className="flex flex-col items-start justify-center gap-4">
           {client?.phones?.map((phone: string) => {
             return (
-              <div className="flex items-start justify-center gap-4">
+              <div
+                key={phone}
+                className="flex items-start justify-center gap-4"
+              >
                 <svg
                   width="22"
                   height="22"
@@ -69,9 +106,11 @@ export default function ClientCard({ client }: Props) {
                     strokeWidth="0.5"
                   />
                 </svg>
-                <p className="font-poppins text-[#979797]">
-                  {formatPhoneNumber(phone)}
-                </p>
+                <Link href={`tel:${phone}`}>
+                  <p className="font-poppins text-[#979797]">
+                    {formatPhoneNumber(phone)}
+                  </p>
+                </Link>
               </div>
             );
           })}
@@ -103,6 +142,16 @@ export default function ClientCard({ client }: Props) {
           </div>
         </div>
       </div>
+      <EditClientModal
+        clientId={client.id}
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+      />
+      <DeleteClientModal
+        client={client}
+        isOpen={isDeleteOpen}
+        setIsOpen={setIsDeleteOpen}
+      />
     </div>
   );
 }

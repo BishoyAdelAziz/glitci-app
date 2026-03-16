@@ -1,7 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { getMeApi } from "@/services/api/user";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getMeApi, updateMeApi } from "@/services/api/user";
 
 export default function useUser() {
   const {
@@ -13,10 +13,19 @@ export default function useUser() {
   } = useQuery({
     queryKey: ["me"],
     queryFn: getMeApi,
-    retry: false, // important for auth
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
-
+  const {
+    mutate: UpdateMeMutation,
+    isError: UpdateMeMutationIsError,
+    error: UpdateMeMutationError,
+    isPending: UpdateMeMutationIsPending,
+  } = useMutation({
+    mutationFn: updateMeApi,
+    onSuccess: () => {
+      refetch();
+    },
+  });
   return {
     user,
     isPending,
@@ -24,5 +33,9 @@ export default function useUser() {
     isError,
     error,
     refetchUser: refetch,
+    UpdateMeMutation,
+    UpdateMeMutationIsError,
+    UpdateMeMutationError,
+    UpdateMeMutationIsPending,
   };
 }

@@ -60,7 +60,7 @@ export default function Modal({
     >
       <div
         ref={modalRef}
-        className={`bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 scrollbar-hidden ${
+        className={`bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-y-scroll transform transition-all duration-300 scale-100 scrollbar-hidden ${
           sizes[size]
         } mx-auto w-full max-w-4xl `}
         onClick={(e) => e.stopPropagation()}

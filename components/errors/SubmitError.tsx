@@ -1,5 +1,12 @@
 import React from "react";
 
+interface FieldError {
+  field: string;
+  value: string;
+  location: string;
+  message: string;
+}
+
 interface Props {
   isError: boolean;
   error: any;
@@ -7,22 +14,21 @@ interface Props {
 
 const SubmitError = ({ isError, error }: Props) => {
   if (!isError) return null;
-  console.log(error);
-  const errorMessage = error?.response?.data?.message;
+
+  const responseData = error?.response?.data ?? error?.data;
+
+  const errorArray = responseData?.error;
+  const isArrayError = Array.isArray(errorArray) && errorArray.length > 0;
+
+  const errorMessage = isArrayError
+    ? (errorArray[0] as FieldError)?.message
+    : (responseData?.message ??
+      error?.message ??
+      "An error occurred. Please try again.");
 
   return (
     <div className="rounded-lg border border-red-500 bg-rose-50 p-3 text-xs text-red-500">
-      {Array.isArray(errorMessage) ? (
-        errorMessage.map((err: string, index: number) => (
-          <p key={index}>* {err}</p>
-        ))
-      ) : (
-        <p>
-          {errorMessage ??
-            error?.message ??
-            "An error occurred. Please try again."}
-        </p>
-      )}
+      <p>* {errorMessage}</p>
     </div>
   );
 };

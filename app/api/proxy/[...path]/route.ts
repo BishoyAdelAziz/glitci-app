@@ -24,78 +24,48 @@ async function proxy(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
     const proxiedPath = pathname.replace("/api/proxy/", "");
 
-    if (!process.env.API_URL) throw new Error("API_URL is not defined");
-
     const backendUrl = new URL(`${process.env.API_URL}/${proxiedPath}`);
     req.nextUrl.searchParams.forEach((v, k) =>
       backendUrl.searchParams.append(k, v),
     );
 
+    // 1. Forward headers but DO NOT force application/json
     const headers = new Headers(req.headers);
-    headers.set("content-type", "application/json");
-    // Forward the short-lived access token in the header
+    headers.delete("host"); // Important for proxying to external APIs
+
     if (token) headers.set("authorization", `Bearer ${token}`);
 
-    let body: string | undefined;
-    if (req.method !== "GET" && req.method !== "HEAD") body = await req.text();
+    // 2. IMPORTANT: If it's form-data/multipart, we must NOT set the content-type manually.
+    // We let the browser's original header (which includes the boundary) pass through.
+    // If you need to force JSON for OTHER requests, do it conditionally:
+    if (!headers.get("content-type")?.includes("multipart/form-data")) {
+      // Only set JSON if it's not a file upload
+      // headers.set("content-type", "application/json");
+    }
+
+    let body: any = undefined;
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      // 3. Use arrayBuffer to keep the "File" as raw binary
+      body = await req.arrayBuffer();
+    }
 
     const res = await fetch(backendUrl.toString(), {
       method: req.method,
       headers,
       body,
-    });
+      duplex: "half",
+    } as any);
 
-    const data = await res.text();
+    // ... handle response (use arrayBuffer for the response too to be safe)
+    const responseData = await res.arrayBuffer();
 
-    if (res.status === 401) {
-      const response = NextResponse.redirect(new URL("/login", req.url));
-      response.cookies.delete("GlitciAccessToken");
-      response.cookies.delete("GlitciTokenExpiry");
-      return response;
-    }
-
-    const response = new NextResponse(data, {
+    return new NextResponse(responseData, {
       status: res.status,
       headers: {
         "Content-Type": res.headers.get("content-type") || "application/json",
       },
     });
-
-    // CRITICAL: Forward all cookies from backend (like the 30-day refresh token)
-    res.headers.forEach((v, k) => {
-      if (k.toLowerCase() === "set-cookie") response.headers.append(k, v);
-    });
-
-    // Logic for Login and Refresh response
-    if (
-      (proxiedPath === "auth/login" || proxiedPath === "auth/refresh") &&
-      res.ok
-    ) {
-      const json = JSON.parse(data);
-      const isProd = process.env.NODE_ENV === "production";
-
-      // Save the 1-hour access token as HttpOnly
-      response.cookies.set("GlitciAccessToken", json.accessToken, {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: "lax",
-        path: "/",
-      });
-
-      // THE ONLY CLIENT-READABLE COOKIE: The Expiry Timestamp
-      response.cookies.set("GlitciTokenExpiry", json.accessTokenExpires, {
-        httpOnly: false, // Accessible by AuthWatcher
-        secure: isProd,
-        sameSite: "lax",
-        path: "/",
-      });
-    }
-
-    return response;
   } catch (err) {
-    return NextResponse.json(
-      { status: "fail", message: "Proxy error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ status: "fail" }, { status: 500 });
   }
 }
