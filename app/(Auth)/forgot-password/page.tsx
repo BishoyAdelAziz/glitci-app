@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
     });
   };
   return (
-    <div className="flex flex-col w-[80%] items-center gap-8 justify-between">
+    <div className="flex flex-col w-[80%] items-start gap-8 justify-between">
       <div className="flex flex-col items-start gap-y-5">
         <h3 className="font-bold text-3xl">Reset your password</h3>
       </div>
@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
         />
 
         <Link
-          href={"/forgot-password"}
+          href={"/login"}
           className="text-[#DE4646] font-poppins capitalize hover:underline underline-offset-4 text-xs"
         >
           Back to login ?

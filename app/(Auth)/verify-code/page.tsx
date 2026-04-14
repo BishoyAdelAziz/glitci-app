@@ -2,17 +2,26 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import SubmitButton from "@/components/forms/SubmitButton";
 import useAuth from "@/hooks/useAuth";
 import { useAuthStore } from "@/stores/AuthStore";
 import Link from "next/link";
+import { z } from "zod";
+
+// ✅ Zod schema
+const otpSchema = z.object({
+  otp: z.string().regex(/^\d{6}$/, "OTP must be exactly 6 digits"),
+});
 
 export default function VerifyCodePage() {
   const { email } = useAuthStore();
   const router = useRouter();
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
   const formRef = useRef<HTMLFormElement | null>(null);
+
+  const [clientError, setClientError] = useState<string | null>(null);
+
   const {
     VerifyCodeError,
     VerifyCodeIsError,
@@ -20,10 +29,14 @@ export default function VerifyCodePage() {
     VerifyCodeMutation,
     ForgotPasswordMutation,
   } = useAuth();
+
   const { handleSubmit } = useForm();
 
+  const getOtpValue = () =>
+    inputsRef.current.map((el) => el?.value ?? "").join("");
+
   const checkAndAutoSubmit = () => {
-    const otp = inputsRef.current.map((el) => el?.value ?? "").join("");
+    const otp = getOtpValue();
     if (otp.length === 6 && /^\d{6}$/.test(otp)) {
       formRef.current?.requestSubmit();
     }
@@ -67,9 +80,11 @@ export default function VerifyCodePage() {
       .getData("text")
       .replace(/\D/g, "")
       .slice(0, 6);
+
     if (!pasted) return;
 
     const inputs = inputsRef.current;
+
     pasted.split("").forEach((digit, i) => {
       const targetIndex = index + i;
       if (targetIndex < 6 && inputs[targetIndex]) {
@@ -83,12 +98,20 @@ export default function VerifyCodePage() {
     checkAndAutoSubmit();
   };
 
-  const getOtpValue = () =>
-    inputsRef.current.map((el) => el?.value ?? "").join("");
-
   const onSubmit = () => {
     const otp = getOtpValue();
-    console.log("OTP submitted:", otp);
+
+    // ✅ Zod validation
+    const result = otpSchema.safeParse({ otp });
+
+    if (!result.success) {
+      const firstError = result.error.issues[0];
+      setClientError(firstError?.message ?? "Invalid input");
+      return;
+    }
+
+    setClientError(null);
+
     VerifyCodeMutation(
       { email, resetCode: otp },
       {
@@ -98,9 +121,21 @@ export default function VerifyCodePage() {
       },
     );
   };
+
   const ResendCode = () => {
     ForgotPasswordMutation({ email });
   };
+
+  // ✅ Optional UX: clear inputs on error
+  useEffect(() => {
+    if (VerifyCodeIsError) {
+      inputsRef.current.forEach((input) => {
+        if (input) input.value = "";
+      });
+      inputsRef.current[0]?.focus();
+    }
+  }, [VerifyCodeIsError]);
+
   return (
     <div className="flex flex-col w-[80%] items-start gap-8 justify-between">
       <div className="flex flex-col items-start gap-y-2">
@@ -135,10 +170,17 @@ export default function VerifyCodePage() {
               onKeyDown={(e) => handleKeyDown(e, i)}
               onInput={(e) => handleInput(e, i)}
               onPaste={(e) => handlePaste(e, i)}
-              className="w-10 h-13 text-center text-xl font-medium  border-white border focus:border-none rounded-md focus:outline-none focus:ring-2 focus:ring-[#DE4646] transition"
+              className="w-10 h-13 text-center text-xl font-medium border-white border focus:border-none rounded-md focus:outline-none focus:ring-2 focus:ring-[#DE4646] transition"
             />
           ))}
         </div>
+
+        {/* ✅ Client-side error */}
+        {clientError && (
+          <div className="rounded-lg border border-red-500 bg-rose-50 p-3 text-xs text-red-500 w-full">
+            <p>* {clientError}</p>
+          </div>
+        )}
 
         <Link
           href={"/forgot-password"}
@@ -146,11 +188,12 @@ export default function VerifyCodePage() {
         >
           Change email ?
         </Link>
+
         <SubmitButton
-          isError={false}
+          isError={VerifyCodeIsError}
           text="Verify"
-          error={null}
-          isPending={false}
+          error={VerifyCodeError}
+          isPending={VerifyCodeIsPending}
         />
       </form>
     </div>
