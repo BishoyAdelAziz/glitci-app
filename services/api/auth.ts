@@ -25,3 +25,21 @@ export const SetInitialPassword = async (data: { newPassword: string }) => {
   );
   return response.data;
 };
+export const ForgotPassword = async (data: { email: string | null }) => {
+  const response = await axiosInstance.post("/auth/forgot-password", data);
+  return response.data;
+};
+export const ResetPassword = async (data: {
+  email: string | null;
+  newPassword: string;
+}) => {
+  const response = await axiosInstance.post("/auth/reset-password", data);
+  return response.data;
+};
+export const verifyCode = async (data: {
+  email: string | null;
+  resetCode: string;
+}) => {
+  const response = await axiosInstance.post("/auth/verify-reset-code", data);
+  return response.data;
+};

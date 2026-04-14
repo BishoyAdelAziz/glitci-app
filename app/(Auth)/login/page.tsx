@@ -10,6 +10,7 @@ import SubmitButton from "@/components/forms/SubmitButton";
 
 import { loginSchema, LoginFormData } from "@/services/validations/auth";
 import { useLogin } from "@/hooks/useLogin";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -67,6 +68,12 @@ export default function LoginPage() {
           name="password"
           register={register}
         />
+        <Link
+          href={"/forgot-password"}
+          className="text-[#DE4646] font-poppins capitalize hover:underline underline-offset-4 text-xs"
+        >
+          Forgot password ?
+        </Link>
         <SubmitButton
           error={error}
           isError={isError}

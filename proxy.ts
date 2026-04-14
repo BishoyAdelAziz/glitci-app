@@ -4,7 +4,13 @@ export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (pathname.startsWith("/api/")) return NextResponse.next();
 
-  const authRoutes = ["/login", "/register", "/forgot-password"];
+  const authRoutes = [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-code",
+  ];
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isInitialPasswordRoute = pathname.startsWith("/initial-password");
 

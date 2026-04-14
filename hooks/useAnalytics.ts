@@ -3,7 +3,7 @@ import { getAnalyticsOverview, getStats } from "@/services/api/analytics";
 import { AnalyticsQueryParams, CurrencyCode } from "@/types/analytics";
 import { useDateFilter } from "@/stores/useDateFilter";
 
-export default function useAnalyticsOverview(currency: CurrencyCode = "USD") {
+export default function useAnalyticsOverview(currency: CurrencyCode) {
   const { startDate, endDate } = useDateFilter();
 
   const formatDate = (date: Date | null) =>

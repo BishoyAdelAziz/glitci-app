@@ -4,9 +4,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChangePassword,
+  ForgotPassword,
   getMeApi,
   LogOut,
+  ResetPassword,
   SetInitialPassword,
+  verifyCode,
 } from "@/services/api/auth";
 import { useRouter } from "next/navigation";
 export default function useAuth() {
@@ -65,6 +68,30 @@ export default function useAuth() {
       window.location.href = "/login";
     },
   });
+  const {
+    mutate: ForgotPasswordMutation,
+    isPending: ForgotPasswordisPending,
+    isError: ForgotPasswordisError,
+    error: ForgotPasswordError,
+  } = useMutation({
+    mutationFn: ForgotPassword,
+  });
+  const {
+    mutate: VerifyCodeMutation,
+    isPending: VerifyCodeIsPending,
+    isError: VerifyCodeIsError,
+    error: VerifyCodeError,
+  } = useMutation({
+    mutationFn: verifyCode,
+  });
+  const {
+    mutate: ResetPasswordMutation,
+    isError: ResetPasswordIsError,
+    isPending: ResetPasswordIsPending,
+    error: ResetPasswordError,
+  } = useMutation({
+    mutationFn: ResetPassword,
+  });
   return {
     user,
     isPending,
@@ -84,5 +111,17 @@ export default function useAuth() {
     SetInitialPasswordIsError,
     SetInitialPasswordIsPending,
     SetInitialPasswordError,
+    ForgotPasswordMutation,
+    ForgotPasswordisPending,
+    ForgotPasswordisError,
+    ForgotPasswordError,
+    VerifyCodeMutation,
+    VerifyCodeIsPending,
+    VerifyCodeIsError,
+    VerifyCodeError,
+    ResetPasswordMutation,
+    ResetPasswordIsError,
+    ResetPasswordIsPending,
+    ResetPasswordError,
   };
 }
