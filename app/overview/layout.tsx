@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 const OverViewLayout = function ({ children }: { children: React.ReactNode }) {
   return (
-    <main className="container mx-auto">
+    <main className="max-w-[80%] mx-auto">
       <NavHeader />
 
       {/* App shell */}

@@ -10,8 +10,8 @@ export const UpdateUserSchema = z.object({
     .nonempty("Phone is Required")
     .nullable(),
   email: z.email().nonempty("Email is Required"),
-  position: z.string().nonempty("Position is required"),
-  skills: z.array(z.string()).min(1, "at least one number required"),
+  position: z.string().optional(),
+  skills: z.array(z.string()).min(1, "at least one number required").optional(),
   currency: CurrencyEnum,
 });
 export type UpdateUserSchemaFormFilds = z.infer<typeof UpdateUserSchema>;

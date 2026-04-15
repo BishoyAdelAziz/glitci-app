@@ -20,10 +20,6 @@ export const getMeApi = async (): Promise<User> => {
   return res.data.data;
 };
 export const updateMeApi = async (data: Partial<User>): Promise<User> => {
-  const res = await axiosInstance.patch<MeResponse>("/users/me", data, {
-    headers: {
-      "Content-Type": "form-data",
-    },
-  });
+  const res = await axiosInstance.patch<MeResponse>("/users/me", data);
   return res.data.data;
 };

@@ -188,8 +188,8 @@ export default function ProfilePage() {
         />
         {/* Dark mode overlay for subtle depth */}
         <div className="absolute inset-0 dark:bg-black/20 transition-colors duration-300" />
-        <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full opacity-10 border-[40px] border-white" />
-        <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full opacity-10 border-[24px] border-white" />
+        <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full opacity-10 border-40 border-white" />
+        <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full opacity-10 border-24 border-white" />
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -347,7 +347,13 @@ export default function ProfilePage() {
                     errors={errors}
                     label="Currency"
                     name="currency"
-                    options={[{ id: "EGP", name: "EGP" }]}
+                    options={[
+                      { id: "EGP", name: "EGP" },
+                      { id: "USD", name: "USD" },
+                      { id: "EUR", name: "EUR" },
+                      { id: "AED", name: "AED" },
+                      { id: "SAR", name: "SAR" },
+                    ]}
                     register={register}
                     setValue={setValue}
                     saveAsId
