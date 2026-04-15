@@ -27,8 +27,8 @@ export default function RecentProjectsTable({
   const formatDate = (date: string) => new Date(date).toLocaleDateString();
 
   return (
-    <div className="w-full bg-white col-span-1 md:col-span-2 dark:bg-gray-800 rounded-4xl p-4 overflow-x-auto">
-      <div className="mb-4">
+    <div className="w-full bg-white col-span-1 relative md:col-span-2 max-h-80 dark:bg-gray-800 rounded-4xl p-4 overflow-x-auto">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 pb-2 mb-2">
         <h3 className="text-lg font-semibold font-poppins">Recent Projects</h3>
       </div>
 

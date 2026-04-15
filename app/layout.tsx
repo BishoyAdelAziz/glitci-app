@@ -33,6 +33,7 @@ export default function RootLayout({
           })();`,
           }}
         />
+        <meta name="viewport" content="width=device-width, initial-scale=0.8" />
       </head>
       <body
         suppressHydrationWarning
