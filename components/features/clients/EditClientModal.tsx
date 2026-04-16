@@ -26,6 +26,8 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
       name: "",
       industry: "",
       phones: [] as string[], // Explicitly type as string[]
+      notes: "",
+      companyName: "",
     },
   });
 
@@ -63,6 +65,8 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
       name: singleClient.data.name,
       industry: singleClient.data.industry,
       phones: singleClient.data.phones || [],
+      notes: singleClient.data.notes || "",
+      companyName: singleClient.data.companyName,
     });
   }, [isReady, singleClient, isOpen, reset]);
   // ----- SUBMIT HANDLER -----
@@ -112,6 +116,18 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
             name="industry"
             register={register}
           />
+          <TextInput
+            errors={errors}
+            label="Company Name"
+            name="companyName"
+            register={register}
+          />
+          <TextInput
+            errors={errors}
+            label="Notes"
+            name="notes"
+            register={register}
+          />
           <div className="col-span-2">
             <MultiPhonesInput
               control={control}
@@ -126,7 +142,7 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
             <SubmitButton
               isError={UpdateClientIsError}
               isPending={updateClientIsPending}
-              text="Update Project"
+              text="Update Client"
               error={updateClientError}
             />
           </div>

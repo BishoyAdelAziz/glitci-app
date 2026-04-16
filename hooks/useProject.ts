@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getProjectById } from "@/services/api/projects";
-export function useProject(id?: string | null) {
+import { ParamValue } from "next/dist/server/request/params";
+export function useProject(id?: string | ParamValue) {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["projects", id],
     queryFn: () => getProjectById(id as string),

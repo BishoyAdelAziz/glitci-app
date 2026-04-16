@@ -108,8 +108,7 @@ export default function SingleProjectPage() {
               <div className="flex items-center gap-2">
                 <svg
                   fill="currentColor"
-                  width="14px"
-                  height="14px"
+                  style={{ width: "1rem", height: "1rem" }}
                   viewBox="0 0 24 24"
                   className="text-gray-400 shrink-0"
                   xmlns="http://www.w3.org/2000/svg"

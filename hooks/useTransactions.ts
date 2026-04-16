@@ -7,8 +7,10 @@ import {
   deleteTransaction,
   createSalaryTansaction,
   createClientPaymentTransaction,
+  ClientPaymentHistory,
 } from "@/services/api/transactions";
 import { TransactionsQueryParams, Transaction } from "@/types/transactions";
+import { normalizeFinance } from "@/utils/functions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function useTransactions(params?: TransactionsQueryParams) {
@@ -78,7 +80,33 @@ export default function useTransactions(params?: TransactionsQueryParams) {
       queryClient.invalidateQueries({ queryKey: ["transactions", params] });
     },
   });
+  const {
+    data: ClientPaymentHistoryData,
+    isError: ClientPaymentHistoryIsError,
+    isPending: ClientPaymentHistoryIsPending,
+    error: ClientPaymentHistoryError,
+  } = useQuery({
+    queryKey: ["clientPaymentHistory", params?.projectId],
+    queryFn: () => ClientPaymentHistory(params?.projectId as string),
+    enabled: !!params?.projectId,
+  });
+  const query = useQuery({
+    queryKey: ["clientPaymentHistory", params?.projectId],
+    queryFn: () => ClientPaymentHistory(params?.projectId as string),
+    enabled: !!params?.projectId,
+
+    select: (res) => {
+      // 🔥 normalize here
+      return normalizeFinance(res?.data);
+    },
+  });
+
   return {
+    finance: query.data,
+
+    FinanceisLoading: query.isPending,
+    FinanceisError: query.isError,
+    Financeerror: query.error,
     transactions: data?.data,
     pagination: data
       ? {
@@ -117,5 +145,10 @@ export default function useTransactions(params?: TransactionsQueryParams) {
     createClientPaymentTransactionError,
     createClientPaymentTransactionIsError,
     createClientPaymentTransactionIsPending,
+    // Client Payment History
+    ClientPaymentHistoryData,
+    ClientPaymentHistoryIsError,
+    ClientPaymentHistoryIsPending,
+    ClientPaymentHistoryError,
   };
 }

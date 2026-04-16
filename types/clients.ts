@@ -1,3 +1,5 @@
+import { ParamValue } from "next/dist/server/request/params";
+
 export interface Client {
   id: string;
   name: string;
@@ -18,7 +20,7 @@ export interface ClientsQueryParams {
   companyName?: string;
   industry?: string;
   isActive?: boolean;
-  clientId?: string;
+  clientId?: string | ParamValue;
 }
 
 export interface ClientsResponse {

@@ -7,6 +7,7 @@ import type {
   UpdateProjectDto,
 } from "@/types/projects";
 import { ProjectFormData } from "../validations/project";
+import { ParamValue } from "next/dist/server/request/params";
 
 export const getProjects = async (
   params?: ProjectsQueryParams,
@@ -15,7 +16,9 @@ export const getProjects = async (
   return response.data;
 };
 
-export const getProjectById = async (id: string): Promise<SingleProject> => {
+export const getProjectById = async (
+  id: string | ParamValue,
+): Promise<SingleProject> => {
   const response = await axiosInstance.get(`/projects/${id}`);
   return response.data.data;
 };
@@ -35,6 +38,6 @@ export const updateProject = async (
   return response.data.data;
 };
 
-export const deleteProject = async (id: string|null): Promise<void> => {
+export const deleteProject = async (id: string | null): Promise<void> => {
   await axiosInstance.delete(`/projects/${id}`);
 };

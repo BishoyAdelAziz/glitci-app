@@ -36,7 +36,7 @@ export default function useClients(params?: ClientsQueryParams) {
     isError: UpdateClientIsError,
   } = useMutation({
     mutationFn: ({ clientId, data }: { clientId: string; data: any }) =>
-      editClient({ data, clientId }), // ✅ Pass as object with both properties
+      editClient({ data, clientId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       queryClient.invalidateQueries({ queryKey: ["Client", params?.clientId] });
