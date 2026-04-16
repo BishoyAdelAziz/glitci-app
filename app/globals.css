@@ -93,6 +93,22 @@ body {
     scrollbar-width: none; /* Firefox */
   }
 }
+@layer base {
+  html {
+    /* Default font size for mobile (e.g., 14px instead of 16px) */
+    font-size: 16px;
+
+    /* Increase for medium screens (768px and up) */
+    @media (min-width: 768px) {
+      font-size: 14px; /* Reset to standard 16px */
+    }
+
+    /* Increase for large screens (1024px and up) */
+    @media (min-width: 1024px) {
+      font-size: 15px; /* Scales to 18px */
+    }
+  }
+}
 /* --- React DatePicker Custom Styling --- */
 /* Custom Scrollbar - All Browsers */
 
