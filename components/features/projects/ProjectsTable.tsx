@@ -26,7 +26,7 @@ import { ParamValue } from "next/dist/server/request/params";
 interface Props {
   isOpen?: boolean;
   setIsOpen?: Dispatch<SetStateAction<boolean>>;
-  clientId: string | ParamValue;
+  clientId?: string | ParamValue;
 }
 
 export default function ProjectsTable({ isOpen, setIsOpen, clientId }: Props) {
