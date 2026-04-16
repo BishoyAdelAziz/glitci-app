@@ -434,13 +434,13 @@ function DesktopNav() {
     <header className="hidden md:flex mx-auto items-center justify-between pt-[5vh]">
       {/* Logo */}
       <div
-        className="h-20 flex items-center gap-x-2 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
+        className="h-15 flex items-center gap-x-2 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
         onClick={() => router.push("/projects")}
       >
         <Image
           src="/icons/App-Icon.svg"
-          width={50}
-          height={50}
+          width={40}
+          height={40}
           alt="app logo"
         />
         <p className="font-semibold text-2xl">
@@ -449,14 +449,14 @@ function DesktopNav() {
       </div>
 
       {/* Routes */}
-      <nav className="h-20 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl relative">
+      <nav className="h-15 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl relative">
         {Routes.map((route) => (
           <DesktopNavItem key={route.id} route={route} />
         ))}
       </nav>
 
       {/* Actions — search replaces the old static button */}
-      <div className="h-20 flex min-w-[10%] items-center justify-evenly px-6 bg-white dark:bg-gray-900 rounded-4xl gap-x-4">
+      <div className="h-15 flex min-w-[10%] items-center justify-evenly px-6 bg-white dark:bg-gray-900 rounded-4xl gap-x-4">
         <DesktopSearch />
 
         {/* Bell */}
@@ -483,19 +483,19 @@ function DesktopNav() {
       ) : (
         <div className="relative group">
           {/* Trigger */}
-          <div className="h-20 flex items-center gap-x-3 bg-white dark:bg-gray-900 px-4 rounded-4xl cursor-pointer">
+          <div className="h-15 flex items-center gap-x-3 bg-white dark:bg-gray-900 px-4 rounded-4xl cursor-pointer">
             {user && (
               <Image
                 alt={user.name}
-                width={60}
-                height={60}
+                width={40}
+                height={40}
                 src={user.image || "/icons/App-Icon.svg"}
                 className="rounded-full"
               />
             )}
             <div className="flex flex-col">
-              <p className="font-medium">{user?.name}</p>
-              <p className="font-extralight text-sm">{user?.email}</p>
+              <p className="font-medium text-sm">{user?.name}</p>
+              <p className="font-extralight text-xs">{user?.email}</p>
             </div>
           </div>
 
