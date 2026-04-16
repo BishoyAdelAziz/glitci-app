@@ -4,7 +4,7 @@ interface ProjectMetaProps {
   endDate: string;
   clientName: string;
   industry?: string;
-  phones: string[];
+  phones?: string[];
 }
 
 type Priority = "normal" | "medium" | "high";

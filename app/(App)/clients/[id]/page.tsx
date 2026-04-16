@@ -80,7 +80,7 @@ export default function SingleClientPage() {
           companyName={singleClient?.data.companyName as string}
           endDate="2023-12-31"
           startDate={singleClient?.data.createdAt as string}
-          priority="medium"
+          phones={singleClient?.data?.phones}
           industry={singleClient?.data.industry as string}
         />
 
