@@ -274,7 +274,7 @@ function MobileSearch() {
       {open && (
         <div className="absolute inset-0 flex items-center gap-2 bg-white dark:bg-gray-900 px-4 z-10">
           <svg
-            className="w-4 h-4 text-gray-400 flex-shrink-0"
+            className="w-4 h-4 text-gray-400 shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -357,7 +357,7 @@ function DesktopNavItem({ route }: { route: Route }) {
     return (
       <Link
         href={route.path}
-        className={`capitalize px-4 py-2 rounded-2xl transition-colors ${
+        className={`capitalize px-6 py-2 rounded-full transition-colors ${
           isActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"

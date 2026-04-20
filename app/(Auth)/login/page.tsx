@@ -30,7 +30,7 @@ export default function LoginPage() {
         if (data.mustChangePassword === true) {
           router.push("/changePassword");
         } else {
-          router.push("/overview");
+          // router.push("/overview");
           router.refresh();
         }
       },

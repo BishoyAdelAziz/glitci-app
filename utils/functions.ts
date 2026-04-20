@@ -171,3 +171,17 @@ export function normalizeTransactions(transactions: any[] = []) {
 
   return result;
 }
+export function sanitizeCookie(raw: string): string {
+  const isProduction = process.env.NODE_ENV === "production";
+  return raw
+    .split(";")
+    .filter((part) => {
+      const key = part.trim().toLowerCase();
+      if (key.startsWith("domain=")) return false;
+      if (key.startsWith("path=")) return false;
+      if (!isProduction && key === "secure") return false;
+      return true;
+    })
+    .concat(" Path=/")
+    .join(";");
+}

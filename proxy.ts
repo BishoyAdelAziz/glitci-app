@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
   if (pathname.startsWith("/api/")) return NextResponse.next();
 
   const authRoutes = [
@@ -14,8 +15,16 @@ export default async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isInitialPasswordRoute = pathname.startsWith("/initial-password");
 
-  const accessToken = request.cookies.get("GlitciAccessToken")?.value;
+  const accessToken = request.cookies.get("accessToken")?.value;
   const expiryCookie = request.cookies.get("GlitciTokenExpiry")?.value;
+  console.log("🔍 Middleware Debug:");
+  console.log("  pathname:", pathname);
+  console.log("  accessToken:", accessToken ? "✅ exists" : "❌ missing");
+  console.log("  expiryCookie:", expiryCookie ? "✅ exists" : "❌ missing");
+  console.log(
+    "  All cookies:",
+    request.cookies.getAll().map((c) => c.name),
+  );
   const mustChangePassword =
     request.cookies.get("GlitciMustChangePassword")?.value === "true";
 
@@ -38,7 +47,7 @@ export default async function middleware(request: NextRequest) {
 
   // 3. Redirect logged-in users (without mustChangePassword) away from auth pages
   if (isTokenValid && !mustChangePassword && isAuthRoute) {
-    return NextResponse.redirect(new URL("/projects", request.url));
+    return NextResponse.redirect(new URL("/overview", request.url));
   }
 
   // 4. Allow valid sessions
@@ -51,42 +60,8 @@ export default async function middleware(request: NextRequest) {
   }
 
   // 6. Token exists but expired? Try Refresh
-  if (accessToken && !isTokenValid && !isAuthRoute) {
-    return await attemptRefresh(request, pathname);
-  }
 
   return NextResponse.next();
-}
-
-async function attemptRefresh(
-  request: NextRequest,
-  fromPath: string,
-): Promise<NextResponse> {
-  try {
-    const refreshRes = await fetch(
-      new URL("/api/proxy/auth/refresh", request.url),
-      {
-        method: "POST",
-        headers: {
-          Cookie: request.headers.get("cookie") || "",
-        },
-      },
-    );
-
-    if (!refreshRes.ok) throw new Error("Refresh failed");
-
-    // Forward the new cookies (GlitciAccessToken + GlitciTokenExpiry) from proxy response
-    const nextResponse = NextResponse.next();
-    refreshRes.headers.forEach((v, k) => {
-      if (k.toLowerCase() === "set-cookie") {
-        nextResponse.headers.append("set-cookie", v);
-      }
-    });
-
-    return nextResponse;
-  } catch {
-    return redirectToLogin(request, fromPath);
-  }
 }
 
 function redirectToLogin(request: NextRequest, fromPath: string): NextResponse {
@@ -94,7 +69,7 @@ function redirectToLogin(request: NextRequest, fromPath: string): NextResponse {
   loginUrl.searchParams.set("from", fromPath);
 
   const response = NextResponse.redirect(loginUrl);
-  response.cookies.delete("GlitciAccessToken");
+  response.cookies.delete("accessToken");
   response.cookies.delete("GlitciTokenExpiry");
   return response;
 }

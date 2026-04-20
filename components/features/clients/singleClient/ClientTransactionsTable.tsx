@@ -60,15 +60,15 @@ export default function ClientTransactionsTable({ data }: Props) {
       {/* Header */}
       <div>
         <h3 className="font-bold text-gray-500 text-xl">Client Transactions</h3>
-        <div className="bg-linear-to-r from-[#DE4646] h-1 w-[35%] mt-2 to-[#B72D2D]" />
+        <div className="bg-linear-to-r from-[#DE4646] h-1 w-22 mt-2 to-[#B72D2D]" />
       </div>
 
       <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm ring-[0.02rem] ring-gray-300">
         {/* ================= Desktop ================= */}
         <div className="hidden lg:block overflow-x-auto">
           <table className="w-full grid">
-            <thead className="bg-gray-50 dark:bg-gray-800 border-b">
-              <tr className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-semibold">
+            <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+              <tr className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-semibold   text-gray-700 dark:text-gray-300">
                 <th className="col-span-2 text-center">Project</th>
                 <th className="col-span-2 text-center">Client</th>
                 <th className="col-span-2 text-center">Amount</th>
@@ -78,11 +78,11 @@ export default function ClientTransactionsTable({ data }: Props) {
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {data.map((tx) => (
                 <tr
                   key={tx.id}
-                  className="grid grid-cols-12 gap-4 px-6 py-4 text-sm items-center border-b"
+                  className="grid grid-cols-12 gap-4 px-6 py-4 text-sm items-center border-gray-200 dark:border-gray-700 border-b"
                 >
                   <td className="col-span-2 font-medium text-center">
                     {tx.projectName}

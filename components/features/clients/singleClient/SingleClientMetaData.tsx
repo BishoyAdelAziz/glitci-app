@@ -95,13 +95,13 @@ export default function ClientMeta({
 
       {/* Priority */}
       <div className="flex items-center gap-2 bg-[#f2f0f0] dark:bg-gray-700 rounded-xl px-3 py-2">
-        <span className="text-gray-500">
+        <span className="text-gray-500 inline-flex">
           <span className="text-gray-400">Phones: </span>
-          {/* <span className="font-semibold text-gray-800 dark:text-gray-100">
-            {phones.map((phone) => {
-              return <p>hi</p>;s
+          <span className="font-semibold flex gap-2 text-gray-800 dark:text-gray-100">
+            {phones?.map((phone) => {
+              return <p key={phone}>{phone}</p>;
             })}
-          </span> */}
+          </span>
         </span>
       </div>
 

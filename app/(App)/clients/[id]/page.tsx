@@ -83,11 +83,15 @@ export default function SingleClientPage() {
           phones={singleClient?.data?.phones}
           industry={singleClient?.data.industry as string}
         />
-
+        <div>
+          <h3 className="font-bold text-gray-500 text-xl">Client Projects</h3>
+          <div className="bg-linear-to-r from-[#DE4646] h-1 w-22 mt-2 to-[#B72D2D]" />
+        </div>
         {/* Projects */}
-        <ProjectsTable clientId={clientId} />
+        <div className="w-full">
+          <ProjectsTable clientId={clientId} />
+        </div>
 
-        {/* Transactions */}
         {/* Transactions */}
         {transactionsLoading ? (
           <div className="p-4">Loading transactions...</div>

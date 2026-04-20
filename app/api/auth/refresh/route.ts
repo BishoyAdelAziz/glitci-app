@@ -3,26 +3,25 @@ import { sanitizeCookie } from "@/lib/cookies";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    // ✅ Forward the browser's cookies (contains refreshToken) to the backend
+    const cookieHeader = req.headers.get("cookie");
 
-    const res = await fetch(`${process.env.API_URL}/auth/login`, {
+    const res = await fetch(`${process.env.API_URL}/auth/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      headers: {
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      },
     });
 
     const result = await res.json();
 
     if (!res.ok) {
-      return NextResponse.json(
-        { message: result?.message || "Login failed" },
-        { status: res.status },
-      );
+      return NextResponse.json(result, { status: res.status });
     }
 
     const response = NextResponse.json(result);
 
-    // ✅ Set accessToken from response body
+    // ✅ Set new accessToken from response body
     const isProduction = process.env.NODE_ENV === "production";
 
     // Fallback to 3 minutes if expiry is missing
@@ -42,7 +41,7 @@ export async function POST(req: Request) {
       maxAge: maxAgeSeconds,
     });
 
-    // ✅ Helper cookie for reading expiry on client
+    // ✅ Update expiry helper cookie
     response.cookies.set("GlitciTokenExpiry", expiryStr, {
       httpOnly: false,
       secure: isProduction,
@@ -51,7 +50,7 @@ export async function POST(req: Request) {
       maxAge: maxAgeSeconds,
     });
 
-    // ✅ Forward backend's Set-Cookie headers (refreshToken) AFTER cookies.set()
+    // ✅ Forward refreshToken from backend Set-Cookie AFTER cookies.set()
     // cookies.set() overwrites previously appended Set-Cookie headers,
     // so we must append the backend cookies last.
     const setCookieHeaders = res.headers.getSetCookie?.() || [];
@@ -60,9 +59,9 @@ export async function POST(req: Request) {
     });
 
     return response;
-  } catch (error: any) {
+  } catch (err: any) {
     return NextResponse.json(
-      { message: error?.message || "Something went wrong" },
+      { message: err?.message || "Refresh failed" },
       { status: 500 },
     );
   }
