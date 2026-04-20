@@ -64,3 +64,11 @@ export const ClientPaymentHistory = async (projectId: string | ParamValue) => {
   );
   return response.data;
 };
+export const EmployeePaymentHistory = async (
+  projectId: string | ParamValue,
+) => {
+  const response = await axiosInstance(
+    `/finance/project/${projectId}/payments/employees`,
+  );
+  return response.data;
+};

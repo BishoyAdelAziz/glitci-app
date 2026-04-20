@@ -27,9 +27,15 @@ interface Props {
   isOpen?: boolean;
   setIsOpen?: Dispatch<SetStateAction<boolean>>;
   clientId?: string | ParamValue;
+  EmployeeId?: string | ParamValue;
 }
 
-export default function ProjectsTable({ isOpen, setIsOpen, clientId }: Props) {
+export default function ProjectsTable({
+  isOpen,
+  setIsOpen,
+  clientId,
+  EmployeeId,
+}: Props) {
   const search = useSearchParam();
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -49,6 +55,7 @@ export default function ProjectsTable({ isOpen, setIsOpen, clientId }: Props) {
     page,
     search: search,
     client: clientId,
+    employee: EmployeeId,
   });
 
   const handleSelectAll = () => {

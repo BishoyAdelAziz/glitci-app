@@ -2,6 +2,7 @@ import {
   addEmployee,
   deleteEmployee,
   getEmployees,
+  getSignleEmployee,
   updateEmployee,
 } from "@/services/api/employees";
 import { EmployeesQueryParams } from "@/types/employees";
@@ -47,6 +48,14 @@ export default function useEmployees(params?: EmployeesQueryParams) {
       queryCLient.invalidateQueries({ queryKey: ["employees", params] });
     },
   });
+  const {
+    data: employeeData,
+    isError: employeeDataIsError,
+    isLoading: employeeDataIsLoading,
+  } = useQuery({
+    queryKey: ["Employee", params?.employeeId],
+    queryFn: () => getSignleEmployee(params?.employeeId),
+  });
   return {
     employees: data?.data,
     pagination: data
@@ -73,5 +82,8 @@ export default function useEmployees(params?: EmployeesQueryParams) {
     DeleteEMployeeIsPending,
     DeleteEMployeeIsError,
     DeleteEMployeeError,
+    employeeData,
+    employeeDataIsError,
+    employeeDataIsLoading,
   };
 }

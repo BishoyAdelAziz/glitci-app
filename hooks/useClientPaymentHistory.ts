@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueries } from "@tanstack/react-query";
-import { ClientPaymentHistory } from "@/services/api/transactions"; // adjust path
+import { ClientPaymentHistory } from "@/services/api/transactions";
 
 type Payment = {
   id: string;

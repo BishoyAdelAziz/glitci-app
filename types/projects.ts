@@ -101,6 +101,7 @@ export interface ProjectsQueryParams {
   page?: number;
   limit?: number;
   client?: ParamValue; // client id
+  employee?: ParamValue;
   status?: ProjectStatus;
   isActive?: boolean;
   name?: string;

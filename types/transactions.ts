@@ -118,7 +118,7 @@ export interface TransactionsQueryParams {
   paymentMethod?: PaymentMethod;
   currency?: Currency;
   projectId?: ParamValue | string;
-  employeeId?: ParamValue | string;
+  employee?: ParamValue | string;
   dateFrom?: string;
   dateTo?: string;
   name?: string;
