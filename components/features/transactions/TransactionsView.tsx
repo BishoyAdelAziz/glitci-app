@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, Fragment } from "react";
-import { Menu, MenuButton, Transition } from "@headlessui/react";
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
 import useTransactions from "@/hooks/useTransactions";
 import TransactionsTable from "./TansactionsTable";
 import AddClientPaymentModal from "./AddClientPayment";
@@ -116,7 +116,7 @@ export default function TransactionsView({ type }: Props) {
 
   const handleCloseAddModal = () => {
     setIsAddModalOpen(false);
-    setTimeout(() => setAddingCategory(null), 300);
+   
   };
 
   return (
@@ -176,10 +176,10 @@ export default function TransactionsView({ type }: Props) {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black/5 focus:outline-none z-50">
+                <MenuItems className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black/5 focus:outline-none z-50">
                   <div className="px-1 py-1">
                     {ROUTES_BY_TYPE[type].map((cat) => (
-                      <Menu.Item key={cat.slug}>
+                      <MenuItem key={cat.slug}>
                         {({ active }) => (
                           <button
                             onClick={() => handleOpenAddModal(cat.slug)}
@@ -192,10 +192,10 @@ export default function TransactionsView({ type }: Props) {
                             + Add {cat.label}
                           </button>
                         )}
-                      </Menu.Item>
+                      </MenuItem>
                     ))}
                   </div>
-                </Menu.Items>
+                </MenuItems>
               </Transition>
             </Menu>
           )}
@@ -220,7 +220,7 @@ export default function TransactionsView({ type }: Props) {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl    overflow-hidden mt-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl py-1   overflow-hidden mt-4">
         <TransactionsTable
           transactions={transactions}
           isLoading={isLoading}

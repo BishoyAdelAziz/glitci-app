@@ -46,7 +46,9 @@ export default function TransactionFilterModal({
       reset({ category: currentCategory || "all" });
     }
   }, [isOpen, currentCategory, reset]);
-
+useEffect(()=> {
+  onClose();
+},[currentCategory])
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
       <div className="p-6 bg-white dark:bg-slate-900 rounded-xl relative overflow-hidden">
@@ -62,6 +64,7 @@ export default function TransactionFilterModal({
                 value="all"
                 className="h-4 w-4 text-[#DE4646] focus:ring-[#DE4646]"
                 {...register("category")}
+                
               />
               <span className="text-gray-700 dark:text-gray-300 font-medium">All Categories</span>
             </label>
@@ -74,6 +77,7 @@ export default function TransactionFilterModal({
                   value={cat.category}
                   className="h-4 w-4 text-[#DE4646] focus:ring-[#DE4646]"
                   {...register("category")}
+                  
                 />
                 <span className="text-gray-700 dark:text-gray-300 font-medium">{cat.label}</span>
               </label>

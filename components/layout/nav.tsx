@@ -434,7 +434,7 @@ function DesktopNav() {
     <header className="hidden md:flex mx-auto items-center justify-between pt-[5vh]">
       {/* Logo */}
       <div
-        className="h-15 flex items-center gap-x-2 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
+        className="h-15 flex items-center gap-x-4 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
         onClick={() => router.push("/projects")}
       >
         <Image
