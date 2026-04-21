@@ -47,6 +47,7 @@ export function useEmployeePaymentHistory(employeeId: string | ParamValue) {
       employeePosition: tx.employee?.position || "",
       employeeEmail: tx.employee?.user?.email || "",
       projectName: tx.project?.name || "",
+      PaymentMethod: tx.paymentMethod,
     })) || [];
 
   return {

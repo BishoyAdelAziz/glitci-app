@@ -1,7 +1,5 @@
 "use client";
 import { useParams } from "next/navigation";
-import ClientMeta from "@/components/features/clients/singleClient/SingleClientMetaData";
-import useClients from "@/hooks/useClients";
 import useEmployees from "@/hooks/useEmployees";
 import { Employee } from "@/types/employee";
 import EmployeeMeta from "@/components/features/employees/SingleEmployee/SinlgeEmployeeMeta";

@@ -42,7 +42,7 @@ export default function EmployeePaymentHistoryTable({ employeeId }: Props) {
             <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <tr className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                 <th className="col-span-2 text-center">Employee</th>
-                <th className="col-span-2 text-center">Position</th>
+                <th className="col-span-2 text-center">Payment Method</th>
                 <th className="col-span-2 text-center">Amount</th>
                 <th className="col-span-2 text-center">Type</th>
                 <th className="col-span-2 text-center">Date</th>
@@ -66,7 +66,7 @@ export default function EmployeePaymentHistoryTable({ employeeId }: Props) {
                   </td>
 
                   <td className="col-span-2 text-gray-600 text-center">
-                    {tx.employeePosition}
+                    {tx.paymentMethod}
                   </td>
 
                   <td className="col-span-2 font-semibold text-center">
@@ -112,7 +112,7 @@ export default function EmployeePaymentHistoryTable({ employeeId }: Props) {
                   <h3 className="font-semibold text-gray-900 dark:text-white">
                     {tx.employeeName}
                   </h3>
-                  <p className="text-sm text-gray-500">{tx.employeePosition}</p>
+                  <p className="text-sm text-gray-500">{tx.paymentMethod}</p>
                   <p className="text-xs text-gray-400 mt-1">
                     {tx.employeeEmail}
                   </p>
