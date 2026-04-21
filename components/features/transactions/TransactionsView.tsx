@@ -22,6 +22,7 @@ import type { GeneralExpenseFormData } from "@/services/validations/transactions
 
 interface Props {
   type: TransactionType;
+  category: string;
 }
 
 const TYPE_TABS: { label: string; value: TransactionType }[] = [
@@ -62,7 +63,7 @@ function getModalType(category: string): ModalType {
   return null;
 }
 
-export default function TransactionsView({ type }: Props) {
+export default function TransactionsView({ type, category }: Props) {
   const search = useSearchParam();
   const router = useRouter();
   const [page, setPage] = useState(1);
