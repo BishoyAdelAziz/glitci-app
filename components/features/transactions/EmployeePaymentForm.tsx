@@ -31,8 +31,22 @@ interface Props {
 }
 
 export default function EmployeePaymentForm({ onClose }: Props) {
-  const { projects } = useProjects();
-  const { employees } = useEmployees({ limit: 1000 });
+    const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    reset,
+    formState: { errors },
+    watch
+  } = useForm<PaymentFormData, unknown, PaymentFormData>({
+    resolver: zodResolver(PaymentSchema) as any,
+    defaultValues: { currency: "EGP", paymentMethod: "instapay" },
+  }); 
+    const employeeId = watch("employee")
+
+  const { projects } = useProjects({limit:100,employee:employeeId});
+  const { employees } = useEmployees({ limit: 100 });
   const {
     SalaryMutaiton,
     SalaryMutaitonError,
@@ -40,17 +54,7 @@ export default function EmployeePaymentForm({ onClose }: Props) {
     SalaryMutaitonIsPending,
   } = useTransactions();
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<PaymentFormData, unknown, PaymentFormData>({
-    resolver: zodResolver(PaymentSchema) as any,
-    defaultValues: { currency: "EGP", paymentMethod: "instapay" },
-  });
+
 
   const refinedProjects = projects?.map((p) => ({ id: p.id, name: p.name }));
   const refinedEmployees = employees?.map((e) => ({

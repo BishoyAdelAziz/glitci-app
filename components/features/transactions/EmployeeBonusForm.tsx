@@ -26,14 +26,6 @@ interface Props {
 }
 
 export default function EmployeeBonusForm({ onClose }: Props) {
-  const { projects } = useProjects();
-  const { employees } = useEmployees({ limit: 1000 });
-  const {
-    SalaryMutaiton,
-    SalaryMutaitonError,
-    SalaryMutaitonIsError,
-    SalaryMutaitonIsPending,
-  } = useTransactions();
 
   const {
     register,
@@ -42,10 +34,20 @@ export default function EmployeeBonusForm({ onClose }: Props) {
     setValue,
     reset,
     formState: { errors },
+    watch,
   } = useForm<BonusFormData, unknown, BonusFormData>({
     resolver: zodResolver(bonusSchema) as any,
     defaultValues: { currency: "EGP" },
   });
+  const employeeId = watch("employee")
+  const { projects } = useProjects({limit:100,employee:employeeId});
+  const { employees } = useEmployees({ limit: 100 });
+  const {
+    SalaryMutaiton,
+    SalaryMutaitonError,
+    SalaryMutaitonIsError,
+    SalaryMutaitonIsPending,
+  } = useTransactions();
 
   const refinedProjects = projects?.map((p) => ({ id: p.id, name: p.name }));
   const refinedEmployees = employees?.map((e) => ({
