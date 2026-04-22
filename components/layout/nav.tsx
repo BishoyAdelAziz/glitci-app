@@ -34,6 +34,15 @@ const Routes: Route[] = [
   { id: 4, name: "employees", path: "/employees" },
   {
     id: 5,
+    name: "tasks",
+    path: "/tasks",
+    children: [
+      { id: 1, name: "All Tasks", path: "/tasks" },
+      { id: 2, name: "Analytics", path: "/tasks/analytics" },
+    ],
+  },
+  {
+    id: 6,
     name: "services",
     path: "/services",
     children: [
@@ -42,7 +51,7 @@ const Routes: Route[] = [
       { id: 3, name: "Skills", path: "/services/skills" },
     ],
   },
-  { id: 6, name: "transactions", path: "/transactions" },
+  { id: 7, name: "transactions", path: "/transactions" },
 ];
 
 const SEARCH_PLACEHOLDERS: Record<string, string> = {
@@ -50,6 +59,8 @@ const SEARCH_PLACEHOLDERS: Record<string, string> = {
   "/projects": "Search projects...",
   "/clients": "Search clients...",
   "/employees": "Search employees...",
+  "/tasks/analytics": "Search analytics...",
+  "/tasks": "Search tasks...",
   "/services/departments": "Search departments...",
   "/services/positions": "Search positions...",
   "/services/skills": "Search skills...",

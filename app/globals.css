@@ -244,3 +244,52 @@ body {
 .react-datepicker__close-icon:after {
   background-color: #d83333 !important;
 }
+
+/* ─── Task Management Module ──────────────────────────────────────────────────── */
+
+/* DateTime Input — consistent styling across browsers */
+input[type="datetime-local"] {
+  @apply font-poppins;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  @apply cursor-pointer opacity-50 hover:opacity-100;
+  filter: none;
+  transition: opacity 200ms ease;
+}
+
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Status badge pulse animation for active tasks */
+@keyframes task-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.task-pulse {
+  animation: task-pulse 2s ease-in-out infinite;
+}
+
+/* Task row subtle entrance */
+@keyframes task-row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-row-enter {
+  animation: task-row-enter 300ms ease-out forwards;
+}
+
