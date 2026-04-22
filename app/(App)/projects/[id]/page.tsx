@@ -1,6 +1,6 @@
 "use client";
 
-import SingleProjectFinance from "@/components/features/projects/SingleProjectFinance";
+import SingleProjectFinanceComponent from "@/components/features/projects/SingleProjectFinance";
 import ProjectMeta from "@/components/features/projects/SingleProjectMeta";
 import TeamMembers from "@/components/features/projects/SingleProjectTeamMemebers";
 import TimelineSection from "@/components/features/projects/TimeLineSection";
@@ -31,11 +31,20 @@ export default function SingleProjectPage() {
   const { id } = useParams();
   const search = useSearchParam();
   const {
-    data: financeData,
-    isLoading: financeIsLoading,
-    isError: financeIsError,
+    SingleProjectFinance,
+    SingleProjectFinanceIsLoading,
+    SingleProjectFinanceIsError,
+    SingleProjectEmployeesBreakDown,
+    SingleProjectEmployeesBreakDownIsError,
+    SingleProjectEmployeesBreakDownIsLoading,
+    SingleProjectExpensesBreakDown,
+    SingleProjectExpensesBreakDownIsError,
+    SingleProjectExpensesBreakDownIsLoading,
+    SingleProjectClientPaymentHistory,
+    SingleProjectClientPaymentHistoryIsError,
+    SingleProjectClientPaymentHistoryIsLoading
   } = useSingleProjectFinance({ projectId: id });
-  
+
   const {
     singleProjectData: project,
     SingleProjectIsLoading,
@@ -204,18 +213,26 @@ export default function SingleProjectPage() {
         />
 
         {/* Financial Overview */}
-        {financeIsLoading ? (
+        {SingleProjectFinanceIsLoading || SingleProjectEmployeesBreakDownIsLoading || SingleProjectExpensesBreakDownIsLoading || SingleProjectClientPaymentHistoryIsLoading ? (
           <div className="w-full h-32 flex items-center justify-center dark:bg-gray-600 bg-[#f2f0f0] rounded-2xl">
             <p className="text-gray-400 animate-pulse">Loading finance data...</p>
           </div>
         ) : (
-          <SingleProjectFinance
-            financials={financeData?.data?.financials}
+          <SingleProjectFinanceComponent
+            financials={SingleProjectFinance?.data?.financials}
+            employeesBreakdown={SingleProjectEmployeesBreakDown?.data}
+            expensesBreakdown={SingleProjectExpensesBreakDown?.data}
+            clientPaymentHistory={SingleProjectClientPaymentHistory?.data}
           />
         )}
 
         {/* Team Members */}
-        <TeamMembers employees={projectData.employees} />
+        <TeamMembers 
+          employees={projectData.employees} 
+          employeesBreakdown={SingleProjectEmployeesBreakDown?.data} 
+          clientPaymentHistory={SingleProjectClientPaymentHistory?.data}
+          financials={SingleProjectFinance?.data?.financials}
+        />
       </div>
     </section>
   );

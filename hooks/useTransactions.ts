@@ -30,7 +30,7 @@ export default function useTransactions(params?: TransactionsQueryParams) {
     mutationFn: (payload: Record<string, unknown>) =>
       createTransaction(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", params] });
     },
   });
   const {
@@ -42,7 +42,7 @@ export default function useTransactions(params?: TransactionsQueryParams) {
     mutationFn: (payload: Record<string, unknown>) =>
       createClientPaymentTransaction(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", params] });
     },
   });
   const {
@@ -54,7 +54,7 @@ export default function useTransactions(params?: TransactionsQueryParams) {
     mutationFn: ({ id, data }: { id: string; data: Partial<Transaction> }) =>
       updateTransaction(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions",params] });
     },
   });
 
