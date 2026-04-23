@@ -178,7 +178,7 @@ function DesktopSearch() {
         className={`
           flex items-center gap-2 overflow-hidden transition-all duration-300 ease-in-out
           rounded-2xl bg-gray-100 dark:bg-gray-800
-          ${expanded ? "w-52 px-3 py-1.5" : "w-0 px-0 opacity-0"}
+          ${expanded ? "w-36 px-3 py-1.5" : "w-0 px-0 opacity-0"}
         `}
       >
         <input
@@ -368,7 +368,7 @@ function DesktopNavItem({ route }: { route: Route }) {
     return (
       <Link
         href={route.path}
-        className={`capitalize px-6 py-2 rounded-full transition-colors ${
+        className={`capitalize px-6 py-2 text-xs rounded-full transition-colors ${
           isActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -383,7 +383,7 @@ function DesktopNavItem({ route }: { route: Route }) {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`capitalize px-4 py-2 rounded-2xl transition-colors flex items-center gap-1.5 ${
+        className={`capitalize px-4 py-2 text-xs rounded-2xl transition-colors flex items-center gap-1.5 ${
           isActive || isChildActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -394,11 +394,11 @@ function DesktopNavItem({ route }: { route: Route }) {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden min-w-40 py-1">
+        <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-gray-900 text-xs rounded-2xl shadow-lg overflow-hidden min-w-40 py-1">
           <Link
             href={route.path}
             onClick={() => setOpen(false)}
-            className={`block capitalize px-4 py-2 text-sm transition-colors border-b dark:border-gray-700 ${
+            className={`block capitalize px-4 py-2  transition-colors border-b dark:border-gray-700 ${
               isActive
                 ? "bg-gray-100 dark:bg-gray-800 font-medium"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -414,7 +414,7 @@ function DesktopNavItem({ route }: { route: Route }) {
                 key={child.id}
                 href={child.path}
                 onClick={() => setOpen(false)}
-                className={`block capitalize px-4 py-2 text-sm transition-colors ${
+                className={`block capitalize px-4 py-2 text-xs transition-colors ${
                   isChildItemActive
                     ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
                     : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -442,7 +442,7 @@ function DesktopNav() {
     LogoutMutationIsPending,
   } = useAuth();
   return (
-    <header className="hidden md:flex mx-auto items-center justify-between pt-[5vh]">
+    <header className="hidden md:flex mx-auto items-center justify-between text-xs font-semibold pt-[5vh]">
       {/* Logo */}
       <div
         className="h-15 flex items-center gap-x-4 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
