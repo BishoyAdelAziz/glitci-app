@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Modal from "@/components/ui/Modal";
@@ -22,6 +22,164 @@ const BulkCreateSchema = z.object({
 
 type BulkCreateFormFields = z.infer<typeof BulkCreateSchema>;
 
+// ─── Sub-Component for Task Row ─────────────────────────────────────────────────
+
+interface TaskRowProps {
+  index: number;
+  field: any;
+  remove: (index: number) => void;
+  fieldsLength: number;
+  control: any;
+  register: any;
+  errors: any;
+  setValue: any;
+  employeeOptions: { id: string; name: string }[];
+}
+
+function TaskRow({
+  index,
+  field,
+  remove,
+  fieldsLength,
+  control,
+  register,
+  errors,
+  setValue,
+  employeeOptions,
+}: TaskRowProps) {
+  const EmployeeId = useWatch({
+    control,
+    name: `tasks.${index}.assignedTo`,
+  });
+
+  const { projects } = useProjects(EmployeeId ? { employee: EmployeeId } : undefined);
+
+  const projectOptions =
+    projects?.map((p: any) => ({ id: p._id || p.id, name: p.name })) ?? [];
+
+  return (
+    <div
+      key={field.id}
+      className="bg-[#F6F6F6] dark:bg-gray-800/50 rounded-2xl p-6 relative"
+    >
+      {/* Remove button */}
+      {fieldsLength > 1 && (
+        <button
+          type="button"
+          onClick={() => remove(index)}
+          className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors group"
+        >
+          <svg
+            className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500 transition-colors"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      )}
+
+      {/* Task Number Label */}
+      {fieldsLength > 1 && (
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+          Task {index + 1}
+        </p>
+      )}
+
+      {/* Task Name */}
+      <TextInput
+        label="Task Name"
+        name={`tasks.${index}.name`}
+        register={register}
+        errors={errors}
+        required
+        placeholder="Enter task name"
+      />
+
+      {/* Description */}
+      <div className="w-full">
+        <label className="inline-flex items-center gap-1 font-bold">
+          Description
+          <span className="inline text-sm font-light text-gray-500">
+            (optional)
+          </span>
+        </label>
+        <textarea
+          {...register(`tasks.${index}.description`)}
+          placeholder="Briefly describe the task..."
+          rows={3}
+          className="w-full rounded-lg p-3 bg-[#EEEEEE] dark:bg-gray-900 dark:ring-1 dark:ring-gray-400 outline-none placeholder:text-xs placeholder:opacity-35 transition-colors resize-none mt-1"
+        />
+      </div>
+
+      {/* Start & End Time */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+        <DateTimeInput
+          label="Start Time"
+          name={`tasks.${index}.startTime`}
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          control={control}
+          required
+        />
+        <DateTimeInput
+          label="End Time"
+          name={`tasks.${index}.endTime`}
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          control={control}
+          required
+        />
+      </div>
+
+      {/* Employee & Project */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+        <SelectInput
+          label="Assigned Employee"
+          name={`tasks.${index}.assignedTo`}
+          options={employeeOptions}
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          control={control}
+          required
+          placeholder="Select employee"
+        />
+        <SelectInput
+          label="Project"
+          name={`tasks.${index}.project`}
+          options={projectOptions}
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          control={control}
+          placeholder="Assign to project"
+        />
+      </div>
+
+      {/* Link */}
+      <div className="mt-2">
+        <TextInput
+          label="Reference Link"
+          name={`tasks.${index}.link`}
+          register={register}
+          errors={errors}
+          placeholder="https://"
+          type="url"
+        />
+      </div>
+    </div>
+  );
+}
+
 // ─── Component ──────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -30,15 +188,6 @@ interface Props {
 }
 
 export default function CreateTaskModal({ isOpen, onClose }: Props) {
-  const { employees } = useEmployees();
-  const { projects } = useProjects();
-  const { CreateTasksMutation, CreateTasksIsPending } = useTasks();
-
-  const employeeOptions =
-    employees?.map((e: any) => ({ id: e._id || e.id, name: e.name })) ?? [];
-  const projectOptions =
-    projects?.map((p: any) => ({ id: p._id || p.id, name: p.name })) ?? [];
-
   const {
     register,
     handleSubmit,
@@ -62,6 +211,13 @@ export default function CreateTaskModal({ isOpen, onClose }: Props) {
       ],
     },
   });
+  const { employees } = useEmployees();
+  const { CreateTasksMutation, CreateTasksIsPending } = useTasks();
+
+  const refinedEmployees = employees?.map((employee) => ({
+    id: employee.id,
+    name: employee.user.name,
+  })) ?? [];
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -89,9 +245,7 @@ export default function CreateTaskModal({ isOpen, onClose }: Props) {
           onClose();
         },
         onError: (err: any) => {
-          toast.error(
-            err?.response?.data?.message || "Failed to create tasks",
-          );
+          toast.error(err?.response?.data?.message || "Failed to create tasks");
         },
       },
     );
@@ -132,125 +286,18 @@ export default function CreateTaskModal({ isOpen, onClose }: Props) {
         {/* Task Forms */}
         <div className="px-6 space-y-6 max-h-[60vh] overflow-y-auto">
           {fields.map((field, index) => (
-            <div
+            <TaskRow
               key={field.id}
-              className="bg-[#F6F6F6] dark:bg-gray-800/50 rounded-2xl p-6 relative"
-            >
-              {/* Remove button */}
-              {fields.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors group"
-                >
-                  <svg
-                    className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500 transition-colors"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              )}
-
-              {/* Task Number Label */}
-              {fields.length > 1 && (
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-                  Task {index + 1}
-                </p>
-              )}
-
-              {/* Task Name */}
-              <TextInput
-                label="Task Name"
-                name={`tasks.${index}.name`}
-                register={register}
-                errors={errors}
-                required
-                placeholder="Enter task name"
-              />
-
-              {/* Description */}
-              <div className="w-full">
-                <label className="inline-flex items-center gap-1 font-bold">
-                  Description
-                  <span className="inline text-sm font-light text-gray-500">
-                    (optional)
-                  </span>
-                </label>
-                <textarea
-                  {...register(`tasks.${index}.description`)}
-                  placeholder="Briefly describe the task..."
-                  rows={3}
-                  className="w-full rounded-lg p-3 bg-[#EEEEEE] dark:bg-gray-900 dark:ring-1 dark:ring-gray-400 outline-none placeholder:text-xs placeholder:opacity-35 transition-colors resize-none mt-1"
-                />
-              </div>
-
-              {/* Start & End Time */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <DateTimeInput
-                  label="Start Time"
-                  name={`tasks.${index}.startTime`}
-                  register={register}
-                  errors={errors}
-                  setValue={setValue}
-                  control={control}
-                  required
-                />
-                <DateTimeInput
-                  label="End Time"
-                  name={`tasks.${index}.endTime`}
-                  register={register}
-                  errors={errors}
-                  setValue={setValue}
-                  control={control}
-                  required
-                />
-              </div>
-
-              {/* Employee & Project */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <SelectInput
-                  label="Assigned Employee"
-                  name={`tasks.${index}.assignedTo`}
-                  options={employeeOptions}
-                  register={register}
-                  errors={errors}
-                  setValue={setValue}
-                  control={control}
-                  required
-                  placeholder="Select employee"
-                />
-                <SelectInput
-                  label="Project"
-                  name={`tasks.${index}.project`}
-                  options={projectOptions}
-                  register={register}
-                  errors={errors}
-                  setValue={setValue}
-                  control={control}
-                  placeholder="Assign to project"
-                />
-              </div>
-
-              {/* Link */}
-              <div className="mt-2">
-                <TextInput
-                  label="Reference Link"
-                  name={`tasks.${index}.link`}
-                  register={register}
-                  errors={errors}
-                  placeholder="https://"
-                  type="url"
-                />
-              </div>
-            </div>
+              index={index}
+              field={field}
+              remove={remove}
+              fieldsLength={fields.length}
+              control={control}
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              employeeOptions={refinedEmployees}
+            />
           ))}
         </div>
 
@@ -271,11 +318,7 @@ export default function CreateTaskModal({ isOpen, onClose }: Props) {
             }
             className="flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
           >
-            <svg
-              className="w-5 h-5"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
             </svg>
             Add Another Task
@@ -298,3 +341,4 @@ export default function CreateTaskModal({ isOpen, onClose }: Props) {
     </Modal>
   );
 }
+

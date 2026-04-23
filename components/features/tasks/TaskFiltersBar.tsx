@@ -208,8 +208,10 @@ export default function TaskFiltersBar({ filters, setFilters }: Props) {
   const { departments } = useDepartments();
   const { projects } = useProjects();
 
-  const employeeOptions =
-    employees?.map((e: any) => ({ id: e._id || e.id, name: e.name })) ?? [];
+  const employeeOptions = employees?.map((employee) => ({
+    id: employee.id,
+    name: employee.user.name,
+  })) ?? [];
   const departmentOptions =
     departments?.map((d: any) => ({ id: d._id || d.id, name: d.name })) ?? [];
   const projectOptions =

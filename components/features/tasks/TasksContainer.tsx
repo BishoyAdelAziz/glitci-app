@@ -22,7 +22,7 @@ function MetricCard({
   color: string;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 flex-1 min-w-[140px] relative overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-lg shadow-black/5 dark:shadow-lg dark:shadow-white/5 flex-1 min-w-[140px] relative overflow-hidden">
       <div
         className={`absolute left-0 top-0 bottom-0 w-1 ${color} rounded-r-full`}
       />
