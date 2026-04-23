@@ -55,6 +55,7 @@ export default function useEmployees(params?: EmployeesQueryParams) {
   } = useQuery({
     queryKey: ["Employee", params?.employeeId],
     queryFn: () => getSignleEmployee(params?.employeeId),
+    enabled: !!params?.employeeId,
   });
   return {
     employees: data?.data,

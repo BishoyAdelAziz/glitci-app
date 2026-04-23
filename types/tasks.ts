@@ -5,10 +5,17 @@ export type TaskStatus = "pending" | "in progress" | "postponed" | "completed";
 // ─── Populated Sub-Types ────────────────────────────────────────────────────────
 
 export interface TaskAssignedTo {
-  _id: string;
-  name: string;
+  _id?: string;
+  id?: string;
+  name?: string;
+  user?: {
+    _id?: string;
+    id?: string;
+    name: string;
+  };
   department?: {
-    _id: string;
+    _id?: string;
+    id?: string;
     name: string;
   };
 }
@@ -34,7 +41,8 @@ export interface TaskHistoryEntry {
 // ─── Task Object ────────────────────────────────────────────────────────────────
 
 export interface Task {
-  _id: string;
+  id: string;
+  _id?: string;
   name: string;
   description?: string;
   startTime: string;
