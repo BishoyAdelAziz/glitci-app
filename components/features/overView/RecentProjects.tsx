@@ -1,24 +1,23 @@
 "use client";
 import { Project } from "@/types/analytics";
+
 export default function RecentProjectsTable({
   projects,
+  currency = "USD",
 }: {
   projects?: Project[];
+  currency?: string;
 }) {
   const statusColor = (status: Project["status"]) => {
     switch (status) {
       case "planning":
         return "bg-yellow-100 text-yellow-700";
-
       case "active":
         return "bg-blue-100 text-blue-700";
-
       case "completed":
         return "bg-green-100 text-green-700";
-
       case "on_hold":
         return "bg-gray-200 text-gray-700";
-
       default:
         return "bg-gray-100 text-gray-600";
     }
@@ -61,9 +60,7 @@ export default function RecentProjectsTable({
 
               <td className="py-3 px-2">
                 <span
-                  className={`px-2 py-1 rounded-full text-xs capitalize ${statusColor(
-                    project.status,
-                  )}`}
+                  className={`px-2 py-1 rounded-full text-xs capitalize ${statusColor(project.status)}`}
                 >
                   {project.status}
                 </span>
@@ -74,7 +71,7 @@ export default function RecentProjectsTable({
               <td className="py-3 px-2">{formatDate(project.endDate)}</td>
 
               <td className="py-3 px-2 font-medium">
-                ${project.budget.toLocaleString()}
+                {project.budget.toLocaleString()} {currency}
               </td>
             </tr>
           ))}

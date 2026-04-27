@@ -6,7 +6,6 @@ import IncomeByDepartment from "@/components/features/overView/charts/IncomeByDe
 import RecentProjectsTable from "@/components/features/overView/RecentProjects";
 import ButtonLoader from "@/components/Loaders/ButtonLoader";
 import useAnalyticsOverview from "@/hooks/useAnalytics";
-import useAuth from "@/hooks/useAuth";
 import useUser from "@/hooks/useUser";
 
 export default function OverViewPage() {
@@ -164,7 +163,7 @@ export default function OverViewPage() {
         <SpendDashboard departments={statsData?.data.departments} />
       </div>
       {/* Recent Projects */}
-      <RecentProjectsTable projects={overview?.recentProjects} />
+      <RecentProjectsTable projects={overview?.recentProjects} currency={user?.currency} />
     </div>
   );
 }
