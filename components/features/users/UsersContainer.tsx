@@ -11,11 +11,8 @@ interface Props {
 export default function ClientsContainer({ isOpen, setIsOpen }: Props) {
   const [page, setPage] = useState(1);
   const search = useSearchParam();
-  const { Users,UsersError,UsersIsError,UsersIsLoading } = UseUsers({
-    name: search,
-    page,
-  });
-  if (isLoading) {
+  const { Users,UsersError,UsersIsError,UsersIsLoading } = UseUsers();
+  if (UsersIsLoading) {
     return (
       <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">
         <div className="flex items-center justify-center">
@@ -24,7 +21,7 @@ export default function ClientsContainer({ isOpen, setIsOpen }: Props) {
       </div>
     );
   }
-  if (isError) {
+  if (UsersIsError) {
     return (
       <div className="w-full overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8">
         <div className="text-center text-red-600 dark:text-red-400">
@@ -36,8 +33,8 @@ export default function ClientsContainer({ isOpen, setIsOpen }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-stretch justify-center gap-x-6 gap-y-12">
-        {clients?.map((client) => {
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-stretch justify-center gap-x-6 gap-y-12">
+        {Users?.map((client) => {
           return <ClientCard client={client} key={client.id} />;
         })}
       </div>
@@ -51,7 +48,7 @@ export default function ClientsContainer({ isOpen, setIsOpen }: Props) {
       </div>
       {isOpen && (
         <AddClient isOpen={isOpen} onClose={() => setIsOpen(!isOpen)} />
-      )}
+      )} */}
     </>
   );
 }
