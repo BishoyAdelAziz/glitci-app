@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 const ROLE_ACCESS: Record<string, string[]> = {
   admin: ["/"], // Admin has full access
-  financial_manager: ["/overview", "/transactions"],
-  operation: ["/employees", "/projects", "/clients", "/tasks"],
+  financial_manager: ["/overview", "/projects", "/transactions"],
+  operation: ["/clients", "/projects", "/employees", "/tasks", "/services"],
   employee: ["/projects", "/tasks"],
 };
 

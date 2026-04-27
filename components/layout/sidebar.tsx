@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
+import { type AppRole, getCurrentUserRole, getHomeForRole } from "@/config/roles";
 import { 
   LayoutDashboard, 
   FolderKanban, 
@@ -24,42 +25,41 @@ type Route = {
   path: string;
   icon: React.ReactNode;
   children?: { id: number; name: string; path: string }[];
+  /** If set, only these roles can see this route. Omit = visible to all. */
+  allowedRoles?: AppRole[];
 };
 
-const AdminRoutes: Route[] = [
-  { id: 1, name: "overview", path: "/overview", icon: <LayoutDashboard size={22} /> },
-  { id: 2, name: "projects", path: "/projects", icon: <FolderKanban size={22} /> },
-  { id: 3, name: "clients", path: "/clients", icon: <Users size={22} /> },
-  { id: 4, name: "employees", path: "/employees", icon: <UserSquare2 size={22} /> },
+const AllRoutes: Route[] = [
+  { id: 1, name: "overview", path: "/overview", icon: <LayoutDashboard size={22} />, allowedRoles: ["admin", "financial_manager"] },
+  { id: 2, name: "projects", path: "/projects", icon: <FolderKanban size={22} />, allowedRoles: ["admin", "operation", "financial_manager", "employee"] },
+  { id: 3, name: "clients", path: "/clients", icon: <Users size={22} />, allowedRoles: ["admin", "operation"] },
+  { id: 4, name: "employees", path: "/employees", icon: <UserSquare2 size={22} />, allowedRoles: ["admin", "operation"] },
   {
     id: 5,
     name: "tasks",
     path: "/tasks",
     icon: <CheckSquare size={22} />,
+    allowedRoles: ["admin", "operation", "employee"],
     children: [
       { id: 1, name: "All Tasks", path: "/tasks" },
       { id: 2, name: "Analytics", path: "/tasks/analytics" },
     ],
   },
-  { id: 8, name: "assets", path: "/assets", icon: <Package size={22} /> },
+  { id: 8, name: "assets", path: "/assets", icon: <Package size={22} />, allowedRoles: ["admin"] },
   {
     id: 6,
     name: "services",
     path: "/services",
     icon: <Hammer size={22} />,
+    allowedRoles: ["admin", "operation"],
     children: [
       { id: 1, name: "Departments", path: "/services/departments" },
       { id: 2, name: "Positions", path: "/services/positions" },
       { id: 3, name: "Skills", path: "/services/skills" },
     ],
   },
-  { id: 7, name: "transactions", path: "/transactions", icon: <Wallet size={22} /> },
-  { id: 9, name: "Users Managment", path: "/users", icon: <HardHat size={22} /> },
-];
-
-const EmployeeRoutes: Route[] = [
-  { id: 1, name: "projects", path: "/projects", icon: <FolderKanban size={22} /> },
-  { id: 2, name: "tasks", path: "/tasks", icon: <CheckSquare size={22} /> },
+  { id: 7, name: "transactions", path: "/transactions", icon: <Wallet size={22} />, allowedRoles: ["admin", "financial_manager"] },
+  { id: 9, name: "Users Managment", path: "/users", icon: <HardHat size={22} />, allowedRoles: ["admin"] },
 ];
 
 interface SidebarProps {
@@ -72,7 +72,8 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
   const router = useRouter();
   const [openSubmenuId, setOpenSubmenuId] = useState<number | null>(null);
 
-  const routes = user?.role === "admin" ? AdminRoutes : EmployeeRoutes;
+  const role = getCurrentUserRole();
+  const routes = AllRoutes.filter((r) => !r.allowedRoles || r.allowedRoles.includes(role));
 
   // Auto-open submenu based on current path
   useEffect(() => {
@@ -126,7 +127,7 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
         } ${
           isMobile ? "justify-start gap-3 px-6" : ""
         }`}
-        onClick={() => router.push(user?.role === "admin" ? "/overview" : "/tasks")}
+        onClick={() => router.push(getHomeForRole(role))}
       >
         <Image
           src="/icons/App-Icon.svg"

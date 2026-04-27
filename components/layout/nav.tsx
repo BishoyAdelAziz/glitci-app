@@ -12,6 +12,7 @@ import { useDateFilter } from "@/stores/useDateFilter";
 import { forwardRef } from "react";
 import DatePicker from "react-datepicker";
 import useAuth from "@/hooks/useAuth";
+import { type AppRole, getCurrentUserRole } from "@/config/roles";
 import { Suspense } from "react";
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,8 @@ type Route = {
   name: string;
   path: string;
   children?: Route[];
+  /** If set, only these roles can see this route. Omit = visible to all. */
+  allowedRoles?: AppRole[];
 };
 interface CalendarTriggerProps {
   value?: string;
@@ -28,33 +31,41 @@ interface CalendarTriggerProps {
 // ─── Config ────────────────────────────────────────────────────────────────────
 
 const Routes: Route[] = [
-  { id: 1, name: "overview", path: "/overview" },
-  { id: 2, name: "projects", path: "/projects" },
-  { id: 3, name: "clients", path: "/clients" },
-  { id: 4, name: "employees", path: "/employees" },
+  { id: 1, name: "overview", path: "/overview", allowedRoles: ["admin", "financial_manager"] },
+  { id: 2, name: "projects", path: "/projects", allowedRoles: ["admin", "operation","financial_manager", "employee"] },
+  { id: 3, name: "clients", path: "/clients", allowedRoles: ["admin", "operation"] },
+  { id: 4, name: "employees", path: "/employees", allowedRoles: ["admin","operation"] },
   {
     id: 5,
     name: "tasks",
     path: "/tasks",
+    allowedRoles: ["admin", "operation", "employee"],
     children: [
       { id: 1, name: "All Tasks", path: "/tasks" },
       { id: 2, name: "Analytics", path: "/tasks/analytics" },
     ],
   },
-  { id: 8, name: "assets", path: "/assets" },
+  { id: 8, name: "assets", path: "/assets", allowedRoles: ["admin"] },
   {
     id: 6,
     name: "services",
     path: "/services",
+    allowedRoles: ["admin","operation"],
     children: [
       { id: 1, name: "Departments", path: "/services/departments" },
       { id: 2, name: "Positions", path: "/services/positions" },
       { id: 3, name: "Skills", path: "/services/skills" },
     ],
   },
-  { id: 7, name: "transactions", path: "/transactions" },
-  { id: 9, name: "user Management", path: "/users" },
+  { id: 7, name: "transactions", path: "/transactions", allowedRoles: ["admin", "financial_manager"] },
+  { id: 9, name: "user Management", path: "/users", allowedRoles: ["admin"] },
 ];
+
+/** Filter the Routes array to only include routes the current role can see. */
+function useFilteredRoutes(): Route[] {
+  const role = getCurrentUserRole();
+  return Routes.filter((r) => !r.allowedRoles || r.allowedRoles.includes(role));
+}
 
 const SEARCH_PLACEHOLDERS: Record<string, string> = {
   "/overview": "Search overview...",
@@ -438,6 +449,7 @@ function DesktopNavItem({ route }: { route: Route }) {
 function DesktopNav() {
   const { user, isPending } = useUser();
   const router = useRouter();
+  const filteredRoutes = useFilteredRoutes();
   const {
     LogoutMutation,
     LogoutMutationError,
@@ -462,9 +474,9 @@ function DesktopNav() {
         </p>
       </div>
 
-      {/* Routes */}
+      {/* Routes — filtered by current user role */}
       <nav className="h-15 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl relative">
-        {Routes.map((route) => (
+        {filteredRoutes.map((route) => (
           <DesktopNavItem key={route.id} route={route} />
         ))}
       </nav>
@@ -655,6 +667,7 @@ function MobileNav() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const PathName = usePathname();
+  const filteredRoutes = useFilteredRoutes();
   const isProfileActive = PathName.startsWith("/profile");
   return (
     <>
@@ -734,7 +747,7 @@ function MobileNav() {
             </div>
 
             <nav className="flex-1 p-5 space-y-2 overflow-y-auto">
-              {Routes.map((route) => (
+              {filteredRoutes.map((route) => (
                 <MobileNavItem
                   key={route.id}
                   route={route}
