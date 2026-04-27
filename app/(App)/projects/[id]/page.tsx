@@ -1,5 +1,6 @@
 "use client";
 
+import { AllowedFor, ForbiddenFor } from "@/components/auth/RoleGate";
 import SingleProjectFinanceComponent from "@/components/features/projects/SingleProjectFinance";
 import ProjectMeta from "@/components/features/projects/SingleProjectMeta";
 import TeamMembers from "@/components/features/projects/SingleProjectTeamMemebers";
@@ -127,6 +128,7 @@ export default function SingleProjectPage() {
                 <div className="w-full h-px bg-gray-300 dark:bg-gray-500" />
 
                 {/* Contact Info */}
+                <ForbiddenFor roles={"employee"}>
                 <div className="flex flex-col items-start gap-2 w-full">
                   {/* Email */}
                   {projectData.client.email && (
@@ -168,6 +170,7 @@ export default function SingleProjectPage() {
                     <p className="text-sm text-gray-400 italic">No phone numbers</p>
                   )}
                 </div>
+                </ForbiddenFor>
               </>
             ) : (
               <p className="text-gray-400 italic text-sm">No client assigned</p>
@@ -218,12 +221,14 @@ export default function SingleProjectPage() {
             <p className="text-gray-400 animate-pulse">Loading finance data...</p>
           </div>
         ) : (
+          <AllowedFor roles={["admin","financial_manager"]}>
           <SingleProjectFinanceComponent
             financials={SingleProjectFinance?.data?.financials}
             employeesBreakdown={SingleProjectEmployeesBreakDown?.data}
             expensesBreakdown={SingleProjectExpensesBreakDown?.data}
             clientPaymentHistory={SingleProjectClientPaymentHistory?.data}
           />
+          </AllowedFor>
         )}
 
         {/* Team Members */}

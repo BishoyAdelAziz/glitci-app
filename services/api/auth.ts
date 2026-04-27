@@ -15,7 +15,7 @@ export const LogOut = async () => {
   return res.data;
 };
 export const ChangePassword = async (data) => {
-  const response = await axiosInstance.patch("/auth/change-password", data);
+  const response = await AuthInstance.patch("/change-password", data);
   return response.data;
 };
 export const SetInitialPassword = async (data: { newPassword: string }) => {

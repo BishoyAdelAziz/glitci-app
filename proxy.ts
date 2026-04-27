@@ -35,10 +35,11 @@ export default async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isInitialPasswordRoute = pathname.startsWith("/initial-password");
   const isApiAuthRoute = pathname.startsWith("/api/auth/");
+  const isApiRoute = pathname.startsWith("/api/");
   const isComingSoon = pathname.startsWith("/coming-soon");
 
-  // 1. Whitelist API auth routes and coming soon
-  if (isApiAuthRoute || isComingSoon) return NextResponse.next();
+  // 1. Whitelist all API routes and coming soon (API routes handle their own auth via tokens)
+  if (isApiAuthRoute || isApiRoute || isComingSoon) return NextResponse.next();
 
   const accessToken = request.cookies.get("accessToken")?.value;
   const expiryCookie = request.cookies.get("GlitciTokenExpiry")?.value;

@@ -51,6 +51,29 @@ export async function POST(req: Request) {
       maxAge: maxAgeSeconds,
     });
 
+    // ✅ Server-side mustChangePassword cookie for immediate middleware enforcement
+    response.cookies.set(
+      "GlitciMustChangePassword",
+      String(!!result.mustChangePassword),
+      {
+        httpOnly: false,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+      },
+    );
+
+    // ✅ Server-side role cookie so middleware can enforce RBAC on first navigation
+    const userRole = result.data?.role ?? "admin";
+    response.cookies.set("GlitciUserRole", userRole, {
+      httpOnly: false,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+    });
+
     // ✅ Forward backend's Set-Cookie headers (refreshToken) AFTER cookies.set()
     // cookies.set() overwrites previously appended Set-Cookie headers,
     // so we must append the backend cookies last.

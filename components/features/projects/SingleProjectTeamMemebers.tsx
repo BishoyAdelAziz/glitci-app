@@ -1,3 +1,4 @@
+import { AllowedFor } from "@/components/auth/RoleGate";
 import React, { useState } from "react";
 
 type EmploymentType = "full_time" | "part_time" | "freelancer";
@@ -153,9 +154,11 @@ export default function TeamMembers({ employees, employeesBreakdown, clientPayme
 
                 {/* Right: compensation + employment type */}
                 <div className="flex flex-col items-end gap-1">
+                  <AllowedFor roles={"admin"}>
                   <span className="font-bold text-sm tabular-nums">
                     {formatCurrency(comp, cur)}
                   </span>
+                  </AllowedFor>
                   <span
                     className={`text-[10px] font-medium px-2 py-0.5 rounded-full ring-1 ${empStyles.badge} capitalize tracking-wide`}
                   >
@@ -240,9 +243,11 @@ export default function TeamMembers({ employees, employeesBreakdown, clientPayme
 
               {/* Right: Budget */}
               <div className="flex flex-col items-end gap-1">
+                <AllowedFor roles={"admin"}>
                 <span className="font-bold text-sm tabular-nums text-gray-700 dark:text-gray-200">
                   {formatCurrency(projectBudget, projectCurrency)}
                 </span>
+                </AllowedFor>
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full ring-1 bg-green-50 text-green-700 ring-green-300 dark:bg-green-900/20 dark:text-green-400 dark:ring-green-700 capitalize tracking-wide">
                   Project Budget
                 </span>

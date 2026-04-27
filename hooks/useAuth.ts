@@ -64,6 +64,12 @@ export default function useAuth() {
     mutationFn: SetInitialPassword,
     onSuccess: async () => {
       toast.success("Password set successfully");
+      // Clear the mustChangePassword cookie immediately as a safety net
+      // (in case logout fails, prevents redirect loop)
+      document.cookie =
+        "GlitciMustChangePassword=false; path=/; expires=" +
+        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString() +
+        "; SameSite=Lax";
       queryClient.clear();
       try {
         await LogOut();
