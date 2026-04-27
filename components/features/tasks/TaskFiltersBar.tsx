@@ -15,6 +15,7 @@ export interface TaskFilters {
   department?: string;
   status?: TaskStatus;
   project?: string;
+  limit?: number;
 }
 
 interface Props {
@@ -32,6 +33,7 @@ function FilterDropdown({
   onChange,
   disabled = false,
   placeholder = "All",
+  hidePlaceholder = false,
 }: {
   label: string;
   icon: React.ReactNode;
@@ -40,6 +42,7 @@ function FilterDropdown({
   onChange: (value?: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  hidePlaceholder?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -71,7 +74,7 @@ function FilterDropdown({
       >
         {icon}
         <span className="truncate max-w-24">{selected?.name || label}</span>
-        {value && (
+        {value && !hidePlaceholder && (
           <span
             onClick={(e) => {
               e.stopPropagation();
@@ -86,17 +89,19 @@ function FilterDropdown({
 
       {isOpen && (
         <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden min-w-48 max-h-60 overflow-y-auto py-1">
-          <button
-            onClick={() => {
-              onChange(undefined);
-              setIsOpen(false);
-            }}
-            className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${
-              !value ? "font-semibold text-red-500" : ""
-            }`}
-          >
-            {placeholder}
-          </button>
+          {!hidePlaceholder && (
+            <button
+              onClick={() => {
+                onChange(undefined);
+                setIsOpen(false);
+              }}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                !value ? "font-semibold text-red-500" : ""
+              }`}
+            >
+              {placeholder}
+            </button>
+          )}
           {options.map((option) => (
             <button
               key={option.id}
@@ -124,6 +129,13 @@ const STATUS_OPTIONS: { id: string; name: string }[] = [
   { id: "in progress", name: "In Progress" },
   { id: "postponed", name: "Postponed" },
   { id: "completed", name: "Completed" },
+];
+
+const LIMIT_OPTIONS: { id: string; name: string }[] = [
+  { id: "10", name: "10 Per Page" },
+  { id: "20", name: "20 Per Page" },
+  { id: "50", name: "50 Per Page" },
+  { id: "100", name: "100 Per Page" },
 ];
 
 // ─── SVG Icons ──────────────────────────────────────────────────────────────────
@@ -159,6 +171,12 @@ const FilterIcon = (
 const FolderIcon = (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+  </svg>
+);
+
+const ListIcon = (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
   </svg>
 );
 
@@ -299,6 +317,16 @@ export default function TaskFiltersBar({ filters, setFilters }: Props) {
         options={projectOptions}
         value={filters.project}
         onChange={(v) => setFilters((prev) => ({ ...prev, project: v }))}
+      />
+
+      {/* Limit */}
+      <FilterDropdown
+        label="10 Per Page"
+        icon={ListIcon}
+        options={LIMIT_OPTIONS}
+        value={filters.limit?.toString() || "10"}
+        onChange={(v) => setFilters((prev) => ({ ...prev, limit: v ? parseInt(v, 10) : undefined }))}
+        hidePlaceholder={true}
       />
     </div>
   );

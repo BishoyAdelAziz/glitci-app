@@ -1,6 +1,6 @@
 // ─── Task Status ────────────────────────────────────────────────────────────────
 
-export type TaskStatus = "pending" | "in progress" | "postponed" | "completed";
+export type TaskStatus = "pending" | "in progress" | "in review" | "postponed" | "completed";
 
 // ─── Populated Sub-Types ────────────────────────────────────────────────────────
 
@@ -38,6 +38,13 @@ export interface TaskHistoryEntry {
   description: string;
 }
 
+// ─── Task Link ──────────────────────────────────────────────────────────────────
+
+export interface TaskLink {
+  name: string;
+  url: string;
+}
+
 // ─── Task Object ────────────────────────────────────────────────────────────────
 
 export interface Task {
@@ -47,7 +54,7 @@ export interface Task {
   description?: string;
   startTime: string;
   endTime: string;
-  link?: string;
+  links?: TaskLink[];
   status: TaskStatus;
   assignedTo: TaskAssignedTo;
   project?: TaskProject;
@@ -88,7 +95,7 @@ export interface CreateTaskPayload {
   endTime: string;
   assignedTo: string;
   project?: string;
-  link?: string;
+  links?: TaskLink[];
 }
 
 export interface CreateTasksBody {
@@ -99,6 +106,25 @@ export interface CreateTasksResponse {
   message: string;
   count: number;
   data: Task[];
+}
+
+// ─── Update Task ─────────────────────────────────────────────────────────────────
+
+export interface UpdateTaskPayload {
+  name?: string;
+  description?: string;
+  assignedTo?: string;
+  project?: string;
+  links?: TaskLink[];
+}
+
+export interface UpdateTaskResponse {
+  message: string;
+  data: Task;
+}
+
+export interface DeleteTaskResponse {
+  message: string;
 }
 
 // ─── Status Update ──────────────────────────────────────────────────────────────
@@ -126,6 +152,7 @@ export interface AnalyticsData {
   completed: number;
   pending: number;
   inProgress: number;
+  inReview: number;
   postponed: number;
   completionRate: number;
   tasks: Task[];

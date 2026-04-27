@@ -6,9 +6,12 @@ import useUser from "@/hooks/useUser";
 import TaskFiltersBar, { type TaskFilters } from "./TaskFiltersBar";
 import TaskTable from "./TaskTable";
 import CreateTaskModal from "./CreateTaskModal";
+import EditTaskModal from "./EditTaskModal";
+import DeleteTaskModal from "./DeleteTaskModal";
 import StackedPagination from "@/components/ui/Pagination";
-import type { TaskStatus } from "@/types/tasks";
+import type { Task, TaskStatus } from "@/types/tasks";
 import toast from "react-hot-toast";
+
 
 // ─── Status Metric Card ────────────────────────────────────────────────────────
 
@@ -44,9 +47,17 @@ interface Props {
 export default function TasksContainer({ isOpen, setIsOpen }: Props) {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<TaskFilters>({});
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { user } = useUser();
 
   const isAdmin = user?.role === "admin" || user?.role === "operation";
+
+  const handleSetFilters: Dispatch<SetStateAction<TaskFilters>> = (val) => {
+    setFilters(val);
+    setPage(1); // Reset page on filter change
+  };
 
   const {
     tasks,
@@ -58,7 +69,7 @@ export default function TasksContainer({ isOpen, setIsOpen }: Props) {
   } = useTasks({
     ...filters,
     page,
-    limit: 10,
+    limit: filters.limit || 10,
   });
 
   // ── Status counts from current page data ──
@@ -74,14 +85,20 @@ export default function TasksContainer({ isOpen, setIsOpen }: Props) {
     UpdateStatusMutation(
       { id: taskId, status: newStatus },
       {
-        onSuccess: () => {
-          toast.success("Status updated!");
-        },
-        onError: (err: any) => {
-          toast.error(err?.response?.data?.message || "Failed to update status");
-        },
+        onSuccess: () => { toast.success("Status updated!"); },
+        onError: (err: any) => { toast.error(err?.response?.data?.message || "Failed to update status"); },
       },
     );
+  };
+
+  const handleEdit = (task: Task) => {
+    setSelectedTask(task);
+    setIsEditOpen(true);
+  };
+
+  const handleDelete = (task: Task) => {
+    setSelectedTask(task);
+    setIsDeleteOpen(true);
   };
 
   // ── Loading ──
@@ -140,7 +157,7 @@ export default function TasksContainer({ isOpen, setIsOpen }: Props) {
       {/* Filters */}
       {isAdmin && (
         <div className="mb-6">
-          <TaskFiltersBar filters={filters} setFilters={setFilters} />
+          <TaskFiltersBar filters={filters} setFilters={handleSetFilters} />
         </div>
       )}
 
@@ -150,6 +167,8 @@ export default function TasksContainer({ isOpen, setIsOpen }: Props) {
         isAdmin={isAdmin}
         onStatusChange={handleStatusChange}
         isUpdating={UpdateStatusIsPending}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
 
       {/* Pagination */}
@@ -164,6 +183,24 @@ export default function TasksContainer({ isOpen, setIsOpen }: Props) {
 
       {/* Create Modal */}
       <CreateTaskModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+
+      {/* Edit / Delete Modals */}
+      {selectedTask && (
+        <>
+          <EditTaskModal
+            isOpen={isEditOpen}
+            setIsOpen={setIsEditOpen}
+            task={selectedTask}
+            setSelectedTask={setSelectedTask}
+          />
+          <DeleteTaskModal
+            isOpen={isDeleteOpen}
+            setIsOpen={setIsDeleteOpen}
+            task={selectedTask}
+            setSelectedTask={setSelectedTask}
+          />
+        </>
+      )}
     </>
   );
 }

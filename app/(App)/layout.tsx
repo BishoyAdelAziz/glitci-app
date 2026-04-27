@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import NavHeader from "@/components/layout/nav";
+import Sidebar from "@/components/layout/sidebar";
+import Header from "@/components/layout/header";
 import ControllersNav from "@/components/layout/controllers";
 import { Metadata } from "next";
 
@@ -10,14 +11,21 @@ export const metadata: Metadata = {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="container mx-auto">
-      <Suspense fallback={null}>
-        <NavHeader />
-      </Suspense>
+    <div className="flex h-screen bg-gray-50 dark:bg-black overflow-hidden transition-colors duration-300">
+      {/* Sidebar - Fixed on desktop */}
+      <div className="hidden md:flex h-full">
+        <Sidebar />
+      </div>
 
-      <div className="relative flex">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Top Header */}
+        <Header />
+
+        {/* Floating Controllers (Date filters, etc) */}
         <ControllersNav />
-        <main className="flex-1 pt-20">
+
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 lg:p-8">
           <Suspense
             fallback={
               <div className="flex items-center justify-center p-20">
@@ -25,12 +33,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             }
           >
-            <section className="bg-white dark:bg-gray-900 p-5 md:p-10 lg:p-20 rounded-4xl">
+            <div className="bg-white dark:bg-gray-900 p-5 md:p-10 rounded-4xl shadow-sm min-h-[calc(100vh-140px)] transition-colors duration-300">
               {children}
-            </section>
+            </div>
           </Suspense>
         </main>
       </div>
-    </section>
+    </div>
   );
 }

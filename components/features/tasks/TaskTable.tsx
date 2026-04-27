@@ -8,6 +8,8 @@ interface Props {
   isAdmin: boolean;
   onStatusChange: (taskId: string, newStatus: TaskStatus) => void;
   isUpdating?: boolean;
+  onEdit?: (task: Task) => void;
+  onDelete?: (task: Task) => void;
 }
 
 export default function TaskTable({
@@ -15,6 +17,8 @@ export default function TaskTable({
   isAdmin,
   onStatusChange,
   isUpdating = false,
+  onEdit,
+  onDelete,
 }: Props) {
   if (!tasks.length) {
     return (
@@ -46,11 +50,12 @@ export default function TaskTable({
     <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
       {/* Header */}
       <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-        <div className="col-span-5">Task Details</div>
+        <div className="col-span-4">Task Details</div>
         <div className="col-span-2">Assigned To</div>
         <div className="col-span-2">Project / Dept</div>
-        <div className="col-span-1">Deadline</div>
-        <div className="col-span-2 text-right">Status</div>
+        <div className="col-span-2">Deadline</div>
+        <div className="col-span-1 text-center">Status</div>
+        {isAdmin && <div className="col-span-1 text-right">Actions</div>}
       </div>
 
       {/* Rows */}
@@ -62,6 +67,8 @@ export default function TaskTable({
           isAdmin={isAdmin}
           onStatusChange={onStatusChange}
           isUpdating={isUpdating}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
     </div>

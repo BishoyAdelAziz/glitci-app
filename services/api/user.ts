@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axios";
+import type { UserRole } from "@/types/user";
 
 export interface User {
   id: string;
@@ -6,8 +7,11 @@ export interface User {
   email: string;
   phone?: string | null;
   image: string | null;
-  role: string;
-  currency: "EGP" | "SAR" | "AED" | "USD" | "EUR";
+  role: UserRole;
+  currency?: "EGP" | "SAR" | "AED" | "USD" | "EUR";
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface MeResponse {

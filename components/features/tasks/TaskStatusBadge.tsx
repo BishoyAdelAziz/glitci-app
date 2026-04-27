@@ -33,19 +33,27 @@ const STATUS_CONFIG: Record<
     text: "text-emerald-600 dark:text-emerald-400",
     dot: "bg-emerald-500",
   },
+  "in review": {
+    label: "In Review",
+    bg: "bg-purple-50 dark:bg-purple-950/30",
+    text: "text-purple-600 dark:text-purple-400",
+    dot: "bg-purple-500",
+  },
 };
 
 // Admin can set any status; employee can only move forward one step
 const ADMIN_TRANSITIONS: Record<TaskStatus, TaskStatus[]> = {
-  pending: ["in progress", "postponed", "completed"],
-  "in progress": ["pending", "postponed", "completed"],
-  postponed: ["pending", "in progress", "completed"],
-  completed: ["pending", "in progress", "postponed"],
+  pending: ["in progress", "postponed", "completed", "in review"],
+  "in progress": ["pending", "postponed", "completed", "in review"],
+  "in review": ["pending", "in progress", "postponed", "completed"],
+  postponed: ["pending", "in progress", "completed", "in review"],
+  completed: ["pending", "in progress", "postponed", "in review"],
 };
 
 const EMPLOYEE_TRANSITIONS: Record<TaskStatus, TaskStatus | null> = {
   pending: "in progress",
-  "in progress": "completed",
+  "in progress": "in review",
+  "in review": "completed",
   postponed: null,
   completed: null,
 };
@@ -100,7 +108,11 @@ export default function TaskStatusBadge({
         disabled={isPending}
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide transition-all hover:scale-105 active:scale-95 ${nextConfig.bg} ${nextConfig.text} ${isPending ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
       >
-        {status === "pending" ? "▶ Start Task" : "✓ Complete"}
+        {status === "pending"
+          ? "▶ Start Task"
+          : status === "in progress"
+            ? "🔍 Submit for Review"
+            : "✓ Complete"}
       </button>
     );
   }

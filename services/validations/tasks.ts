@@ -1,5 +1,10 @@
 import z from "zod";
 
+export const TaskLinkSchema = z.object({
+  name: z.string().min(1, "Link name is required"),
+  url: z.string().url("Must be a valid URL"),
+});
+
 export const CreateTaskSchema = z
   .object({
     name: z
@@ -27,11 +32,7 @@ export const CreateTaskSchema = z
 
     project: z.string().optional().or(z.literal("")),
 
-    link: z
-      .string()
-      .url("Must be a valid URL")
-      .optional()
-      .or(z.literal("")),
+    links: z.array(TaskLinkSchema).optional(),
   })
   .refine(
     (data) => {
@@ -45,3 +46,24 @@ export const CreateTaskSchema = z
   );
 
 export type CreateTaskFormFields = z.infer<typeof CreateTaskSchema>;
+
+// ─── Update Task Schema ─────────────────────────────────────────────────────────
+
+export const UpdateTaskSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Task name must be at least 2 characters")
+    .max(200, "Task name must be at most 200 characters")
+    .optional(),
+  description: z
+    .string()
+    .max(2000, "Description must be at most 2000 characters")
+    .optional()
+    .or(z.literal("")),
+  assignedTo: z.string().optional(),
+  project: z.string().optional().or(z.literal("")),
+  links: z.array(TaskLinkSchema).optional(),
+});
+
+export type UpdateTaskFormFields = z.infer<typeof UpdateTaskSchema>;
+

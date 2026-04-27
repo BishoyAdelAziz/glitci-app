@@ -10,6 +10,7 @@ import SubmitButton from "@/components/forms/SubmitButton";
 
 import { loginSchema, LoginFormData } from "@/services/validations/auth";
 import { useLogin } from "@/hooks/useLogin";
+import { getHomeForRole, getCurrentUserRole } from "@/config/roles";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -28,9 +29,10 @@ export default function LoginPage() {
     mutate(data, {
       onSuccess: (data) => {
         if (data.mustChangePassword === true) {
-          router.push("/changePassword");
+          router.push("/initial-password");
         } else {
-          router.push("/overview");
+          const role = getCurrentUserRole();
+          router.push(getHomeForRole(role));
           router.refresh();
         }
       },

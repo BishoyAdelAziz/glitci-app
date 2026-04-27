@@ -1,11 +1,12 @@
 import { Suspense } from "react";
-import NavHeader from "@/components/layout/nav";
+import Sidebar from "@/components/layout/sidebar";
+import Header from "@/components/layout/header";
 import ControllersNav from "@/components/layout/controllers";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: `${process.env.NEXT_PUBLIC_APP_NAME} App`,
-  description: "Here Your Can Manage Your Application",
+  title: `${process.env.NEXT_PUBLIC_APP_NAME} Profile`,
+  description: "Manage your profile",
 };
 
 export default function ProfileLayout({
@@ -14,14 +15,21 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="container mx-auto">
-      <Suspense fallback={null}>
-        <NavHeader />
-      </Suspense>
+    <div className="flex h-screen bg-gray-50 dark:bg-black overflow-hidden transition-colors duration-300">
+      {/* Sidebar */}
+      <div className="hidden md:flex h-full">
+        <Sidebar />
+      </div>
 
-      <div className="relative flex">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Top Header */}
+        <Header />
+
+        {/* Floating Controllers */}
         <ControllersNav />
-        <main className="flex-1 pt-20">
+
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 lg:p-8">
           <Suspense
             fallback={
               <div className="flex items-center justify-center p-20">
@@ -29,10 +37,12 @@ export default function ProfileLayout({
               </div>
             }
           >
-            <section className="bg-white dark:bg-gray-900">{children}</section>
+            <div className="bg-white dark:bg-gray-900 p-5 md:p-10 rounded-4xl shadow-sm min-h-[calc(100vh-140px)] transition-colors duration-300">
+              {children}
+            </div>
           </Suspense>
         </main>
       </div>
-    </section>
+    </div>
   );
 }

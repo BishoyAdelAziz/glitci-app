@@ -41,6 +41,7 @@ const Routes: Route[] = [
       { id: 2, name: "Analytics", path: "/tasks/analytics" },
     ],
   },
+  { id: 8, name: "assets", path: "/assets" },
   {
     id: 6,
     name: "services",
@@ -52,6 +53,7 @@ const Routes: Route[] = [
     ],
   },
   { id: 7, name: "transactions", path: "/transactions" },
+  { id: 9, name: "user Management", path: "/users" },
 ];
 
 const SEARCH_PLACEHOLDERS: Record<string, string> = {
@@ -61,6 +63,7 @@ const SEARCH_PLACEHOLDERS: Record<string, string> = {
   "/employees": "Search employees...",
   "/tasks/analytics": "Search analytics...",
   "/tasks": "Search tasks...",
+  "/assets": "Search assets...",
   "/services/departments": "Search departments...",
   "/services/positions": "Search positions...",
   "/services/skills": "Search skills...",

@@ -12,6 +12,7 @@ import {
   verifyCode,
 } from "@/services/api/auth";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 export default function useAuth() {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function useAuth() {
   } = useMutation({
     mutationFn: LogOut,
     onSuccess: () => {
-      window.location.href = "/login";
+      router.push("/login");
     },
   });
   const {
@@ -46,11 +47,12 @@ export default function useAuth() {
   } = useMutation({
     mutationFn: ChangePassword,
     onSuccess: async () => {
+      toast.success("Password changed successfully");
       queryClient.clear();
       try {
         await LogOut();
       } catch (_) {}
-      window.location.href = "/login";
+      router.push("/login");
     },
   });
   const {
@@ -61,11 +63,12 @@ export default function useAuth() {
   } = useMutation({
     mutationFn: SetInitialPassword,
     onSuccess: async () => {
+      toast.success("Password set successfully");
       queryClient.clear();
       try {
         await LogOut();
       } catch (_) {}
-      window.location.href = "/login";
+      router.push("/login");
     },
   });
   const {
