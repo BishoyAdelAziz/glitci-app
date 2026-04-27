@@ -8,13 +8,19 @@ import useUser from "@/hooks/useUser";
 import useAuth from "@/hooks/useAuth";
 import ButtonLoader from "@/components/Loaders/ButtonLoader";
 import DesktopSearch from "@/components/layout/DesktopSearch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Sidebar from "./sidebar"; // We'll use Sidebar inside a drawer for mobile
 
 export default function Header() {
   const { user, isPending } = useUser();
   const { LogoutMutation } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="h-20 p-8 md:mx-8 mt-[3vh] rounded-3xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 px-4 md:px-8 flex items-center justify-between sticky top-0 z-40">
@@ -87,18 +93,19 @@ export default function Header() {
       </div>
 
       {/* Mobile Drawer */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+      {isMobileMenuOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[100] md:hidden flex">
           {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           {/* Drawer Content */}
-          <div className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-gray-900 shadow-2xl animate-in slide-in-from-left duration-300">
+          <div className="relative w-72 bg-white dark:bg-gray-900 shadow-2xl animate-in slide-in-from-left duration-300">
             <Sidebar isMobile />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );

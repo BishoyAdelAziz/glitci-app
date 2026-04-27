@@ -43,7 +43,7 @@ export default function RootLayout({
 
           {children}
         </ClientProviders>
-        <div id="root-portal" className="relative z-9999" />
+        <div id="root-portal" className="relative z-9999999999999" />
       </body>
     </html>
   );

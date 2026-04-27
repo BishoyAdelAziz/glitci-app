@@ -106,6 +106,7 @@ export default function TaskRow({
     >
       {/* Main Row */}
       <div className="grid grid-cols-12 gap-y-4 gap-x-2 md:gap-4 px-4 sm:px-6 py-5 items-center">
+
         {/* Task Details */}
         <div className="col-span-12 md:col-span-4 flex items-center gap-3 min-w-0">
           <button
@@ -118,8 +119,8 @@ export default function TaskRow({
             </svg>
           </button>
           <TaskTypeIcon />
-          <div 
-            className="min-w-0 cursor-pointer" 
+          <div
+            className="min-w-0 cursor-pointer"
             onClick={() => setIsExpanded(!isExpanded)}
           >
             <p className="font-semibold text-sm truncate hover:text-red-500 transition-colors">{task.name}</p>
@@ -168,13 +169,15 @@ export default function TaskRow({
           </span>
         </div>
 
-        {/* Status */}
+        {/* Status — TaskStatusBadge now uses a portal internally */}
         <div className="col-span-9 sm:col-span-10 md:col-span-1 flex flex-col justify-center items-start md:items-center mt-2 sm:mt-0">
           <span className="text-[10px] uppercase text-gray-400 font-bold md:hidden mb-1 tracking-wider">Status</span>
           <TaskStatusBadge
             status={task.status}
             isAdmin={isAdmin}
-            onStatusChange={(newStatus) => onStatusChange(task.id || task._id || "", newStatus)}
+            onStatusChange={(newStatus) =>
+              onStatusChange(task.id || task._id || "", newStatus)
+            }
             isPending={isUpdating}
           />
         </div>
@@ -205,24 +208,30 @@ export default function TaskRow({
       {isExpanded && (
         <div className="px-6 pb-5 pt-2 border-t border-gray-100 dark:border-gray-800">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
             {/* Meta Data */}
             <div className="lg:col-span-1 space-y-5">
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Created By</p>
                 <div className="flex items-center gap-2">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0 ${getAvatarColor(task.createdBy?.name || "System")}`}>
+                  <div
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0 ${getAvatarColor(task.createdBy?.name || "System")}`}
+                  >
                     {getInitials(task.createdBy?.name || "System")}
                   </div>
                   <span className="text-sm font-medium">{task.createdBy?.name || "System"}</span>
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Created At</p>
                 <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                   {new Date(task.createdAt).toLocaleString("en-US", {
-                    month: "short", day: "numeric", year: "numeric",
-                    hour: "numeric", minute: "2-digit"
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
                   })}
                 </p>
               </div>
@@ -239,7 +248,9 @@ export default function TaskRow({
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
                         {link.name || "Open Link"}
                       </a>
                     ))}
@@ -257,22 +268,39 @@ export default function TaskRow({
                     <div key={i} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div className="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600 mt-1" />
-                        {i !== task.history.length - 1 && <div className="w-px h-full bg-gray-200 dark:bg-gray-700 my-1.5" />}
+                        {i !== task.history.length - 1 && (
+                          <div className="w-px h-full bg-gray-200 dark:bg-gray-700 my-1.5" />
+                        )}
                       </div>
                       <div className="pb-2">
                         <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
                           {h.description}
                         </p>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
-                          <span>{new Date(h.changedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                          <span>
+                            {new Date(h.changedAt).toLocaleString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              hour: "numeric",
+                              minute: "2-digit",
+                            })}
+                          </span>
                           <span className="w-1 h-1 rounded-full bg-gray-300" />
                           <span>{h.changedByName || "System"}</span>
                           <span className="w-1 h-1 rounded-full bg-gray-300" />
-                          <span className={`uppercase tracking-wider font-bold ${
-                            h.status === 'completed' ? 'text-emerald-500' :
-                            h.status === 'in progress' ? 'text-blue-500' :
-                            h.status === 'postponed' ? 'text-orange-500' : 'text-amber-500'
-                          }`}>{h.status}</span>
+                          <span
+                            className={`uppercase tracking-wider font-bold ${
+                              h.status === "completed"
+                                ? "text-emerald-500"
+                                : h.status === "in progress"
+                                ? "text-blue-500"
+                                : h.status === "postponed"
+                                ? "text-orange-500"
+                                : "text-amber-500"
+                            }`}
+                          >
+                            {h.status}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -282,6 +310,7 @@ export default function TaskRow({
                 <p className="text-sm text-gray-500 italic">No timeline events recorded.</p>
               )}
             </div>
+
           </div>
         </div>
       )}

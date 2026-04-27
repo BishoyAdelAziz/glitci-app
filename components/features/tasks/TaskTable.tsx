@@ -47,7 +47,7 @@ export default function TaskTable({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl ">
       {/* Header */}
       <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
         <div className="col-span-4">Task Details</div>

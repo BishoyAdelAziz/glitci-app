@@ -92,22 +92,18 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
   }, [pathname, openSubmenuId]);
 
   const rowShellClass = (active: boolean) =>
-    `${
-      "flex h-[52px] w-14 shrink-0 cursor-pointer items-center justify-center gap-0 rounded-2xl transition-all duration-300"
-    } ${
-      !isMobile ? "group-hover:w-[calc(100%-24px)] group-hover:justify-start group-hover:gap-3 group-hover:rounded-none group-hover:rounded-r-3xl group-hover:self-start group-hover:ps-5 group-hover:pe-3" : ""
-    } ${
-      isMobile ? "w-full justify-start gap-3 rounded-none rounded-r-3xl self-start ps-5 pe-3" : ""
+    `flex h-[52px] shrink-0 cursor-pointer items-center transition-all duration-300 ${
+      !isMobile 
+        ? "w-14 justify-center gap-0 rounded-2xl group-hover:w-[calc(100%-24px)] group-hover:justify-start group-hover:gap-3 group-hover:rounded-none group-hover:rounded-r-3xl group-hover:self-start group-hover:ps-5 group-hover:pe-3" 
+        : "w-full justify-start gap-3 rounded-none rounded-r-3xl self-start ps-5 pe-3"
     } ${
       active 
         ? "bg-linear-to-r from-[#484848] to-[#000000] text-white shadow-md" 
         : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
     }`;
 
-  const labelClass = `${"hidden min-w-0 flex-1 truncate text-start font-medium text-sm transition-all duration-300"} ${
-      !isMobile ? "group-hover:block" : ""
-    } ${
-      isMobile ? "block" : ""
+  const labelClass = `min-w-0 flex-1 truncate text-start font-medium text-sm transition-all duration-300 ${
+      !isMobile ? "hidden group-hover:block" : "block"
     }`;
 
   return (
@@ -120,12 +116,10 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
     >
       {/* Logo */}
       <div 
-        className={`${
-          "h-20 shrink-0 flex items-center justify-center gap-0 px-2 transition-all duration-300 cursor-pointer"
-        } ${
-          !isMobile ? "group-hover:justify-start group-hover:gap-3 group-hover:px-6" : ""
-        } ${
-          isMobile ? "justify-start gap-3 px-6" : ""
+        className={`h-20 shrink-0 flex items-center transition-all duration-300 cursor-pointer ${
+          !isMobile 
+            ? "justify-center gap-0 px-2 group-hover:justify-start group-hover:gap-3 group-hover:px-6" 
+            : "justify-start gap-3 px-6"
         }`}
         onClick={() => router.push(getHomeForRole(role))}
       >
@@ -153,7 +147,7 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
           const submenuOpen = openSubmenuId === route.id;
 
           return (
-            <div key={route.id} className={`${"flex w-full flex-col items-center"} ${!isMobile ? "group-hover:items-start" : ""} ${isMobile ? "items-start" : ""}`}>
+            <div key={route.id} className={`flex w-full flex-col ${!isMobile ? "items-center group-hover:items-start" : "items-start"}`}>
               {hasChildren ? (
                 <>
                   <button
@@ -169,12 +163,8 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
                     </span>
                     <ChevronDown
                       size={16}
-                      className={`${
-                        "hidden shrink-0 transition-transform duration-300"
-                      } ${
-                        !isMobile ? "group-hover:block" : ""
-                      } ${
-                        isMobile ? "block" : ""
+                      className={`shrink-0 transition-transform duration-300 ${
+                        !isMobile ? "hidden group-hover:block" : "block"
                       } ${
                         submenuOpen ? "rotate-180" : ""
                       }`}

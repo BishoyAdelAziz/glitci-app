@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import type { TaskStatus } from "@/types/tasks";
+import { usePortalPosition } from "@/hooks/Useportalpisition";
 
 // ─── Status Configuration ───────────────────────────────────────────────────────
 
@@ -73,19 +74,8 @@ export default function TaskStatusBadge({
   onStatusChange,
   isPending = false,
 }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const { triggerRef, isOpen, toggle, close, rect } = usePortalPosition<HTMLDivElement>();
   const config = STATUS_CONFIG[status];
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
 
   // ── Employee: single action button ──
   if (!isAdmin) {
@@ -121,9 +111,9 @@ export default function TaskStatusBadge({
   const transitions = ADMIN_TRANSITIONS[status];
 
   return (
-    <div ref={ref} className="relative inline-block">
+    <div ref={triggerRef} className="relative inline-block">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggle}
         disabled={isPending}
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide transition-all ${config.bg} ${config.text} ${isPending ? "opacity-50 cursor-wait" : "cursor-pointer hover:shadow-md"}`}
       >
@@ -144,8 +134,20 @@ export default function TaskStatusBadge({
         </svg>
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden min-w-36 py-1">
+      {isOpen && createPortal(
+        <div
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          style={{
+            position: "fixed",
+            zIndex: 2147483647,
+            right: window.innerWidth - (rect.left + rect.width),
+            ...(rect.openUpward
+              ? { bottom: window.innerHeight - rect.top, marginBottom: "4px" }
+              : { top: rect.top, marginTop: "4px" }),
+          }}
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden min-w-36 py-1 border border-gray-100 dark:border-gray-700"
+        >
           {transitions.map((s) => {
             const c = STATUS_CONFIG[s];
             return (
@@ -153,7 +155,7 @@ export default function TaskStatusBadge({
                 key={s}
                 onClick={() => {
                   onStatusChange(s);
-                  setIsOpen(false);
+                  close();
                 }}
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
@@ -162,7 +164,8 @@ export default function TaskStatusBadge({
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

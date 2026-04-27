@@ -58,6 +58,7 @@ const Routes: Route[] = [
     ],
   },
   { id: 7, name: "transactions", path: "/transactions", allowedRoles: ["admin", "financial_manager"] },
+
   { id: 9, name: "user Management", path: "/users", allowedRoles: ["admin"] },
 ];
 
@@ -581,6 +582,8 @@ function DesktopNav() {
 }
 
 // ─── Mobile Nav Item ───────────────────────────────────────────────────────────
+const navItemBase =
+  "block capitalize px-4 py-2 rounded-2xl transition-colors text-gray-800 dark:text-gray-200";
 
 function MobileNavItem({
   route,
@@ -591,10 +594,13 @@ function MobileNavItem({
 }) {
   const pathname = usePathname();
   const hasChildren = !!route.children?.length;
+
   const isActive =
     pathname === route.path || pathname.startsWith(route.path + "/");
+
   const isChildActive =
     route.children?.some((c) => pathname === c.path) ?? false;
+
   const [open, setOpen] = useState(isChildActive);
 
   if (!hasChildren) {
@@ -602,13 +608,13 @@ function MobileNavItem({
       <Link
         href={route.path}
         onClick={onClose}
-        className={`block capitalize px-4 py-2 rounded-2xl transition-colors ${
+        className={`${navItemBase} ${
           isActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
       >
-        {route.name}
+        {route.name || "—"} {/* fallback just in case */}
       </Link>
     );
   }
@@ -616,15 +622,16 @@ function MobileNavItem({
   return (
     <div>
       <div
-        className={`flex items-center justify-between capitalize px-4 py-2 rounded-2xl transition-colors cursor-pointer ${
+        className={`flex items-center justify-between ${navItemBase} cursor-pointer ${
           isActive || isChildActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
       >
         <Link href={route.path} onClick={onClose} className="flex-1">
-          {route.name}
+          {route.name || "—"}
         </Link>
+
         <button
           onClick={() => setOpen((v) => !v)}
           className="pl-2 flex items-center"
@@ -638,18 +645,19 @@ function MobileNavItem({
         <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-3">
           {route.children!.map((child) => {
             const isChildItemActive = pathname === child.path;
+
             return (
               <Link
                 key={child.id}
                 href={child.path}
                 onClick={onClose}
-                className={`block capitalize px-4 py-2 rounded-2xl text-sm transition-colors ${
+                className={`block capitalize px-4 py-2 rounded-2xl text-sm transition-colors text-gray-800 dark:text-gray-200 ${
                   isChildItemActive
                     ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
                     : "hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
-                {child.name}
+                {child.name || "—"}
               </Link>
             );
           })}
@@ -662,17 +670,22 @@ function MobileNavItem({
 // ─── Mobile Nav ────────────────────────────────────────────────────────────────
 
 function MobileNav() {
-  const { user } = useUser();
+  const { user, isPending } = useUser();
   const { toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const PathName = usePathname();
+  const pathname = usePathname();
+
   const filteredRoutes = useFilteredRoutes();
-  const isProfileActive = PathName.startsWith("/profile");
+  const isProfileActive = pathname.startsWith("/profile");
+
+  // ⛔ prevent rendering before data is ready
+  if (isPending) return null;
+
   return (
     <>
-      {/* Fixed top bar — `relative` is required for the search overlay to position correctly */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow ">
+      {/* Header */}
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow">
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => router.push("/projects")}
@@ -689,7 +702,6 @@ function MobileNav() {
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Search overlays the header when open */}
           <MobileSearch />
 
           <button
@@ -723,11 +735,14 @@ function MobileNav() {
           />
 
           <aside className="absolute right-0 top-0 h-full w-72 bg-white dark:bg-gray-900 flex flex-col rounded-tl-4xl rounded-bl-4xl shadow-xl z-50">
+            {/* Profile */}
             <div
-              onClick={() => {
-                router.push("/profile");
-              }}
-              className={`flex items-center cursor-pointer ${isProfileActive ? `bg-[linear-gradient(90deg,#DE4646,#B72D2D)] m-3 rounded-2xl text-white` : ""} gap-3 p-5 border-b dark:border-gray-700`}
+              onClick={() => router.push("/profile")}
+              className={`flex items-center cursor-pointer gap-3 p-5 border-b dark:border-gray-700 ${
+                isProfileActive
+                  ? "bg-[linear-gradient(90deg,#DE4646,#B72D2D)] m-3 rounded-2xl text-white"
+                  : ""
+              }`}
             >
               <Image
                 src={user?.image ?? "/icons/App-Icon.svg"}
@@ -739,13 +754,16 @@ function MobileNav() {
               <div>
                 <p className="font-medium">{user?.name}</p>
                 <p
-                  className={`text-sm ${isProfileActive ? "text-white" : "text-gray-500"}`}
+                  className={`text-sm ${
+                    isProfileActive ? "text-white" : "text-gray-500"
+                  }`}
                 >
                   {user?.email}
                 </p>
               </div>
             </div>
 
+            {/* Routes */}
             <nav className="flex-1 p-5 space-y-2 overflow-y-auto">
               {filteredRoutes.map((route) => (
                 <MobileNavItem
@@ -756,6 +774,7 @@ function MobileNav() {
               ))}
             </nav>
 
+            {/* Bottom controllers */}
             <div className="p-4 border-t dark:border-gray-700 flex flex-col gap-4">
               <ControllerTop toggleTheme={toggleTheme} />
               <ControllerBottom />
