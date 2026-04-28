@@ -76,8 +76,13 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
   const onSubmit: SubmitHandler<any> = async (data) => {
     if (!clientId) return;
     try {
+      const payload = {
+        ...data,
+        email: data.email?.trim() || undefined,
+      };
+
       updateClientMutation(
-        { clientId: clientId, data },
+        { clientId: clientId, data: payload },
         {
           onSuccess: () => {
             onClose();
