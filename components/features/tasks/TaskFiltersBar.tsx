@@ -129,6 +129,7 @@ const STATUS_OPTIONS: { id: string; name: string }[] = [
   { id: "in progress", name: "In Progress" },
   { id: "postponed", name: "Postponed" },
   { id: "completed", name: "Completed" },
+  { id: "in review", name: "In Review" },
 ];
 
 const LIMIT_OPTIONS: { id: string; name: string }[] = [
@@ -141,20 +142,40 @@ const LIMIT_OPTIONS: { id: string; name: string }[] = [
 // ─── SVG Icons ──────────────────────────────────────────────────────────────────
 
 const CalendarIcon = (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
     <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" />
     <path strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" />
   </svg>
 );
 
 const UserIcon = (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+    />
   </svg>
 );
 
 const DeptIcon = (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
     <rect x="3" y="3" width="7" height="7" rx="1" strokeWidth="2" />
     <rect x="14" y="3" width="7" height="7" rx="1" strokeWidth="2" />
     <rect x="3" y="14" width="7" height="7" rx="1" strokeWidth="2" />
@@ -163,20 +184,50 @@ const DeptIcon = (
 );
 
 const FilterIcon = (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+    />
   </svg>
 );
 
 const FolderIcon = (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+    />
   </svg>
 );
 
 const ListIcon = (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M4 6h16M4 12h16M4 18h16"
+    />
   </svg>
 );
 
@@ -226,10 +277,11 @@ export default function TaskFiltersBar({ filters, setFilters }: Props) {
   const { departments } = useDepartments();
   const { projects } = useProjects();
 
-  const employeeOptions = employees?.map((employee) => ({
-    id: employee.id,
-    name: employee.user.name,
-  })) ?? [];
+  const employeeOptions =
+    employees?.map((employee) => ({
+      id: employee.id,
+      name: employee.user.name,
+    })) ?? [];
   const departmentOptions =
     departments?.map((d: any) => ({ id: d._id || d.id, name: d.name })) ?? [];
   const projectOptions =
@@ -325,7 +377,12 @@ export default function TaskFiltersBar({ filters, setFilters }: Props) {
         icon={ListIcon}
         options={LIMIT_OPTIONS}
         value={filters.limit?.toString() || "10"}
-        onChange={(v) => setFilters((prev) => ({ ...prev, limit: v ? parseInt(v, 10) : undefined }))}
+        onChange={(v) =>
+          setFilters((prev) => ({
+            ...prev,
+            limit: v ? parseInt(v, 10) : undefined,
+          }))
+        }
         hidePlaceholder={true}
       />
     </div>
