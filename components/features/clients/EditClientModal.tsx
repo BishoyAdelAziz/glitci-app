@@ -14,7 +14,6 @@ interface Props {
 }
 
 export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
-  // ----- FORM -----
   const {
     register,
     handleSubmit,
@@ -25,8 +24,9 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
     defaultValues: {
       name: "",
       industry: "",
-      phones: [] as string[], // Explicitly type as string[]
+      phones: [] as string[],
       notes: "",
+      email: "",
       companyName: "",
     },
   });
@@ -43,10 +43,9 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
     UpdateClientIsError,
   } = useClients({ clientId: clientId });
 
-  // ----- CHECK IF READY -----
   const isReady = singleClient?.data;
   const ClientPhones = singleClient?.data.phones;
-  // ----- POPULATE FORM -----
+  const ClientEmail = singleClient?.data.email;
   useEffect(() => {
     if (!isReady || !isOpen) return;
 
@@ -54,6 +53,9 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
       name: singleClient.data.name,
       industry: singleClient.data.industry,
       phones: ClientPhones,
+      email: singleClient.data.email || "",
+      notes: singleClient.data.notes || "",
+      companyName: singleClient.data.companyName,
     });
   }, [isReady, singleClient, isOpen, reset]);
 
@@ -66,6 +68,7 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
       industry: singleClient.data.industry,
       phones: singleClient.data.phones || [],
       notes: singleClient.data.notes || "",
+      email: singleClient.data.email || "",
       companyName: singleClient.data.companyName,
     });
   }, [isReady, singleClient, isOpen, reset]);
@@ -120,6 +123,12 @@ export default function EditClientModal({ isOpen, onClose, clientId }: Props) {
             errors={errors}
             label="Company Name"
             name="companyName"
+            register={register}
+          />
+          <TextInput
+            errors={errors}
+            label="Email"
+            name="email"
             register={register}
           />
           <TextInput
