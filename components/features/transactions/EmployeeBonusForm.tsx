@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,14 +27,6 @@ interface Props {
 }
 
 export default function EmployeeBonusForm({ onClose }: Props) {
-  const { projects } = useProjects();
-  const { employees } = useEmployees({ limit: 1000 });
-  const {
-    SalaryMutaiton,
-    SalaryMutaitonError,
-    SalaryMutaitonIsError,
-    SalaryMutaitonIsPending,
-  } = useTransactions();
 
   const {
     register,
@@ -42,10 +35,22 @@ export default function EmployeeBonusForm({ onClose }: Props) {
     setValue,
     reset,
     formState: { errors },
+    watch,
   } = useForm<BonusFormData, unknown, BonusFormData>({
     resolver: zodResolver(bonusSchema) as any,
     defaultValues: { currency: "EGP" },
   });
+  const employeeId = watch("employee");
+  const projectId = watch("project");
+  
+  const { projects } = useProjects({limit:100,employee:employeeId});
+  const { employees } = useEmployees({ limit: 100 });
+  const {
+    SalaryMutaiton,
+    SalaryMutaitonError,
+    SalaryMutaitonIsError,
+    SalaryMutaitonIsPending,
+  } = useTransactions();
 
   const refinedProjects = projects?.map((p) => ({ id: p.id, name: p.name }));
   const refinedEmployees = employees?.map((e) => ({
@@ -59,6 +64,43 @@ export default function EmployeeBonusForm({ onClose }: Props) {
       ")",
   }));
 
+  const employeeCurrencies = useMemo(() => {
+    if (!projects || !employeeId) return [];
+    
+    const currencies = new Set<string>();
+    projects.forEach((p) => {
+      if (projectId && p.id !== projectId) return;
+
+      const emp = p.employees?.find((e: any) => e.id === employeeId) as any;
+      if (emp && emp.currency) {
+        currencies.add(emp.currency);
+      }
+    });
+    
+    return Array.from(currencies).map((c) => ({ id: c, name: c }));
+  }, [projects, employeeId, projectId]);
+
+  const currencyOptions =
+    employeeCurrencies.length > 0
+      ? employeeCurrencies
+      : [
+          { id: "EGP", name: "EGP" },
+          { id: "USD", name: "USD" },
+          { id: "EUR", name: "EUR" },
+          { id: "AED", name: "AED" },
+          { id: "SAR", name: "SAR" },
+        ];
+
+  useEffect(() => {
+    if (employeeCurrencies.length > 0) {
+      const currentCurrency = watch("currency");
+      const hasCurrency = employeeCurrencies.find((c) => c.id === currentCurrency);
+      if (!hasCurrency) {
+        setValue("currency", employeeCurrencies[0].id as any);
+      }
+    }
+  }, [employeeCurrencies, setValue, watch]);
+
   const onSubmit = (data: BonusFormData) => {
     SalaryMutaiton(
       { ...data, type: "expense", category: "employee_bonus" },
@@ -70,7 +112,8 @@ export default function EmployeeBonusForm({ onClose }: Props) {
       },
     );
   };
-
+console.log(projects)
+console.log(employees)
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -116,13 +159,7 @@ export default function EmployeeBonusForm({ onClose }: Props) {
           control={control}
           errors={errors}
           saveAsId={false}
-          options={[
-            { id: "EGP", name: "EGP" },
-            { id: "USD", name: "USD" },
-            { id: "EUR", name: "EUR" },
-            { id: "AED", name: "AED" },
-            { id: "SAR", name: "SAR" },
-          ]}
+          options={currencyOptions}
           placeholder="Currency"
           required
         />

@@ -6,7 +6,7 @@ export const ClientSchema = z.object({
   companyName: z
     .string("Company Name Must be String")
     .nonempty("Company Name is Required"),
-  email: z.email("invalid Email").nonempty("Client Email is Required"),
+  email: z.email("invalid Email").optional(),
   phones: z
     .array(
       z

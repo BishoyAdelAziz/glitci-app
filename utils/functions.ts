@@ -89,3 +89,99 @@ export const formatPhoneNumber = (phone: string | undefined | null): string => {
 
   return `${prefix} ${stacks.join(" ")}`;
 };
+// utils/normalizeFinance.ts
+
+export function normalizeFinance(data: any) {
+  const project = data?.project;
+
+  const currency =
+    project?.currency ||
+    data?.summary?.balanceDue?.[0]?.currency ||
+    data?.summary?.totalCollected?.[0]?.currency ||
+    "EGP";
+
+  return {
+    project: {
+      id: project?._id,
+      name: project?.name,
+      budget: project?.budget ?? 0,
+      currency,
+      client: {
+        id: project?.client?._id,
+        name: project?.client?.name,
+        companyName: project?.client?.companyName,
+      },
+    },
+
+    payments: data?.payments ?? [],
+
+    summary: {
+      totalPayments: data?.summary?.totalPayments ?? 0,
+
+      totalCollected:
+        data?.summary?.totalCollected?.reduce(
+          (sum: number, item: any) => sum + (item?.amount ?? 0),
+          0,
+        ) ?? 0,
+
+      balanceDue:
+        data?.summary?.balanceDue?.reduce(
+          (sum: number, item: any) => sum + (item?.amount ?? 0),
+          0,
+        ) ?? 0,
+
+      percentagePaid: data?.summary?.percentagePaid ?? 0,
+
+      currency,
+    },
+  };
+}
+export function normalizeTransactions(transactions: any[] = []) {
+  const result: Record<string, any> = {};
+
+  for (const tx of transactions) {
+    const projectId = tx.project?._id || "no-project";
+
+    if (!result[projectId]) {
+      result[projectId] = {
+        projectId,
+        projectName: tx.project?.name || "Unassigned",
+
+        income: 0,
+        expenses: 0,
+        balance: 0,
+
+        transactions: [],
+      };
+    }
+
+    const amount = tx.amountConverted?.EGP ?? tx.amount;
+
+    if (tx.type === "income") {
+      result[projectId].income += amount;
+    } else {
+      result[projectId].expenses += amount;
+    }
+
+    result[projectId].balance =
+      result[projectId].income - result[projectId].expenses;
+
+    result[projectId].transactions.push(tx);
+  }
+
+  return result;
+}
+export function sanitizeCookie(raw: string): string {
+  const isProduction = process.env.NODE_ENV === "production";
+  return raw
+    .split(";")
+    .filter((part) => {
+      const key = part.trim().toLowerCase();
+      if (key.startsWith("domain=")) return false;
+      if (key.startsWith("path=")) return false;
+      if (!isProduction && key === "secure") return false;
+      return true;
+    })
+    .concat(" Path=/")
+    .join(";");
+}

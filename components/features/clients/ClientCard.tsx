@@ -24,7 +24,7 @@ export default function ClientCard({ client }: Props) {
             {
               label: "View",
               icon: <EyeIcon />,
-              href: `/projects/${client.id}`,
+              href: `/clients/${client.id}`,
             },
             {
               label: "Edit",

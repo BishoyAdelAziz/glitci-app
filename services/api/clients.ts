@@ -6,6 +6,7 @@ import {
   SigleClientResponse,
 } from "@/types/clients";
 import { AddClientSchema } from "../validations/clients";
+import { ParamValue } from "next/dist/server/request/params";
 export const getClients = async (
   params?: ClientsQueryParams,
 ): Promise<ClientsResponse> => {
@@ -27,7 +28,7 @@ export const editClient = async ({
   return response.data;
 };
 export const getSingleClient = async (
-  clientId: string | undefined,
+  clientId: string | ParamValue,
 ): Promise<SigleClientResponse> => {
   const response = await axiosInstance.get(`/clients/${clientId}`);
   return response.data;

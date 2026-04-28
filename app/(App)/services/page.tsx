@@ -1,23 +1,16 @@
-"use client";
-import PageHeader from "@/components/features/services/PageHeader";
-import ServicesTable from "@/components/features/services/ServicesTable";
-import { useState } from "react";
+import { Suspense } from "react";
+import ServicesView from "./ServicesView";
 
 export default function ServicesPage() {
-  const [isCreateServiceOpen, setIsCreateServiceOpen] =
-    useState<boolean>(false);
   return (
-    <div>
-      <PageHeader
-        isOpen={isCreateServiceOpen}
-        setIsOpen={setIsCreateServiceOpen}
-      />
-      <div className="mt-10">
-        <ServicesTable
-          isOpen={isCreateServiceOpen}
-          setIsOpen={setIsCreateServiceOpen}
-        />
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B72D2D]"></div>
+        </div>
+      }
+    >
+      <ServicesView />
+    </Suspense>
   );
 }

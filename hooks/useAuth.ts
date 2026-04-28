@@ -4,11 +4,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChangePassword,
+  ForgotPassword,
   getMeApi,
   LogOut,
+  ResetPassword,
   SetInitialPassword,
+  verifyCode,
 } from "@/services/api/auth";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 export default function useAuth() {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -32,7 +36,7 @@ export default function useAuth() {
   } = useMutation({
     mutationFn: LogOut,
     onSuccess: () => {
-      window.location.href = "/login";
+      router.push("/login");
     },
   });
   const {
@@ -43,11 +47,12 @@ export default function useAuth() {
   } = useMutation({
     mutationFn: ChangePassword,
     onSuccess: async () => {
+      toast.success("Password changed successfully");
       queryClient.clear();
       try {
         await LogOut();
       } catch (_) {}
-      window.location.href = "/login";
+      router.push("/login");
     },
   });
   const {
@@ -58,12 +63,43 @@ export default function useAuth() {
   } = useMutation({
     mutationFn: SetInitialPassword,
     onSuccess: async () => {
+      toast.success("Password set successfully");
+      // Clear the mustChangePassword cookie immediately as a safety net
+      // (in case logout fails, prevents redirect loop)
+      document.cookie =
+        "GlitciMustChangePassword=false; path=/; expires=" +
+        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString() +
+        "; SameSite=Lax";
       queryClient.clear();
       try {
         await LogOut();
       } catch (_) {}
-      window.location.href = "/login";
+      router.push("/login");
     },
+  });
+  const {
+    mutate: ForgotPasswordMutation,
+    isPending: ForgotPasswordisPending,
+    isError: ForgotPasswordisError,
+    error: ForgotPasswordError,
+  } = useMutation({
+    mutationFn: ForgotPassword,
+  });
+  const {
+    mutate: VerifyCodeMutation,
+    isPending: VerifyCodeIsPending,
+    isError: VerifyCodeIsError,
+    error: VerifyCodeError,
+  } = useMutation({
+    mutationFn: verifyCode,
+  });
+  const {
+    mutate: ResetPasswordMutation,
+    isError: ResetPasswordIsError,
+    isPending: ResetPasswordIsPending,
+    error: ResetPasswordError,
+  } = useMutation({
+    mutationFn: ResetPassword,
   });
   return {
     user,
@@ -84,5 +120,17 @@ export default function useAuth() {
     SetInitialPasswordIsError,
     SetInitialPasswordIsPending,
     SetInitialPasswordError,
+    ForgotPasswordMutation,
+    ForgotPasswordisPending,
+    ForgotPasswordisError,
+    ForgotPasswordError,
+    VerifyCodeMutation,
+    VerifyCodeIsPending,
+    VerifyCodeIsError,
+    VerifyCodeError,
+    ResetPasswordMutation,
+    ResetPasswordIsError,
+    ResetPasswordIsPending,
+    ResetPasswordError,
   };
 }

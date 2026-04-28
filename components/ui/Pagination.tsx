@@ -18,8 +18,8 @@ const StackedPagination: React.FC<Props> = ({
   stackSize = 6,
   className = "",
 }) => {
-  // Calculate total pages
-  const totalPages = total && limit ? Math.ceil(total / limit) : 0;
+  // The `total` prop universally receives `totalPages` from the backend API response instead of total items.
+  const totalPages = total || 0;
 
   if (totalPages <= 1) return null;
 

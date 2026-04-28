@@ -1,37 +1,96 @@
 "use client";
-import { useEffect } from "react";
-import axiosInstance from "@/lib/axios";
+
+import { useEffect, useRef } from "react";
+import axios from "axios";
 
 export default function AuthWatcher() {
+  const refreshTimeout = useRef<NodeJS.Timeout | null>(null);
+  const isRefreshing = useRef(false);
+
+  const getExpiry = () => {
+    if (typeof document === "undefined") return null;
+    const cookies = document.cookie.split("; ");
+    const row = cookies.find((c) => c.startsWith("GlitciTokenExpiry="));
+
+    if (!row) return null;
+
+    try {
+      const val = decodeURIComponent(row.split("=")[1]);
+      const date = new Date(val);
+      if (isNaN(date.getTime())) return null;
+      return date.getTime();
+    } catch {
+      return null;
+    }
+  };
+
+  const refreshToken = async () => {
+    if (isRefreshing.current) return;
+
+    try {
+      isRefreshing.current = true;
+      console.log("🔄 Proactive refresh triggered...");
+
+      // ✅ Call the dedicated refresh route (NOT the proxy)
+      await axios.post("/api/auth/refresh", null, {
+        withCredentials: true,
+      });
+
+      console.log("✅ Token successfully refreshed");
+      scheduleRefresh(); // Reschedule next refresh
+    } catch (err) {
+      console.error("❌ Refresh failed, redirecting to login");
+      window.location.href = "/login";
+    } finally {
+      isRefreshing.current = false;
+    }
+  };
+
+  const scheduleRefresh = () => {
+    const expiry = getExpiry();
+    if (!expiry) {
+      console.warn("⚠️ No GlitciTokenExpiry cookie found. Static fallback not possible on client.");
+      return;
+    }
+
+    const now = Date.now();
+    // Refresh 60 seconds before expiry
+    const delay = expiry - now - 60 * 1000;
+
+    if (delay <= 0) {
+      console.log("🕒 Token is almost expired or already expired. Refreshing now.");
+      refreshToken();
+      return;
+    }
+
+    if (refreshTimeout.current) {
+      clearTimeout(refreshTimeout.current);
+    }
+
+    console.log(`🕒 Next refresh scheduled in ${Math.round(delay / 1000)}s`);
+
+    refreshTimeout.current = setTimeout(() => {
+      refreshToken();
+    }, delay);
+  };
+
   useEffect(() => {
-    const checkAndRefresh = async () => {
-      const cookies = document.cookie.split("; ");
-      const expiryRow = cookies.find((row) =>
-        row.startsWith("GlitciTokenExpiry="),
-      );
+    scheduleRefresh();
 
-      if (!expiryRow) return;
-
-      const expiryValue = decodeURIComponent(expiryRow.split("=")[1]);
-      const expiryTime = new Date(expiryValue).getTime();
-      const now = Date.now();
-
-      // Refresh 5 minutes before the 1-hour access token expires
-      const threshold = 5 * 60 * 1000;
-
-      if (expiryTime - now < threshold) {
-        try {
-          // The proxy handles sending the backend cookies and updating the expiry
-          await axiosInstance.post("/auth/refresh");
-          console.log("Token refreshed.");
-        } catch (err) {
-          console.error("Refresh failed.");
-        }
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        scheduleRefresh(); // Resync when tab becomes active
       }
     };
 
-    const interval = setInterval(checkAndRefresh, 60000); // Check every minute
-    return () => clearInterval(interval);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      if (refreshTimeout.current) {
+        clearTimeout(refreshTimeout.current);
+      }
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   return null;
