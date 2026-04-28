@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { useSearchParam } from "@/hooks/useSearchParam";
 import StackedPagination from "@/components/ui/Pagination";
 import UseUsers from "@/hooks/useUsers";
+import EmployeeCard from "../employees/EmployeeCard";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -33,7 +34,11 @@ export default function UsersContainer({ isOpen, setIsOpen }: Props) {
   console.log(Users.data);
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center justify-center gap-x-6 gap-y-12"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center justify-center gap-x-6 gap-y-12">
+        {/* {Users.data.map((user)=> {
+          <EmployeeCard  />
+        })} */}
+      </div>
     </>
   );
 }

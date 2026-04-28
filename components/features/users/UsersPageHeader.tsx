@@ -35,7 +35,7 @@ export default function UsersPageHeader({ isOpen, setIsOpen }: Props) {
               d="M12 4v16m8-8H4"
             />
           </svg>
-          New Task
+          New User
         </button>
       </div>
     </div>
