@@ -1,12 +1,13 @@
 "use client";
+import UsersContainer from "@/components/features/users/UsersContainer";
 import UsersPageHeader from "@/components/features/users/UsersPageHeader";
 import { useState } from "react";
 export default function UsersPage() {
-  const [isCreateOpen,setIsCreateOpen] = useState<boolean>(false)
+  const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
   return (
     <div>
-      <UsersPageHeader isOpen={isCreateOpen} setIsOpen={setIsCreateOpen}/>
-      {/* <UsersContainer isOpen={isCreateOpen} setIsOpen={setIsCreateOpen}/> */}
+      <UsersPageHeader isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
+      <UsersContainer isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
     </div>
   );
 }
