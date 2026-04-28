@@ -1,5 +1,5 @@
 "use client";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SubmitButton from "@/components/forms/SubmitButton";
 import TextInput from "@/components/forms/TextInput";
@@ -33,17 +33,22 @@ export default function AddClient({ isOpen, onClose }: Props) {
     defaultValues: {
       name: "",
       companyName: "",
-      email: "",
+      email: "", // Optional field, can be empty
       industry: "",
       notes: "",
       phones: [""], // Important: Initialize with one empty phone
     },
   });
 
-  const onSubmit = (data: AddClientSchema) => {
-    AddClientMutation(data, {
+  const onSubmit: SubmitHandler<AddClientSchema> = (data: AddClientSchema) => {
+    const payload = {
+      ...data,
+      email: data.email === "" ? null : data.email, // normalize here instead
+    };
+
+    AddClientMutation(payload, {
       onSuccess: () => {
-        reset(); // Reset form after successful submission
+        reset();
         onClose();
       },
     });
