@@ -1,26 +1,5 @@
-"use client";
-import { Suspense, useState } from "react";
-import DepartmentPageHeader from "@/components/features/departments/PageHeader";
-import DepartmentsTable from "@/components/features/departments/DepartmentsTable";
-
-function DepartmentsContent() {
-  const [isCreateDepartmentOpen, setIsCreateDepartmentOpen] =
-    useState<boolean>(false);
-  return (
-    <div>
-      <DepartmentPageHeader
-        isOpen={isCreateDepartmentOpen}
-        setIsOpen={setIsCreateDepartmentOpen}
-      />
-      <div className="mt-20">
-        <DepartmentsTable
-          isOpen={isCreateDepartmentOpen}
-          setIsOpen={setIsCreateDepartmentOpen}
-        />
-      </div>
-    </div>
-  );
-}
+import { Suspense } from "react";
+import DepartmentsView from "./DepartmentsView";
 
 export default function DepartmentsPage() {
   return (
@@ -31,7 +10,7 @@ export default function DepartmentsPage() {
         </div>
       }
     >
-      <DepartmentsContent />
+      <DepartmentsView />
     </Suspense>
   );
 }

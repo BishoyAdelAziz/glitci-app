@@ -9,7 +9,7 @@
   --color-foreground: #171717;
   --color-primary: #2563eb;
   --color-light-gray: #979797;
-  --datepicker-day-names: #000000; /* Black for light mode */
+  --datepicker-day-names: #000000;
   --color-input-cream: #eeeeee;
 }
 
@@ -19,7 +19,7 @@
   --color-foreground: #f6f6f6;
   --color-primary: #3b82f6;
   --color-light-gray: #979797;
-  --datepicker-day-names: #ffffff; /* White for dark mode */
+  --datepicker-day-names: #ffffff;
   --color-input-cream: #eeeeee;
 }
 
@@ -36,13 +36,13 @@ body {
   --font-poppins: var(--font-poppins);
 }
 @theme {
-  --font-size-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-  --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
-  --font-size-lg: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
-  --font-size-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
-  --font-size-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
-  --font-size-3xl: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem);
-  --font-size-4xl: clamp(2.25rem, 1.8rem + 2vw, 3rem);
+  --font-size-sm: clamp(0.75rem, 0.7rem + 0.35vw, 0.875rem);
+  --font-size-base: clamp(0.875rem, 0.85rem + 0.5vw, 1.125rem);
+  --font-size-lg: clamp(1rem, 0.95rem + 0.6vw, 1.25rem);
+  --font-size-xl: clamp(1.125rem, 1.05rem + 0.75vw, 1.5rem);
+  --font-size-2xl: clamp(1.25rem, 1.1rem + 1vw, 1.875rem);
+  --font-size-3xl: clamp(1.5rem, 1.3rem + 1.5vw, 2.25rem);
+  --font-size-4xl: clamp(1.875rem, 1.6rem + 2vw, 3rem);
 }
 @layer utilities {
   .white-dark {
@@ -93,8 +93,53 @@ body {
     scrollbar-width: none; /* Firefox */
   }
 }
-/* --- React DatePicker Custom Styling --- */
+@layer base {
+  html {
+    /* Default font size for mobile (e.g., 14px instead of 16px) */
+    font-size: 16px;
 
+    /* Increase for medium screens (768px and up) */
+    @media (min-width: 768px) {
+      font-size: 14px; /* Reset to standard 16px */
+    }
+
+    /* Increase for large screens (1024px and up) */
+    @media (min-width: 1024px) {
+      font-size: 15px; /* Scales to 18px */
+    }
+  }
+}
+/* --- React DatePicker Custom Styling --- */
+/* Custom Scrollbar - All Browsers */
+
+/* Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent; /* light mode */
+}
+
+.dark * {
+  scrollbar-color: #4b5563 transparent; /* dark mode */
+}
 /* 1. Container & Wrapper */
 .react-datepicker {
   @apply border-none shadow-2xl font-poppins rounded-2xl overflow-hidden;
@@ -199,3 +244,52 @@ body {
 .react-datepicker__close-icon:after {
   background-color: #d83333 !important;
 }
+
+/* ─── Task Management Module ──────────────────────────────────────────────────── */
+
+/* DateTime Input — consistent styling across browsers */
+input[type="datetime-local"] {
+  @apply font-poppins;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  @apply cursor-pointer opacity-50 hover:opacity-100;
+  filter: none;
+  transition: opacity 200ms ease;
+}
+
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Status badge pulse animation for active tasks */
+@keyframes task-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.task-pulse {
+  animation: task-pulse 2s ease-in-out infinite;
+}
+
+/* Task row subtle entrance */
+@keyframes task-row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-row-enter {
+  animation: task-row-enter 300ms ease-out forwards;
+}
+

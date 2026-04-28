@@ -214,7 +214,7 @@ export default function DepartmentsTable({ isOpen, setIsOpen }: Props) {
         </div>
 
         {/* Pagination */}
-        <div className="translate-y-8 relative transform">
+        <div className="translate-y-8 flex items-center justify-center relative transform">
           {pagination && (
             <StackedPagination
               total={pagination.totalPages}

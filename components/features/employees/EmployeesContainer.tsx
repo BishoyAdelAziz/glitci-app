@@ -7,14 +7,19 @@ import EmployeeCard from "./EmployeeCard";
 import useEmployees from "@/hooks/useEmployees";
 import { Employee } from "@/types/employees";
 import { useSearchParam } from "@/hooks/useSearchParam";
+import StackedPagination from "@/components/ui/Pagination";
 interface Props {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function EmployeesContainer({ isOpen, setIsOpen }: Props) {
+  const [page, setPage] = useState(1);
   const search = useSearchParam();
-  const { employees, isError, isLoading } = useEmployees({ name: search });
+  const { employees, isError, isLoading, pagination } = useEmployees({
+    name: search,
+    page,
+  });
 
   // ─── Source of truth ──────────────────────────────────────────────────────
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
@@ -75,6 +80,14 @@ export default function EmployeesContainer({ isOpen, setIsOpen }: Props) {
             onDelete={handleDelete}
           />
         ))}
+      </div>
+      <div className="w-full flex items-center justify-center mt-[5vh]">
+        <StackedPagination
+          currentPage={pagination?.currentPage}
+          limit={pagination?.limit}
+          total={pagination?.totalPages}
+          onChange={(page) => setPage(page)}
+        />
       </div>
       {/* Modals — rendered once at container level */}
       <AddEmployeeMddal isOpen={isOpen} setIsOpen={() => setIsOpen(false)} />

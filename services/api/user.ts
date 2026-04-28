@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axios";
+import type { UserRole } from "@/types/user";
 
 export interface User {
   id: string;
@@ -6,8 +7,11 @@ export interface User {
   email: string;
   phone?: string | null;
   image: string | null;
-  role: string;
-  currency: "EGP" | "SAR" | "AED" | "USD" | "EUR";
+  role: UserRole;
+  currency?: "EGP" | "SAR" | "AED" | "USD" | "EUR";
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface MeResponse {
@@ -20,10 +24,6 @@ export const getMeApi = async (): Promise<User> => {
   return res.data.data;
 };
 export const updateMeApi = async (data: Partial<User>): Promise<User> => {
-  const res = await axiosInstance.patch<MeResponse>("/users/me", data, {
-    headers: {
-      "Content-Type": "form-data",
-    },
-  });
+  const res = await axiosInstance.patch<MeResponse>("/users/me", data);
   return res.data.data;
 };

@@ -39,3 +39,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+tasks_module_api_docs.md
+.gitignore
+tasks_screens.md
+stitch_glitci_task_management_module/design.md
+stitch_glitci_task_management_module/tasks_screens.md
+stitch_glitci_task_management_module/admin_analytics_dashboard/code.html
+stitch_glitci_task_management_module/admin_analytics_dashboard/screen.png
+stitch_glitci_task_management_module/admin_create_task_modal/code.html
+stitch_glitci_task_management_module/admin_create_task_modal/screen.png
+stitch_glitci_task_management_module/admin_task_list/code.html
+stitch_glitci_task_management_module/admin_task_list/screen.png
+stitch_glitci_task_management_module/employee_my_tasks_1/code.html
+stitch_glitci_task_management_module/employee_my_tasks_1/screen.png
+stitch_glitci_task_management_module/employee_my_tasks_2/code.html
+stitch_glitci_task_management_module/employee_my_tasks_2/screen.png
+stitch_glitci_task_management_module/glitci_crimson_editorial/DESIGN.md
+.vscode/settings.json

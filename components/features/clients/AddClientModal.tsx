@@ -74,7 +74,6 @@ export default function AddClient({ isOpen, onClose }: Props) {
           label="Email"
           name="email"
           register={register}
-          required
         />
         <TextInput
           errors={errors}

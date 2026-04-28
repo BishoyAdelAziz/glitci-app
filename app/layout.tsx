@@ -1,3 +1,4 @@
+
 import "./globals.css";
 import ClientProviders from "@/providers/ClientProviders";
 import type { Metadata } from "next";
@@ -38,8 +39,11 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${Poppins_Font.variable} antialiased  mx-auto`}
       >
-        <ClientProviders>{children}</ClientProviders>
-        <div id="root-portal" className="relative z-9999" />
+        <ClientProviders>
+
+          {children}
+        </ClientProviders>
+        <div id="root-portal" className="relative z-9999999999999" />
       </body>
     </html>
   );

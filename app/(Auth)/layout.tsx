@@ -14,16 +14,16 @@ export default function AuthLayout({
   return (
     <main className="relative min-h-screen">
       {/* Centered App Icon (overlay) */}
-      <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-        <div className="bg-[#f6f6f6] dark:bg-[#171717] hidden md:block p-6 rounded-full  transition-colors duration-300">
-          <Image
-            src="/icons/App-Logo.svg"
-            width={40}
-            height={30}
-            alt="App Icon"
-          />
-        </div>
-      </div>
+    <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+  <div className="bg-[#f2f0f0] dark:bg-[#171717] hidden md:flex items-center justify-center p-6 rounded-full size-20 transition-colors duration-300">
+    <Image
+      src="/icons/App-Logo.svg"
+      width={40}
+      height={30}
+      alt="App Icon"
+    />
+  </div>
+</div>
 
       {/* Layout grid */}
       <div className="grid min-h-screen grid-cols-1 md:grid-cols-8">

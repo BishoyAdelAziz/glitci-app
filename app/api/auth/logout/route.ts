@@ -5,7 +5,7 @@ import { cookies as nextCookies } from "next/headers";
 export async function POST() {
   try {
     const cookieStore = await nextCookies();
-    const token = cookieStore.get("GlitciAccessToken")?.value;
+    const token = cookieStore.get("accessToken")?.value;
 
     // Forward logout to your actual backend (optional — clears server-side session if any)
     if (token) {
@@ -23,7 +23,7 @@ export async function POST() {
 
   const response = NextResponse.json({ success: true });
 
-  const clearAccessToken = serialize("GlitciAccessToken", "", {
+  const clearAccessToken = serialize("accessToken", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",

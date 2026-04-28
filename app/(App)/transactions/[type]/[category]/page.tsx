@@ -37,7 +37,5 @@ export default async function TransactionsCategoryPage({ params }: Props) {
     redirect(`/transactions/income/${fallbackCategory}`);
   }
 
-  return (
-    <TransactionsView type={type as TransactionType} category={category} />
-  );
+  return <TransactionsView type={type as TransactionType} />;
 }

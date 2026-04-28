@@ -5,6 +5,7 @@ import {
   SingleTransactionResponse,
   Transaction,
 } from "@/types/transactions";
+import { ParamValue } from "next/dist/server/request/params";
 
 export async function getTransactions(
   params?: TransactionsQueryParams,
@@ -57,3 +58,17 @@ export async function updateTransaction(
 export async function deleteTransaction(id: string): Promise<void> {
   await axiosInstance.delete(`/transactions/${id}`);
 }
+export const ClientPaymentHistory = async (projectId: string | ParamValue) => {
+  const response = await axiosInstance.get(
+    `/finance/project/${projectId}/payments/client`,
+  );
+  return response.data;
+};
+export const EmployeePaymentHistory = async (
+  projectId: string | ParamValue,
+) => {
+  const response = await axiosInstance(
+    `/finance/project/${projectId}/payments/employees`,
+  );
+  return response.data;
+};

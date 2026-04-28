@@ -1,22 +1,16 @@
-"use client";
-import SkillPageHeader from "@/components/features/skills/SkillsPageHeader";
-import SkillsTable from "@/components/features/skills/SkillsTable";
-import { useState } from "react";
+import { Suspense } from "react";
+import SkillsView from "./SkillsView";
 
 export default function SkillsPage() {
-  const [isCreateSkillOpen, setIsCreateSkillOpen] = useState<boolean>(false);
   return (
-    <div>
-      <SkillPageHeader
-        isOpen={isCreateSkillOpen}
-        setIsOpen={setIsCreateSkillOpen}
-      />
-      <div className="mt-10">
-        <SkillsTable
-          isOpen={isCreateSkillOpen}
-          setIsOpen={setIsCreateSkillOpen}
-        />
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B72D2D]"></div>
+        </div>
+      }
+    >
+      <SkillsView />
+    </Suspense>
   );
 }

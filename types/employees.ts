@@ -1,3 +1,5 @@
+import { ParamValue } from "next/dist/server/request/params";
+
 export type EmployeeTypes = "freelancer" | "full_time" | "part_time";
 
 export interface User {
@@ -45,7 +47,7 @@ export interface EmployeesQueryParams {
   position?: string; // position ID
   skill?: string; // skill ID
   isActive?: boolean;
-  employeeId?: string;
+  employeeId?: string | ParamValue;
 }
 
 // Matches the Paginated JSON structure exactly
