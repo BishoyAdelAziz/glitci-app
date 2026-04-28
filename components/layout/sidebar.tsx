@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useMemo } from "react";
 import useUser from "@/hooks/useUser";
 import {
   type AppRole,
@@ -119,19 +120,21 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
   const [openSubmenuId, setOpenSubmenuId] = useState<number | null>(null);
 
   const role = getCurrentUserRole();
-  const routes = AllRoutes.filter(
-    (r) => !r.allowedRoles || r.allowedRoles.includes(role),
+  const routes = useMemo(
+    () =>
+      AllRoutes.filter((r) => !r.allowedRoles || r.allowedRoles.includes(role)),
+    [role],
   );
 
-  // Auto-open submenu based on current path
   useEffect(() => {
-    for (const route of routes) {
-      if (route.children?.some((child) => child.path === pathname)) {
-        setOpenSubmenuId(route.id);
-        return;
-      }
+    const activeParent = routes.find((route) =>
+      route.children?.some((child) => child.path === pathname),
+    );
+    if (activeParent) {
+      setOpenSubmenuId(activeParent.id);
     }
-  }, [pathname, routes]);
+    // Don't reset to null if no active parent — let manual toggles persist
+  }, [pathname]); // ← remove `routes` from deps
 
   const onParentToggle = useCallback(
     (route: Route) => {
