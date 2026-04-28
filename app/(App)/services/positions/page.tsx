@@ -1,22 +1,16 @@
-"use client";
-import PositionsPageHeader from "@/components/features/positions/PositionsPageHeader";
-import PositionsTable from "@/components/features/positions/PositionsTable";
-import { useState } from "react";
+import { Suspense } from "react";
+import PositionsView from "./PositionsView";
+
 export default function PositionsPage() {
-  const [isCreatePositionOpen, setIsCreatePositionOpen] =
-    useState<boolean>(false);
   return (
-    <div>
-      <PositionsPageHeader
-        isOpen={isCreatePositionOpen}
-        setIsOpen={setIsCreatePositionOpen}
-      />
-      <div className="mt-10">
-        <PositionsTable
-          isOpen={isCreatePositionOpen}
-          setIsOpen={setIsCreatePositionOpen}
-        />
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B72D2D]"></div>
+        </div>
+      }
+    >
+      <PositionsView />
+    </Suspense>
   );
 }

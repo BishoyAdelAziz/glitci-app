@@ -1,26 +1,50 @@
-import NavHeader from "@/components/layout/nav";
+import Sidebar from "@/components/layout/sidebar";
+import Header from "@/components/layout/header";
 import ControllersNav from "@/components/layout/controllers";
 import { Metadata } from "next";
+import { Suspense } from "react";
+
 export const metadata: Metadata = {
   title: `${process.env.NEXT_PUBLIC_APP_NAME} Overview`,
   description: "Here You Can Screen Your Overview",
 };
+
 const OverViewLayout = function ({ children }: { children: React.ReactNode }) {
   return (
-    <main className="container mx-auto">
-      <NavHeader />
+    <div className="flex h-screen bg-gray-50 dark:bg-black overflow-hidden transition-colors duration-300">
+      {/* Sidebar */}
+      <div className="hidden md:flex h-full">
+        <Sidebar />
+      </div>
 
-      {/* App shell */}
-      <div className="relative mx-auto flex">
-        {/* Controllers pinned inside app width */}
-        <ControllersNav />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Top Header */}
+        <Suspense fallback={<div className="h-16 w-full" />}>
+          <Header />
+        </Suspense>
 
-        {/* Main page content */}
-        <main className="flex-1  pt-10 ">
-          <section className=" rounded-4xl">{children}</section>
+        {/* Floating Controllers */}
+        <Suspense fallback={null}>
+          <ControllersNav />
+        </Suspense>
+
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 lg:p-8">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center p-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B72D2D]" />
+              </div>
+            }
+          >
+            <div className="bg-white dark:bg-gray-900 p-5 md:p-10 rounded-4xl shadow-sm min-h-[calc(100vh-140px)] transition-colors duration-300">
+              {children}
+            </div>
+          </Suspense>
         </main>
       </div>
-    </main>
+    </div>
   );
 };
+
 export default OverViewLayout;

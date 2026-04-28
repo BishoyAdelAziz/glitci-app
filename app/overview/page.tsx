@@ -12,8 +12,9 @@ export default function OverViewPage() {
   const { user } = useUser();
   const userName = user?.name || "";
   const firstName = userName.split(" ")[0];
-
-  const { overview, isLoading, isError, statsData } = useAnalyticsOverview();
+  const { overview, isLoading, isError, statsData } = useAnalyticsOverview(
+    user?.currency || "USD",
+  );
 
   if (isLoading) return <ButtonLoader />;
   if (isError) return null;
@@ -37,7 +38,8 @@ export default function OverViewPage() {
           <p className="text-white font-semibold text-sm">Revenues</p>
 
           <p className="inline-flex items-center gap-2 text-white font-semibold text-2xl md:text-4xl">
-            ${overview?.financials.totalIncome}
+            {overview?.financials.totalIncome}{" "}
+            <span className="text-xs">{user?.currency}</span>
             <svg width="25" height="32" viewBox="0 0 32 32" fill="none">
               <path
                 d="M22.6668 9.33301L9.3335 22.6663M22.6668 9.33301H10.6668M22.6668 9.33301V21.333"
@@ -66,35 +68,39 @@ export default function OverViewPage() {
       </div>
 
       {/* FINANCIAL SUMMARY */}
-      <div className="col-span-1 grid grid-cols-2 sm:grid-cols-2 gap-4 bg-white dark:bg-gray-800 p-4 rounded-4xl">
-        <div className="flex flex-col gap-2 p-3 rounded-2xl bg-gradient-to-bl from-[#DE4646] to-[#B72D2D]">
+      <div className="col-span-1 grid grid-cols-2 sm:grid-cols-2 gap-4 bg-white dark:bg-gray-800 p-4  rounded-4xl">
+        <div className="flex flex-col items-start justify-center gap-0.5 px-3 py-1 rounded-xl bg-linear-to-bl from-[#DE4646] to-[#B72D2D]">
           <h4 className="text-sm text-white">Total salaries</h4>
           <p className="text-xl md:text-2xl text-white">
-            ${overview?.financials.totalSalaries}
+            {overview?.financials.totalSalaries}{" "}
+            <span className="text-xs">{user?.currency}</span>
           </p>
           <p className="text-xs text-white">this month</p>
         </div>
 
-        <div className="flex flex-col gap-2 p-3 rounded-2xl bg-[#F6F6F6] dark:bg-gray-600">
+        <div className="flex flex-col items-start justify-center gap-0.5 px-3 py-1 rounded-xl bg-[#F6F6F6] dark:bg-gray-600">
           <h4 className="text-sm">Other expenses</h4>
           <p className="text-xl md:text-2xl">
-            ${overview?.financials.otherExpenses}
+            {overview?.financials.otherExpenses}{" "}
+            <span className="text-xs">{user?.currency}</span>
           </p>
           <p className="text-xs">this month</p>
         </div>
 
-        <div className="flex flex-col gap-2 p-3 rounded-2xl bg-[#F6F6F6] dark:bg-gray-600">
+        <div className="flex flex-col items-start justify-center gap-0.5 px-3 py-1 rounded-xl bg-[#F6F6F6] dark:bg-gray-600">
           <h4 className="text-sm">Profit Margin</h4>
           <p className="text-xl md:text-2xl">
-            ${overview?.financials.profitMargin}
+            {overview?.financials.profitMargin}{" "}
+            <span className="text-xs">{user?.currency}</span>
           </p>
           <p className="text-xs">this month</p>
         </div>
 
-        <div className="flex flex-col gap-2 p-3 rounded-2xl bg-[#F6F6F6] dark:bg-gray-600">
+        <div className="flex flex-col items-start justify-center gap-0.5 px-3 py-1 rounded-xl bg-[#F6F6F6] dark:bg-gray-600">
           <h4 className="text-sm">Net Profit</h4>
           <p className="text-xl md:text-2xl">
-            ${overview?.financials.netProfit}
+            {overview?.financials.netProfit}{" "}
+            <span className="text-xs">{user?.currency}</span>
           </p>
           <p className="text-xs">this month</p>
         </div>
@@ -107,8 +113,8 @@ export default function OverViewPage() {
 
       {/* PROJECTS / EMPLOYEES / COMPLETION */}
       <div className="col-span-1 md:col-span-2 grid grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-4xl p-4 flex justify-between flex-col gap-6">
-          <div>
+        <div className="bg-white pb-6 dark:bg-gray-800 rounded-4xl p-4 flex justify-between flex-col gap-6">
+          <div className="flex flex-col items-start justify-center gap-4">
             <h4 className="font-semibold text-xs md:text-lg">Total Projects</h4>
             <p className="text-3xl md:text-4xl">
               {statsData?.data.counts.totalProjects}
@@ -121,8 +127,8 @@ export default function OverViewPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-4xl p-4 justify-between flex flex-col gap-6">
-          <div>
+        <div className="bg-white pb-6 dark:bg-gray-800 rounded-4xl p-4 justify-between flex flex-col gap-6">
+          <div className="flex flex-col items-start justify-center gap-4">
             <h4 className="font-semibold text-xs md:text-lg">
               Active Employees
             </h4>
@@ -135,8 +141,8 @@ export default function OverViewPage() {
           <p className="text-xs md:text-sm">Employees Report</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-4xl p-4 justify-between flex flex-col gap-6">
-          <div>
+        <div className="bg-white pb-6 dark:bg-gray-800 rounded-4xl p-4 justify-between flex flex-col gap-6">
+          <div className="flex flex-col items-start justify-center gap-4">
             <h4 className="font-semibold text-xs md:text-lg">AVG Completion</h4>
             <p className="text-4xl md:text-6xl font-semibold">
               {statsData?.data.counts.avgCompletion}%
@@ -157,7 +163,7 @@ export default function OverViewPage() {
         <SpendDashboard departments={statsData?.data.departments} />
       </div>
       {/* Recent Projects */}
-      <RecentProjectsTable projects={overview?.recentProjects} />
+      <RecentProjectsTable projects={overview?.recentProjects} currency={user?.currency} />
     </div>
   );
 }

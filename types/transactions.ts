@@ -1,5 +1,7 @@
 // ─── Shared / Nested Types ───────────────────────────────────────────────────
 
+import { ParamValue } from "next/dist/server/request/params";
+
 export interface TransactionUser {
   _id: string;
   name: string;
@@ -115,11 +117,12 @@ export interface TransactionsQueryParams {
   status?: TransactionStatus;
   paymentMethod?: PaymentMethod;
   currency?: Currency;
-  projectId?: string;
-  employeeId?: string;
+  projectId?: ParamValue | string;
+  employee?: ParamValue | string;
   dateFrom?: string;
   dateTo?: string;
-  name: string;
+  name?: string;
+  clientId?: ParamValue | string;
 }
 
 // ─── API Responses ────────────────────────────────────────────────────────────

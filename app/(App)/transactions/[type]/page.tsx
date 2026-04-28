@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { ROUTES_BY_TYPE } from "@/config/Transactionroutes";
+import TransactionsView from "@/components/features/transactions/TransactionsView";
 import { TransactionType } from "@/types/transactions";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: Promise<{ type: string }>;
@@ -12,12 +12,10 @@ export function generateStaticParams() {
 
 export default async function TransactionsTypePage({ params }: Props) {
   const { type } = await params;
-  const validType = type as TransactionType;
-  const routes = ROUTES_BY_TYPE[validType];
 
-  if (!routes?.length) {
-    redirect("/transactions/income/client_payment");
+  if (type !== "income" && type !== "expense") {
+    redirect("/transactions/income");
   }
 
-  redirect(`/transactions/${type}/${routes[0].slug}`);
+  return <TransactionsView type={type as TransactionType} />;
 }

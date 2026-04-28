@@ -22,12 +22,20 @@ import DeleteProjectModal from "./DeleteProjectModal";
 import { Project } from "@/types/projects";
 import { useSearchParam } from "@/hooks/useSearchParam";
 import PriorityBadge from "@/components/ui/flags/PriorityFlag";
+import { ParamValue } from "next/dist/server/request/params";
 interface Props {
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  isOpen?: boolean;
+  setIsOpen?: Dispatch<SetStateAction<boolean>>;
+  clientId?: string | ParamValue;
+  EmployeeId?: string | ParamValue;
 }
 
-export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
+export default function ProjectsTable({
+  isOpen,
+  setIsOpen,
+  clientId,
+  EmployeeId,
+}: Props) {
   const search = useSearchParam();
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -37,6 +45,7 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
   const [page, setPage] = useState(1);
   // onClose lives here in the parent component
   const onClose = () => {
+    if (!setIsOpen) return;
     setIsOpen(false);
   };
   const onDeleteClose = () => {
@@ -45,6 +54,8 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
   const { projects, isLoading, isError, pagination } = useProjects({
     page,
     search: search,
+    client: clientId,
+    employee: EmployeeId,
   });
 
   const handleSelectAll = () => {
@@ -242,8 +253,8 @@ export default function ProjectsTable({ isOpen, setIsOpen }: Props) {
           </div>
         </div>
         {/* Pass onClose to the modal */}
-        <AddProjectModal isOpen={isOpen} onClose={onClose} />
-        <div className="translate-y-8 relative transform">
+        <AddProjectModal isOpen={!!isOpen} onClose={onClose} />
+        <div className="translate-y-8 flex items-center justify-center relative transform">
           {pagination && (
             <StackedPagination
               total={pagination?.totalPages}

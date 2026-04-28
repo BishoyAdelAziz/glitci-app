@@ -18,15 +18,6 @@ interface Props {
 }
 
 export default function AddClientPaymentModal({ isOpen, onClose }: Props) {
-  const { projects } = useProjects();
-  const { clients } = useClients({ limit: 1000 });
-  const {
-    createClientPaymentTransactionError,
-    createClientPaymentTransactionIsError,
-    createClientPaymentTransactionIsPending,
-    createClientPaymentTransactionMutation,
-  } = useTransactions();
-
   const {
     register,
     handleSubmit,
@@ -34,6 +25,7 @@ export default function AddClientPaymentModal({ isOpen, onClose }: Props) {
     setValue,
     reset,
     formState: { errors },
+    watch
   } = useForm<ClientPaymentFormData>({
     resolver: zodResolver(clientPaymentSchema) as any,
     defaultValues: {
@@ -42,6 +34,17 @@ export default function AddClientPaymentModal({ isOpen, onClose }: Props) {
       status: "completed",
     },
   });
+  const ClientId = watch("client")
+  const { projects } = useProjects({ limit: 100, client:ClientId });
+  const { clients } = useClients({ limit: 100 });
+  const {
+    createClientPaymentTransactionError,
+    createClientPaymentTransactionIsError,
+    createClientPaymentTransactionIsPending,
+    createClientPaymentTransactionMutation,
+  } = useTransactions();
+
+  
 
   const refinedProjects = projects?.map((p) => ({ id: p.id, name: p.name }));
   const refinedClients = clients?.map((c) => ({ id: c.id, name: c.name }));

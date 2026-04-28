@@ -271,7 +271,7 @@ export default function ServicesTable({ isOpen, setIsOpen }: Props) {
       </div>
 
       {/* Pagination */}
-      <div className=" py-6">
+      <div className=" py-6 flex items-center justify-center">
         <StackedPagination
           total={pagination?.totalPages}
           limit={1}

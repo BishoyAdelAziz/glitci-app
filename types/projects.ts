@@ -100,12 +100,13 @@ export interface Project {
 export interface ProjectsQueryParams {
   page?: number;
   limit?: number;
-  client?: string; // client id
+  client?: ParamValue|string; // client id
+  employee?: ParamValue;
   status?: ProjectStatus;
   isActive?: boolean;
   name?: string;
   id?: ParamValue;
-  search: string;
+  search?: string;
 }
 
 export interface ProjectsResponse {

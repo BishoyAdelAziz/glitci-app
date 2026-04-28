@@ -12,6 +12,8 @@ import { useDateFilter } from "@/stores/useDateFilter";
 import { forwardRef } from "react";
 import DatePicker from "react-datepicker";
 import useAuth from "@/hooks/useAuth";
+import { type AppRole, getCurrentUserRole } from "@/config/roles";
+import { Suspense } from "react";
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 type Route = {
@@ -19,6 +21,8 @@ type Route = {
   name: string;
   path: string;
   children?: Route[];
+  /** If set, only these roles can see this route. Omit = visible to all. */
+  allowedRoles?: AppRole[];
 };
 interface CalendarTriggerProps {
   value?: string;
@@ -27,28 +31,51 @@ interface CalendarTriggerProps {
 // ─── Config ────────────────────────────────────────────────────────────────────
 
 const Routes: Route[] = [
-  { id: 1, name: "overview", path: "/overview" },
-  { id: 2, name: "projects", path: "/projects" },
-  { id: 3, name: "clients", path: "/clients" },
-  { id: 4, name: "employees", path: "/employees" },
+  { id: 1, name: "overview", path: "/overview", allowedRoles: ["admin", "financial_manager"] },
+  { id: 2, name: "projects", path: "/projects", allowedRoles: ["admin", "operation","financial_manager", "employee"] },
+  { id: 3, name: "clients", path: "/clients", allowedRoles: ["admin", "operation"] },
+  { id: 4, name: "employees", path: "/employees", allowedRoles: ["admin","operation"] },
   {
     id: 5,
+    name: "tasks",
+    path: "/tasks",
+    allowedRoles: ["admin", "operation", "employee"],
+    children: [
+      { id: 1, name: "All Tasks", path: "/tasks" },
+      { id: 2, name: "Analytics", path: "/tasks/analytics" },
+    ],
+  },
+  { id: 8, name: "assets", path: "/assets", allowedRoles: ["admin"] },
+  {
+    id: 6,
     name: "services",
     path: "/services",
+    allowedRoles: ["admin","operation"],
     children: [
       { id: 1, name: "Departments", path: "/services/departments" },
       { id: 2, name: "Positions", path: "/services/positions" },
       { id: 3, name: "Skills", path: "/services/skills" },
     ],
   },
-  { id: 6, name: "transactions", path: "/transactions" },
+  { id: 7, name: "transactions", path: "/transactions", allowedRoles: ["admin", "financial_manager"] },
+
+  { id: 9, name: "user Management", path: "/users", allowedRoles: ["admin"] },
 ];
+
+/** Filter the Routes array to only include routes the current role can see. */
+function useFilteredRoutes(): Route[] {
+  const role = getCurrentUserRole();
+  return Routes.filter((r) => !r.allowedRoles || r.allowedRoles.includes(role));
+}
 
 const SEARCH_PLACEHOLDERS: Record<string, string> = {
   "/overview": "Search overview...",
   "/projects": "Search projects...",
   "/clients": "Search clients...",
   "/employees": "Search employees...",
+  "/tasks/analytics": "Search analytics...",
+  "/tasks": "Search tasks...",
+  "/assets": "Search assets...",
   "/services/departments": "Search departments...",
   "/services/positions": "Search positions...",
   "/services/skills": "Search skills...",
@@ -166,7 +193,7 @@ function DesktopSearch() {
         className={`
           flex items-center gap-2 overflow-hidden transition-all duration-300 ease-in-out
           rounded-2xl bg-gray-100 dark:bg-gray-800
-          ${expanded ? "w-52 px-3 py-1.5" : "w-0 px-0 opacity-0"}
+          ${expanded ? "w-36 px-3 py-1.5" : "w-0 px-0 opacity-0"}
         `}
       >
         <input
@@ -273,7 +300,7 @@ function MobileSearch() {
       {open && (
         <div className="absolute inset-0 flex items-center gap-2 bg-white dark:bg-gray-900 px-4 z-10">
           <svg
-            className="w-4 h-4 text-gray-400 flex-shrink-0"
+            className="w-4 h-4 text-gray-400 shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -356,7 +383,7 @@ function DesktopNavItem({ route }: { route: Route }) {
     return (
       <Link
         href={route.path}
-        className={`capitalize px-4 py-2 rounded-2xl transition-colors ${
+        className={`capitalize px-6 py-2 text-xs rounded-full transition-colors ${
           isActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -371,7 +398,7 @@ function DesktopNavItem({ route }: { route: Route }) {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`capitalize px-4 py-2 rounded-2xl transition-colors flex items-center gap-1.5 ${
+        className={`capitalize px-4 py-2 text-xs rounded-2xl transition-colors flex items-center gap-1.5 ${
           isActive || isChildActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -382,11 +409,11 @@ function DesktopNavItem({ route }: { route: Route }) {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden min-w-40 py-1">
+        <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-gray-900 text-xs rounded-2xl shadow-lg overflow-hidden min-w-40 py-1">
           <Link
             href={route.path}
             onClick={() => setOpen(false)}
-            className={`block capitalize px-4 py-2 text-sm transition-colors border-b dark:border-gray-700 ${
+            className={`block capitalize px-4 py-2  transition-colors border-b dark:border-gray-700 ${
               isActive
                 ? "bg-gray-100 dark:bg-gray-800 font-medium"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -402,7 +429,7 @@ function DesktopNavItem({ route }: { route: Route }) {
                 key={child.id}
                 href={child.path}
                 onClick={() => setOpen(false)}
-                className={`block capitalize px-4 py-2 text-sm transition-colors ${
+                className={`block capitalize px-4 py-2 text-xs transition-colors ${
                   isChildItemActive
                     ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
                     : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -423,6 +450,7 @@ function DesktopNavItem({ route }: { route: Route }) {
 function DesktopNav() {
   const { user, isPending } = useUser();
   const router = useRouter();
+  const filteredRoutes = useFilteredRoutes();
   const {
     LogoutMutation,
     LogoutMutationError,
@@ -430,16 +458,16 @@ function DesktopNav() {
     LogoutMutationIsPending,
   } = useAuth();
   return (
-    <header className="hidden md:flex mx-auto items-center justify-between pt-[5vh]">
+    <header className="hidden md:flex mx-auto items-center justify-between text-xs font-semibold pt-[5vh]">
       {/* Logo */}
       <div
-        className="h-20 flex items-center gap-x-2 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
+        className="h-15 flex items-center gap-x-4 bg-white dark:bg-gray-900 px-6 rounded-4xl cursor-pointer"
         onClick={() => router.push("/projects")}
       >
         <Image
           src="/icons/App-Icon.svg"
-          width={50}
-          height={50}
+          width={40}
+          height={40}
           alt="app logo"
         />
         <p className="font-semibold text-2xl">
@@ -447,15 +475,15 @@ function DesktopNav() {
         </p>
       </div>
 
-      {/* Routes */}
-      <nav className="h-20 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl relative">
-        {Routes.map((route) => (
+      {/* Routes — filtered by current user role */}
+      <nav className="h-15 flex items-center gap-5 bg-white dark:bg-gray-900 px-4 rounded-4xl relative">
+        {filteredRoutes.map((route) => (
           <DesktopNavItem key={route.id} route={route} />
         ))}
       </nav>
 
       {/* Actions — search replaces the old static button */}
-      <div className="h-20 flex min-w-[10%] items-center justify-evenly px-6 bg-white dark:bg-gray-900 rounded-4xl gap-x-4">
+      <div className="h-15 flex min-w-[10%] items-center justify-evenly px-6 bg-white dark:bg-gray-900 rounded-4xl gap-x-4">
         <DesktopSearch />
 
         {/* Bell */}
@@ -482,19 +510,19 @@ function DesktopNav() {
       ) : (
         <div className="relative group">
           {/* Trigger */}
-          <div className="h-20 flex items-center gap-x-3 bg-white dark:bg-gray-900 px-4 rounded-4xl cursor-pointer">
+          <div className="h-15 flex items-center gap-x-3 bg-white dark:bg-gray-900 px-4 rounded-4xl cursor-pointer">
             {user && (
               <Image
                 alt={user.name}
-                width={60}
-                height={60}
+                width={40}
+                height={40}
                 src={user.image || "/icons/App-Icon.svg"}
                 className="rounded-full"
               />
             )}
             <div className="flex flex-col">
-              <p className="font-medium">{user?.name}</p>
-              <p className="font-extralight text-sm">{user?.email}</p>
+              <p className="font-medium text-sm">{user?.name}</p>
+              <p className="font-extralight text-xs">{user?.email}</p>
             </div>
           </div>
 
@@ -554,6 +582,8 @@ function DesktopNav() {
 }
 
 // ─── Mobile Nav Item ───────────────────────────────────────────────────────────
+const navItemBase =
+  "block capitalize px-4 py-2 rounded-2xl transition-colors text-gray-800 dark:text-gray-200";
 
 function MobileNavItem({
   route,
@@ -564,10 +594,13 @@ function MobileNavItem({
 }) {
   const pathname = usePathname();
   const hasChildren = !!route.children?.length;
+
   const isActive =
     pathname === route.path || pathname.startsWith(route.path + "/");
+
   const isChildActive =
     route.children?.some((c) => pathname === c.path) ?? false;
+
   const [open, setOpen] = useState(isChildActive);
 
   if (!hasChildren) {
@@ -575,13 +608,13 @@ function MobileNavItem({
       <Link
         href={route.path}
         onClick={onClose}
-        className={`block capitalize px-4 py-2 rounded-2xl transition-colors ${
+        className={`${navItemBase} ${
           isActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
       >
-        {route.name}
+        {route.name || "—"} {/* fallback just in case */}
       </Link>
     );
   }
@@ -589,15 +622,16 @@ function MobileNavItem({
   return (
     <div>
       <div
-        className={`flex items-center justify-between capitalize px-4 py-2 rounded-2xl transition-colors cursor-pointer ${
+        className={`flex items-center justify-between ${navItemBase} cursor-pointer ${
           isActive || isChildActive
             ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
             : "hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
       >
         <Link href={route.path} onClick={onClose} className="flex-1">
-          {route.name}
+          {route.name || "—"}
         </Link>
+
         <button
           onClick={() => setOpen((v) => !v)}
           className="pl-2 flex items-center"
@@ -611,18 +645,19 @@ function MobileNavItem({
         <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-3">
           {route.children!.map((child) => {
             const isChildItemActive = pathname === child.path;
+
             return (
               <Link
                 key={child.id}
                 href={child.path}
                 onClick={onClose}
-                className={`block capitalize px-4 py-2 rounded-2xl text-sm transition-colors ${
+                className={`block capitalize px-4 py-2 rounded-2xl text-sm transition-colors text-gray-800 dark:text-gray-200 ${
                   isChildItemActive
                     ? "bg-linear-to-r from-[#484848] to-[#000000] text-white"
                     : "hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
-                {child.name}
+                {child.name || "—"}
               </Link>
             );
           })}
@@ -635,16 +670,22 @@ function MobileNavItem({
 // ─── Mobile Nav ────────────────────────────────────────────────────────────────
 
 function MobileNav() {
-  const { user } = useUser();
+  const { user, isPending } = useUser();
   const { toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const PathName = usePathname();
-  const isProfileActive = PathName.startsWith("/profile");
+  const pathname = usePathname();
+
+  const filteredRoutes = useFilteredRoutes();
+  const isProfileActive = pathname.startsWith("/profile");
+
+  // ⛔ prevent rendering before data is ready
+  if (isPending) return null;
+
   return (
     <>
-      {/* Fixed top bar — `relative` is required for the search overlay to position correctly */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow ">
+      {/* Header */}
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow">
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => router.push("/projects")}
@@ -661,7 +702,6 @@ function MobileNav() {
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Search overlays the header when open */}
           <MobileSearch />
 
           <button
@@ -695,11 +735,14 @@ function MobileNav() {
           />
 
           <aside className="absolute right-0 top-0 h-full w-72 bg-white dark:bg-gray-900 flex flex-col rounded-tl-4xl rounded-bl-4xl shadow-xl z-50">
+            {/* Profile */}
             <div
-              onClick={() => {
-                router.push("/profile");
-              }}
-              className={`flex items-center cursor-pointer ${isProfileActive ? `bg-[linear-gradient(90deg,#DE4646,#B72D2D)] m-3 rounded-2xl text-white` : ""} gap-3 p-5 border-b dark:border-gray-700`}
+              onClick={() => router.push("/profile")}
+              className={`flex items-center cursor-pointer gap-3 p-5 border-b dark:border-gray-700 ${
+                isProfileActive
+                  ? "bg-[linear-gradient(90deg,#DE4646,#B72D2D)] m-3 rounded-2xl text-white"
+                  : ""
+              }`}
             >
               <Image
                 src={user?.image ?? "/icons/App-Icon.svg"}
@@ -711,15 +754,18 @@ function MobileNav() {
               <div>
                 <p className="font-medium">{user?.name}</p>
                 <p
-                  className={`text-sm ${isProfileActive ? "text-white" : "text-gray-500"}`}
+                  className={`text-sm ${
+                    isProfileActive ? "text-white" : "text-gray-500"
+                  }`}
                 >
                   {user?.email}
                 </p>
               </div>
             </div>
 
+            {/* Routes */}
             <nav className="flex-1 p-5 space-y-2 overflow-y-auto">
-              {Routes.map((route) => (
+              {filteredRoutes.map((route) => (
                 <MobileNavItem
                   key={route.id}
                   route={route}
@@ -728,6 +774,7 @@ function MobileNav() {
               ))}
             </nav>
 
+            {/* Bottom controllers */}
             <div className="p-4 border-t dark:border-gray-700 flex flex-col gap-4">
               <ControllerTop toggleTheme={toggleTheme} />
               <ControllerBottom />
@@ -944,8 +991,12 @@ function ControllerBottom() {
 export default function AppNav() {
   return (
     <>
-      <DesktopNav />
-      <MobileNav />
+      <Suspense fallback={null}>
+        <DesktopNav />
+      </Suspense>
+      <Suspense fallback={null}>
+        <MobileNav />
+      </Suspense>
     </>
   );
 }
