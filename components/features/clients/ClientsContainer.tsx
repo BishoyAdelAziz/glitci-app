@@ -37,7 +37,7 @@ export default function ClientsContainer({ isOpen, setIsOpen }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-stretch justify-center gap-x-6 gap-y-12">
+      <div className="grid grid-cols-1 md:grid-cols-3  items-stretch justify-center gap-x-6 gap-y-12">
         {clients?.map((client) => {
           return <ClientCard client={client} key={client.id} />;
         })}

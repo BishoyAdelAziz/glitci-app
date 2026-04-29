@@ -7,7 +7,10 @@ export default function UsersPage() {
   return (
     <div>
       <UsersPageHeader isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
-      <UsersContainer isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
+      <div className="mt-20">
+        {" "}
+        <UsersContainer isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
+      </div>
     </div>
   );
 }

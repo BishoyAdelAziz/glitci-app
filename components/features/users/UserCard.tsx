@@ -1,19 +1,21 @@
-import { Employee } from "@/types/employees";
-import { formatPhoneNumber } from "@/utils/functions";
-import ActionsMenu from "@/components/ui/ActionsMenu";
-import { EyeIcon } from "@/components/ui/ActionsMenu";
-import { EditIcon } from "@/components/ui/ActionsMenu";
-import { TrashIcon } from "@/components/ui/ActionsMenu";
-import Image from "next/image";
+"use client";
+
 import { User } from "@/types/user";
+import ActionsMenu from "@/components/ui/ActionsMenu";
+import { EyeIcon, EditIcon, TrashIcon } from "@/components/ui/ActionsMenu";
+import Image from "next/image";
+
 interface Props {
-  employee: User; // ← remove null, card always has real employee
-  onEdit: (employee: Employee) => void;
-  onDelete: (employee: Employee) => void;
+  employee: User;
+  onEdit: (employee: User) => void;
+  onDelete: (employee: User) => void;
 }
+
 export default function UserCard({ employee, onDelete, onEdit }: Props) {
   return (
-    <div className=" relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px]  bg-white dark:bg-gray-800">
+    <div className="relative shadow-[0_4px_8.2px_0_rgba(0,0,0,0.25)] dark:shadow-[0_4px_8.2px_0_rgba(255,255,255,0.10)] p-6 rounded-[20px] bg-white dark:bg-gray-800 w-full min-w-0">
+      {" "}
+      {/* ✅ added w-full min-w-0 */}
       <div className="absolute top-2 right-2">
         <ActionsMenu
           actions={[
@@ -25,20 +27,27 @@ export default function UserCard({ employee, onDelete, onEdit }: Props) {
             {
               label: "Edit",
               icon: <EditIcon />,
-              // onClick: () => onEdit(employee), // ← wrap to pass employee
+              onClick: () => onEdit(employee),
             },
             {
               label: "Delete",
               icon: <TrashIcon />,
-              // onClick: () => onEdit(employee), // ← wrap to pass employee
+              onClick: () => onDelete(employee),
               variant: "danger",
             },
           ]}
         />
       </div>
-      <div className="flex flex-col items-stretch justify-center gap-6 w-full">
-        <div className="flex items-center justify-start gap-4">
-          <div className="relative inline-block">
+      <div className="flex flex-col items-stretch justify-center gap-6 w-full min-w-0">
+        {" "}
+        {/* ✅ min-w-0 */}
+        {/* Header: avatar + name/role */}
+        <div className="flex items-center justify-start gap-4 min-w-0">
+          {" "}
+          {/* ✅ min-w-0 */}
+          <div className="relative inline-block shrink-0">
+            {" "}
+            {/* ✅ shrink-0 to prevent avatar squishing */}
             <Image
               alt="User Profile"
               width={100}
@@ -46,21 +55,27 @@ export default function UserCard({ employee, onDelete, onEdit }: Props) {
               src="/images/User-Image.jpg"
               className="rounded-full"
             />
-            <div className="absolute bottom-1 right-2 w-4 h-4 rounded-full bg-green-500 border-2 border-white"></div>
+            <div className="absolute bottom-1 right-2 w-4 h-4 rounded-full bg-green-500 border-2 border-white" />
           </div>
-          <div className="flex flex-col items-start justify-center">
-            <h4 className="font-poppins font-bold text-nowrap">
+          <div className="flex flex-col items-start min-w-0 w-full break-all overflow-hidden">
+            <h4
+              title={employee?.name}
+              className="font-poppins font-bold w-full text-wrap"
+            >
               {employee?.name}
             </h4>
-            <p className="font-poppins font-normal text-[#979797] text-nowrap">
+            <p className="font-poppins font-normal text-[#979797] w-full truncate">
+              {/* ✅ truncate, removed text-nowrap */}
               {employee?.role}
             </p>
           </div>
         </div>
-        <div className="h-0.5 bg-gray-400/30 w-ful"></div>
-
-        <div className="flex items-start justify-start gap-4">
+        <div className="h-0.5 bg-gray-400/30 w-full" />
+        {/* Email row */}
+        <div className="flex items-start justify-start gap-4 min-w-0">
+          {/* ✅ min-w-0 */}
           <svg
+            className="shrink-0"
             width="22"
             height="22"
             viewBox="0 0 22 22"
@@ -81,46 +96,25 @@ export default function UserCard({ employee, onDelete, onEdit }: Props) {
               strokeWidth="0.5"
             />
           </svg>
-
-          <p className="font-poppins font-normal text-[#979797] text-md">
+          <p className="font-poppins font-normal text-[#979797] text-md break-all w-full min-w-0">
             {employee?.email}
           </p>
         </div>
-        <div className="h-0.5 bg-gray-400/30 w-ful"></div>
-        <div className="flex items-start justify-start gap-4">
+        <div className="h-0.5 bg-gray-400/30 w-full" />
+        {/* Role row */}
+        <div className="flex items-start justify-start gap-4 min-w-0">
+          {" "}
+          {/* ✅ min-w-0 */}
           <svg
+            className="shrink-0"
             width="22"
             height="22"
             viewBox="0 0 22 22"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <circle
-              cx="11"
-              cy="11"
-              r="10.75"
-              stroke="#979797"
-              strokeWidth="0.5"
-            />
-            <path
-              d="M11.5 10.2414C12.1685 10.2414 12.8097 9.96528 13.2824 9.4738C13.7552 8.98233 14.0208 8.31574 14.0208 7.62069C14.0208 6.92564 13.7552 6.25906 13.2824 5.76758C12.8097 5.27611 12.1685 5 11.5 5C10.8315 5 10.1903 5.27611 9.71756 5.76758C9.24483 6.25906 8.97925 6.92564 8.97925 7.62069C8.97925 8.31574 9.24483 8.98233 9.71756 9.4738C10.1903 9.96528 10.8315 10.2414 11.5 10.2414ZM11.5 11.3928C8.1485 11.3928 6 13.3156 6 14.2518V16H17V14.2518C17 13.1197 14.966 11.3928 11.5 11.3928Z"
-              fill="#979797"
-            />
-          </svg>
-
-          <p className="font-poppins font-normal text-[#979797] text-md">
-            Web Developer
-          </p>
-        </div>
-        <div className="h-0.5 bg-gray-400/30 w-ful"></div>
-        <div className="flex items-start justify-start gap-4">
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 22 22"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+            {" "}
+            {/* ✅ shrink-0 */}
             <circle
               cx="11"
               cy="11"
@@ -135,8 +129,9 @@ export default function UserCard({ employee, onDelete, onEdit }: Props) {
               fill="#979797"
             />
           </svg>
-
-          <p className="font-poppins font-normal text-[#979797] text-md">
+          <p className="font-poppins font-normal text-[#979797] text-md truncate min-w-0">
+            {" "}
+            {/* ✅ truncate + min-w-0 */}
             {employee?.role}
           </p>
         </div>
