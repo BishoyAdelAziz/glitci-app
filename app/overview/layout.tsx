@@ -24,9 +24,7 @@ const OverViewLayout = function ({ children }: { children: React.ReactNode }) {
         </Suspense>
 
         {/* Floating Controllers */}
-        <Suspense fallback={null}>
-          <ControllersNav />
-        </Suspense>
+        <Suspense fallback={null}>{/* <ControllersNav /> */}</Suspense>
 
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 lg:p-8">

@@ -65,9 +65,9 @@ body {
 .dark .react-datepicker__day--selected {
   background-color: #2563eb;
 }
-.react-datepicker-wrapper {
+/* .react-datepicker-wrapper {
   width: 100% !important;
-}
+} */
 
 .react-datepicker__input-container {
   width: 100% !important;
@@ -292,4 +292,3 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .task-row-enter {
   animation: task-row-enter 300ms ease-out forwards;
 }
-
