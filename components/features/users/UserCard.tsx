@@ -5,8 +5,9 @@ import { EyeIcon } from "@/components/ui/ActionsMenu";
 import { EditIcon } from "@/components/ui/ActionsMenu";
 import { TrashIcon } from "@/components/ui/ActionsMenu";
 import Image from "next/image";
+import { User } from "@/types/user";
 interface Props {
-  employee: Employee; // ← remove null, card always has real employee
+  employee: User; // ← remove null, card always has real employee
   onEdit: (employee: Employee) => void;
   onDelete: (employee: Employee) => void;
 }
@@ -24,12 +25,12 @@ export default function UserCard({ employee, onDelete, onEdit }: Props) {
             {
               label: "Edit",
               icon: <EditIcon />,
-              onClick: () => onEdit(employee), // ← wrap to pass employee
+              // onClick: () => onEdit(employee), // ← wrap to pass employee
             },
             {
               label: "Delete",
               icon: <TrashIcon />,
-              onClick: () => onEdit(employee), // ← wrap to pass employee
+              // onClick: () => onEdit(employee), // ← wrap to pass employee
               variant: "danger",
             },
           ]}
@@ -136,7 +137,7 @@ export default function UserCard({ employee, onDelete, onEdit }: Props) {
           </svg>
 
           <p className="font-poppins font-normal text-[#979797] text-md">
-            {employee?.employmentType}
+            {employee?.role}
           </p>
         </div>
       </div>
