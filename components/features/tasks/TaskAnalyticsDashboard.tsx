@@ -72,9 +72,13 @@ function MetricCard({
   hoverBg: string;
 }) {
   return (
-    <div className={`bg-white dark:bg-gray-900 border border-gray-50 dark:border-gray-800 rounded-2xl p-5 relative overflow-hidden transition-all duration-500 shadow-sm hover:shadow-2xl hover:border-transparent group ${hoverBg}`}>
+    <div
+      className={`bg-white dark:bg-gray-900 border border-gray-50 dark:border-gray-800 rounded-2xl p-5 relative overflow-hidden transition-all duration-500 shadow-sm hover:shadow-2xl hover:border-transparent group ${hoverBg}`}
+    >
       <div className="flex items-center justify-between mb-3">
-        <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6`}>
+        <div
+          className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6`}
+        >
           {icon}
         </div>
       </div>
@@ -127,7 +131,10 @@ export default function TaskAnalyticsDashboard() {
               type="date"
               value={params.startDate || ""}
               onChange={(e) =>
-                setParams((p) => ({ ...p, startDate: e.target.value || undefined }))
+                setParams((p) => ({
+                  ...p,
+                  startDate: e.target.value || undefined,
+                }))
               }
               className="bg-white dark:bg-gray-800 rounded-xl px-3 py-2.5 text-sm outline-none"
               placeholder="Start"
@@ -137,7 +144,10 @@ export default function TaskAnalyticsDashboard() {
               type="date"
               value={params.endDate || ""}
               onChange={(e) =>
-                setParams((p) => ({ ...p, endDate: e.target.value || undefined }))
+                setParams((p) => ({
+                  ...p,
+                  endDate: e.target.value || undefined,
+                }))
               }
               className="bg-white dark:bg-gray-800 rounded-xl px-3 py-2.5 text-sm outline-none"
               placeholder="End"
@@ -184,8 +194,18 @@ export default function TaskAnalyticsDashboard() {
               color="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
               hoverBg="hover:bg-gray-50/80 dark:hover:bg-gray-800/50"
               icon={
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
                 </svg>
               }
             />
@@ -195,8 +215,18 @@ export default function TaskAnalyticsDashboard() {
               color="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600"
               hoverBg="hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10"
               icon={
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               }
             />
@@ -206,8 +236,18 @@ export default function TaskAnalyticsDashboard() {
               color="bg-blue-100 dark:bg-blue-900/30 text-blue-600"
               hoverBg="hover:bg-blue-50/50 dark:hover:bg-blue-900/10"
               icon={
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               }
             />
@@ -217,9 +257,24 @@ export default function TaskAnalyticsDashboard() {
               color="bg-purple-100 dark:bg-purple-900/30 text-purple-600"
               hoverBg="hover:bg-purple-50/50 dark:hover:bg-purple-900/10"
               icon={
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
                 </svg>
               }
             />
@@ -229,8 +284,18 @@ export default function TaskAnalyticsDashboard() {
               color="bg-amber-100 dark:bg-amber-900/30 text-amber-600"
               hoverBg="hover:bg-amber-50/50 dark:hover:bg-amber-900/10"
               icon={
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               }
             />
@@ -240,8 +305,18 @@ export default function TaskAnalyticsDashboard() {
               color="bg-orange-100 dark:bg-orange-900/30 text-orange-600"
               hoverBg="hover:bg-orange-50/50 dark:hover:bg-orange-900/10"
               icon={
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               }
             />
@@ -256,7 +331,9 @@ export default function TaskAnalyticsDashboard() {
                 </p>
                 <div className="flex items-baseline gap-2">
                   <h3 className="text-6xl font-black">{completionRate}%</h3>
-                  <span className="text-lg text-gray-400">of total workload</span>
+                  <span className="text-lg text-gray-400">
+                    of total workload
+                  </span>
                 </div>
               </div>
               <div className="flex-1 max-w-md w-full">
@@ -272,7 +349,9 @@ export default function TaskAnalyticsDashboard() {
               </div>
             </div>
             {/* Background Decoration */}
-            <div className={`absolute -right-20 -top-20 w-64 h-64 bg-linear-to-br ${rateColor} opacity-10 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-125`} />
+            <div
+              className={`absolute -right-20 -top-20 w-64 h-64 bg-linear-to-br ${rateColor} opacity-10 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-125`}
+            />
           </div>
 
           {/* Breakdown Table */}
@@ -310,7 +389,7 @@ export default function TaskAnalyticsDashboard() {
             </div>
 
             {/* Rows */}
-            {analytics.tasks?.slice(0, 8).map((task, i) => (
+            {analytics.tasks?.map((task, i) => (
               <div
                 key={task._id}
                 className={`grid grid-cols-12 gap-4 px-6 py-4 items-center ${
@@ -329,13 +408,13 @@ export default function TaskAnalyticsDashboard() {
                         ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400"
                         : task.status === "in progress"
                           ? "bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400"
-                        : task.status === "in review"
-                          ? "bg-purple-50 text-purple-600 dark:bg-purple-950/30 dark:text-purple-400"
-                          : task.status === "pending"
-                            ? "bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400"
-                            : task.status === "postponed"
-                              ? "bg-orange-50 text-orange-600 dark:bg-orange-950/30 dark:text-orange-400"
-                              : "bg-gray-50 text-gray-600 dark:bg-gray-950/30 dark:text-gray-400"
+                          : task.status === "in review"
+                            ? "bg-purple-50 text-purple-600 dark:bg-purple-950/30 dark:text-purple-400"
+                            : task.status === "pending"
+                              ? "bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400"
+                              : task.status === "postponed"
+                                ? "bg-orange-50 text-orange-600 dark:bg-orange-950/30 dark:text-orange-400"
+                                : "bg-gray-50 text-gray-600 dark:bg-gray-950/30 dark:text-gray-400"
                     }`}
                   >
                     {task.status.toUpperCase()}
@@ -343,14 +422,14 @@ export default function TaskAnalyticsDashboard() {
                 </div>
                 <div className="col-span-2 flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white text-[9px] font-bold shrink-0">
-                    {task.assignedTo?.name
+                    {task.assignedTo?.user?.name
                       ?.split(" ")
                       .map((n: string) => n[0])
                       .join("")
                       .slice(0, 2)}
                   </div>
                   <span className="text-sm truncate">
-                    {task.assignedTo?.name ?? "—"}
+                    {task.assignedTo?.user?.name ?? "—"}
                   </span>
                 </div>
                 <div className="col-span-2 text-sm text-gray-600 dark:text-gray-400 truncate">
