@@ -334,7 +334,7 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
           }}
           aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
           className={`
-            absolute top-1/2 -translate-y-1/2 -right-3.5 z-60
+            absolute top-1/2 -translate-y-1/2 -right-3.5 z-50
             flex items-center justify-center
             w-7 h-7 rounded-full
             bg-[#DE4646] dark:bg-gray-900
