@@ -20,7 +20,7 @@ export default function UsersContainer({ isOpen, setIsOpen }: Props) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const search = useSearchParam();
-  const { Users, UsersError, UsersIsError, UsersIsLoading } = UseUsers();
+  const { Users, UsersIsError, UsersIsLoading } = UseUsers({ isActive: true });
   const HandleEdit = (user: User) => {
     setSelectedUser(user);
     setIsEditModalOpen(true);
